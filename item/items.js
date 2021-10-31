@@ -56,9 +56,9 @@ let getItems = () => [
         modifyDate: new ItemDate(10, 2, 2021),
         downloadResources: { folder: "/beta", resources: ["airship.webp"] }
     }),
-    new Item(null, "Summer plant", "https://www.instagram.com/p/CMXFzXihSGw/", {
+    new Item(null, "Wonderfull spice", "https://www.instagram.com/p/CMXFzXihSGw/", {
         image: "crocus/crocus-base.webp",
-        content: "One of the most common summer plant - Crocus!"
+        content: "One of the most common summer plant - Crocus but also the most expensive spice in the world!"
     }, new ItemDate(20, 10, 2021), {
         group: ["best_pixel","beta"],
     }),
