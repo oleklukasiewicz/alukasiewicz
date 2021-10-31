@@ -4,6 +4,7 @@ let getGroups = () => [
     new Group("isometric-world", "Isometric world", new ItemDate(27, 8, 2021)),
     new Group(null, "Microsoft Projects", new ItemDate(3, 6, 2021), { route: ["microsoft", "ms"] }),
     new Group("pixel-plants", "Pixel flowers and plants", new ItemDate(20, 11, 2021)),
+    new Group("beta","Beta projects - do not release",new ItemDate(31,10,2021))
 ];
 let getItems = () => [
     new Item(null, "Pixel tree", "https://www.instagram.com/p/CPSx-X8hdVM/", {
@@ -27,12 +28,6 @@ let getItems = () => [
     }, new ItemDate(27, 10, 2020), {
         modifyDate: new ItemDate(13, 3, 2021),
         group: ["best_pixel"],
-    }),
-    new Item(null, "Summer plant", "https://www.instagram.com/p/CMXFzXihSGw/", {
-        image: "crocus/crocus-base.webp",
-        content: "One of the most common summer plant - Crocus!"
-    }, new ItemDate(20, 10, 2021), {
-        group: ["best_pixel","pixel-plants"],
     }),
     new Item(null, "Procedural world", "https://www.instagram.com/p/CLEOiDiBDey/", {
         image: "isometric/isometric_castle.webp",
@@ -60,5 +55,11 @@ let getItems = () => [
         group: ["microsoft"],
         modifyDate: new ItemDate(10, 2, 2021),
         downloadResources: { folder: "/beta", resources: ["airship.webp"] }
-    })
+    }),
+    new Item(null, "Wonderfull spice", "https://www.instagram.com/p/CMXFzXihSGw/", {
+        image: "crocus/crocus-base.webp",
+        content: "One of the most common summer plant - Crocus but also the most expensive spice in the world!"
+    }, new ItemDate(20, 10, 2021), {
+        group: ["best_pixel","beta"],
+    }),
 ];
