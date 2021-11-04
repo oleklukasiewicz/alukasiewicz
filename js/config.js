@@ -526,30 +526,14 @@ const imageView = new View(VIEW.image, APP.url.image, {}, {
         });
         this.data.viewerStream = new Stream({
             load: async function (item, index, mode) {
-                if (mode == ItemController.loadModes.group) {
-                    await _sender.data.imageViewerController.loadImages(item.items.filter((xItem) => (!xItem.arg?.hideTileImageInGallery)).map((xItem) => new ItemImageViewerItem(xItem.id, APP.itemFolder + "/" + xItem.tile.image)));
-                    _sender.data.imageViewerController.set(item.items.findIndex((xItem) => xItem.id == _sender.data.route[2]));
-                } else {
-                    if (_sender.data.route[2] && _sender.data.route[2] != 0 && !item.isItemLinkToWeb) {
-                        let _target = _sender.data.route[2];
-                        if (!isNaN(_target))
-                            _target -= 1;
-                        let _img = [];
-                        let _index = 1;
-                        item.content.forEach((section) => Array.prototype.forEach.call(section.getElementsByTagName("IMG"), (img) => {
-                            _img.push(ItemImageViewerItem(_index, img.src));
-                            if (isNaN(_target) && _target == img.src)
-                                _target = _index - 1;
-                            _index++;
-                        }));
-                        await _sender.data.imageViewerController.loadImages(_img);
-                        _sender.data.imageViewerController.set(_target);
-                    }
-                    else {
-                        await _sender.data.imageViewerController.loadImages([new ItemImageViewerItem(item.id, APP.itemFolder + "/" + item.tile.image)]);
-                        _sender.data.imageViewerController.set(0);
-                    }
-                }
+                await _sender.data.imageViewerController.loadImages(item.arg.imageGroup.images);
+                console.log(_sender.data.route.length, _sender.data.route)
+                let _d = _sender.data.route.slice(2).join("/");
+                let _r = item.arg.imageGroup.findIndexById(_d);
+                if (_r==-1)
+                _r = item.arg.imageGroup.findIndexBySrc((_d[0] == '/' ? "" : '/') + _d);
+                _sender.data.route[2] = item.arg.imageGroup.images[_r]?.id;
+                _sender.data.imageViewerController.setById(_sender.data.route[2]);
             }
         });
         window.addEventListener("keyup", function (e) {
@@ -611,7 +595,15 @@ ItemController.addEventListener("fetchItem", function (item) {
     let urlRex = /^(?:(?:https?|ftp):\/\/)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,})))(?::\d{2,5})?(?:\/\S*)?$/;
     item.isItemLinkToWeb = urlRex.test(item.content) ? item.content : null;
     item.isDownloaded = ItemDownloadController.isDownloaded(item.id);
+    let _images = [];
+    _images.push(APP.itemFolder + "/" + item.tile.image);
+    if (!item.isItemLinkToWeb) {
+        item.content.forEach((section) => Array.prototype.map.call(section.getElementsByTagName("IMG"), (img) => _images.push(img.dataset.shortsrc)));
+    }
+    item.arg.imageGroup = new ImageGroup(item.id, _images.map((img, index) => new ImageItem(index, img)));
 });
+ItemController.addEventListener("fetchItemFinish", () => ItemController.storage.forEach((group) =>
+    group.arg.imageGroup = new ImageGroup(group.id, group.items.map((item) => new ImageItem(item.id, APP.itemFolder + "/" + item.tile.image)))))
 ItemDownloadController.addEventListener("saveDownloads", (items) => window.localStorage[STORAGE.itemDownload] = JSON.stringify(items));
 ItemDownloadController.addEventListener("download", (id) => ItemDownloadController.modifyResourcesByItemId(id, true, cacheIfRequired));
 ItemDownloadController.addEventListener("removeDownloads", (id) => ItemDownloadController.modifyResourcesByItemId(id, false, removeFromCache));
@@ -694,7 +686,9 @@ let ItemImage = function (src, alt) {
     let _frame = document.createElement("DIV");
     let _img = document.createElement("IMG");
     let _alt = document.createElement("SPAN");
-    _img.src = APP.itemFolder + "/" + src;
+    let _src = APP.itemFolder + "/" + src;
+    _img.src = _src;
+    _img.dataset.shortsrc = _src;
     _alt.className = "img-alt";
     _alt.innerHTML = alt || "";
     _frame.appendChild(_img);
@@ -703,7 +697,7 @@ let ItemImage = function (src, alt) {
     _img.onerror = function () { _img.onload = function () { }; _img.src = "/img/image_error.webp"; _img.classList.add("no-image"); _noImage = true; }
     _img.onload = function () {
         if (!_noImage)
-            _frame.addEventListener("click", () => ViewController.navigate(VIEW.image, { routeArg: ["item", itemView.data.currentItem.id, _img.src] }));
+            _frame.addEventListener("click", () => ViewController.navigate(VIEW.image, { routeArg: ["item", itemView.data.currentItem.id, _src] }));
     };
     return _frame;
 }
@@ -765,6 +759,7 @@ let ItemImageViewer = function () {
         _currentIndex = index;
         _controller.invokeEvent("render", [_currentImages[index], index, _currentImages[_prev], _prev]);
     }
+    _controller.setById = (id) => _controller.set(_currentImages.findIndex((img) => img.id == id));
     _controller.forward = function () {
         let _index = _currentIndex + 1;
         if (_index >= _currentImages.length)
@@ -785,8 +780,6 @@ let ItemImageViewer = function () {
         })
     return _controller;
 };
-let ItemImageViewerItem = function (id, src) { return { id, src } }
-
 let ImageItem = function (id, src, arg = {}) { return { id, src, arg } }
 let ImageGroup = function (id = new Date(), images = []) {
     EventController.call(this, {
@@ -813,6 +806,8 @@ let ImageGroup = function (id = new Date(), images = []) {
         let _deleted = _images.splice(_index, 1);
         this.invokeEvent("remove", [_deleted[0], _index]);
     }
+    this.findIndexById = (id) => _findImageIndexById(id);
+    this.findIndexBySrc = (src) => _images.findIndex((img) => img.src == src);
     Object.defineProperties(this, {
         images:
         {
