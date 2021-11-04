@@ -282,7 +282,7 @@ let ItemDownloadController = (function () {
         item.arg.downloadResources?.resources.forEach(async (file) => await whatToDo(APP.itemFolder + item.arg.downloadResources.folder + networkOnlyFolder + file));
     }
     return _controller;
-}())
+}());
 const landingView = new View(VIEW.landing, APP.url.landing, { scrollY: -1, itemsLoaded: false }, {
     onNavigate: async function () {
         if (this.data.scrollY >= 0)
@@ -487,59 +487,7 @@ const imageView = new View(VIEW.image, APP.url.image, {}, {
                     _sender.data.imageViewerController.forward();
             }
         });
-        this.data.imageViewerController = (function () {
-            let _controller = {};
-            let _currentImages = [];
-            let _currentIndex = -1;
-            EventController.call(_controller, {
-                "back": [],
-                "forward": [],
-                "render": [],
-                "load": [],
-                "remove": [],
-                "loadStart": [],
-                "loadFinish": [],
-            });
-            _controller.loadImages = async function (images) {
-                _currentImages = images;
-                await _controller.invokeEvent("loadStart", [images]);
-                await Promise.all(_currentImages.map(async (image, index) => await _controller.invokeEvent("load", [image, index])));
-                await _controller.invokeEvent("loadFinish", [images]);
-            }
-            _controller.removeImage = function (src) {
-                let index = _currentImages.findIndex((image) => image.src == src);
-                _currentImages.splice(index, 1);
-                _controller.invokeEvent("remove", [index, src]);
-                if (_currentIndex >= _currentImages.length) {
-                    _currentIndex = _currentImages.length - 1;
-                    _controller.set(_currentIndex);
-                }
-            }
-            _controller.set = function (index) {
-                let _prev = _currentIndex;
-                _currentIndex = index;
-                _controller.invokeEvent("render", [_currentImages[index], index, _currentImages[_prev], _prev]);
-            }
-            _controller.forward = function () {
-                let _index = _currentIndex + 1;
-                if (_index >= _currentImages.length)
-                    _index = 0;
-                _controller.set(_index);
-                _controller.invokeEvent("forward", [_currentImages[_index], _index]);
-            }
-            _controller.back = function () {
-                let _index = _currentIndex - 1;
-                if (_index < 0)
-                    _index = _currentImages.length - 1;
-                _controller.set(_index);
-                _controller.invokeEvent("back", [_currentImages[_index], _index]);
-            }
-            Object.defineProperties(_controller,
-                {
-                    images: { get: () => _currentImages }
-                })
-            return _controller;
-        }());
+        this.data.imageViewerController = new ItemImageViewer();
         let _sender = this;
         let _imagesList = getById("image-img-list");
         this.data.imageList = _imagesList;
@@ -548,7 +496,6 @@ const imageView = new View(VIEW.image, APP.url.image, {}, {
         getById("image-close").addEventListener("click", ViewController.back);
         _forwardButton.addEventListener("click", _sender.data.imageViewerController.forward);
         _backButton.addEventListener("click", _sender.data.imageViewerController.back);
-        let imageItem = function (id, src) { return { id, src } }
         this.data.imageViewerController.addEventListener("loadStart", function (images) {
             _forwardButton.classList.toggle(GLOBAL.hidden, images.length < 2);
             _backButton.classList.toggle(GLOBAL.hidden, images.length < 2);
@@ -580,7 +527,7 @@ const imageView = new View(VIEW.image, APP.url.image, {}, {
         this.data.viewerStream = new Stream({
             load: async function (item, index, mode) {
                 if (mode == ItemController.loadModes.group) {
-                    await _sender.data.imageViewerController.loadImages(item.items.filter((xItem) => (!xItem.arg?.hideTileImageInGallery)).map((xItem) => new imageItem(xItem.id, APP.itemFolder + "/" + xItem.tile.image)));
+                    await _sender.data.imageViewerController.loadImages(item.items.filter((xItem) => (!xItem.arg?.hideTileImageInGallery)).map((xItem) => new ItemImageViewerItem(xItem.id, APP.itemFolder + "/" + xItem.tile.image)));
                     _sender.data.imageViewerController.set(item.items.findIndex((xItem) => xItem.id == _sender.data.route[2]));
                 } else {
                     if (_sender.data.route[2] && _sender.data.route[2] != 0 && !item.isItemLinkToWeb) {
@@ -590,7 +537,7 @@ const imageView = new View(VIEW.image, APP.url.image, {}, {
                         let _img = [];
                         let _index = 1;
                         item.content.forEach((section) => Array.prototype.forEach.call(section.getElementsByTagName("IMG"), (img) => {
-                            _img.push(imageItem(_index, img.src));
+                            _img.push(ItemImageViewerItem(_index, img.src));
                             if (isNaN(_target) && _target == img.src)
                                 _target = _index - 1;
                             _index++;
@@ -599,7 +546,7 @@ const imageView = new View(VIEW.image, APP.url.image, {}, {
                         _sender.data.imageViewerController.set(_target);
                     }
                     else {
-                        await _sender.data.imageViewerController.loadImages([new imageItem(item.id, APP.itemFolder + "/" + item.tile.image)]);
+                        await _sender.data.imageViewerController.loadImages([new ItemImageViewerItem(item.id, APP.itemFolder + "/" + item.tile.image)]);
                         _sender.data.imageViewerController.set(0);
                     }
                 }
@@ -785,3 +732,57 @@ let ItemQuote = function (quote, author) {
     _quote.appendChild(_quoteAuthor);
     return _quote;
 }
+let ItemImageViewer = function () {
+    let _controller = {};
+    let _currentImages = [];
+    let _currentIndex = -1;
+    EventController.call(_controller, {
+        "back": [],
+        "forward": [],
+        "render": [],
+        "load": [],
+        "remove": [],
+        "loadStart": [],
+        "loadFinish": [],
+    });
+    _controller.loadImages = async function (images) {
+        _currentImages = images;
+        await _controller.invokeEvent("loadStart", [images]);
+        await Promise.all(_currentImages.map(async (image, index) => await _controller.invokeEvent("load", [image, index])));
+        await _controller.invokeEvent("loadFinish", [images]);
+    }
+    _controller.removeImage = function (src) {
+        let index = _currentImages.findIndex((image) => image.src == src);
+        _currentImages.splice(index, 1);
+        _controller.invokeEvent("remove", [index, src]);
+        if (_currentIndex >= _currentImages.length) {
+            _currentIndex = _currentImages.length - 1;
+            _controller.set(_currentIndex);
+        }
+    }
+    _controller.set = function (index) {
+        let _prev = _currentIndex;
+        _currentIndex = index;
+        _controller.invokeEvent("render", [_currentImages[index], index, _currentImages[_prev], _prev]);
+    }
+    _controller.forward = function () {
+        let _index = _currentIndex + 1;
+        if (_index >= _currentImages.length)
+            _index = 0;
+        _controller.set(_index);
+        _controller.invokeEvent("forward", [_currentImages[_index], _index]);
+    }
+    _controller.back = function () {
+        let _index = _currentIndex - 1;
+        if (_index < 0)
+            _index = _currentImages.length - 1;
+        _controller.set(_index);
+        _controller.invokeEvent("back", [_currentImages[_index], _index]);
+    }
+    Object.defineProperties(_controller,
+        {
+            images: { get: () => _currentImages }
+        })
+    return _controller;
+};
+let ItemImageViewerItem = function (id, src) { return { id, src } }
