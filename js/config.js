@@ -496,10 +496,10 @@ const imageView = new View(VIEW.image, APP.url.image, {}, {
         getById("image-close").addEventListener("click", ViewController.back);
         _forwardButton.addEventListener("click", _sender.data.imageViewerController.next);
         _backButton.addEventListener("click", _sender.data.imageViewerController.previous);
-        this.data.imageViewerController.addEventListener("loadStart", function (images) {
+        this.data.imageViewerController.addEventListener("loadStart", (images) => _imagesList.getElementsByTagName("IMG").remove());
+        this.data.imageViewerController.addEventListener("loadFinish", function (images) {
             _forwardButton.classList.toggle(GLOBAL.hidden, images.length < 2);
             _backButton.classList.toggle(GLOBAL.hidden, images.length < 2);
-            _imagesList.getElementsByTagName("IMG").remove();
         });
         this.data.imageViewerController.addEventListener("load", async function (image, index) {
             let _iImage = document.createElement("img");
@@ -743,9 +743,9 @@ let ImageGroupController = function (images = []) {
     let _sender = this;
     this.load = async function (images = []) {
         _images = images;
-        this.invokeEvent("loadStart", [_images]);
+        _sender.invokeEvent("loadStart", [_images]);
         await Promise.all(_images.map(async (img, index) => await _sender.invokeEvent("load", [img, index])));
-        this.invokeEvent("loadFinish", [_images]);
+        _sender.invokeEvent("loadFinish", [_images]);
     }
     this.open = function (id) {
         this.openIndex(this.findIndexById(id));
