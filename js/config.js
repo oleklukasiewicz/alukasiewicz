@@ -417,8 +417,6 @@ const groupView = new View(VIEW.group, APP.url.group, { scrollY: -1 }, {
         let _data = this.data;
         _data._groupData = getById("group-data")
         _data._groupList = getById("group-list");
-        let _galleryButton = getById("group-gallery-button")
-        _galleryButton.addEventListener("click", () => ViewController.navigate(VIEW.image, { routeArg: ["group", _data.currentGroup.id, _data.currentGroup.items[0].id] }));
         ViewController.addErrorType(new ErrorType(ERROR_CODE.groupNotFound, "This group is not available."));
         ViewController.addErrorType(new ErrorType(ERROR_CODE.noItemsInGroup, "This group is empty"));
         this.data.itemStream = new Stream({
@@ -473,106 +471,10 @@ const groupView = new View(VIEW.group, APP.url.group, { scrollY: -1 }, {
         this.data._groupList.getElementsByClassName("item loading").remove();
     }
 }, getById(VIEW.group), true, ViewController.loadingModes.always);
-const imageView = new View(VIEW.image, APP.url.image, {}, {
-    onRegister: function () {
-        ViewController.addErrorType(new ErrorType(ERROR_CODE.imageNotFound, "Image not found"));
-        let touchStartX;
-        this.rootNode.addEventListener("touchstart", () => touchStartX = event.changedTouches[0].clientX);
-        this.rootNode.addEventListener("touchend", function () {
-            let touch = event.changedTouches[0].clientX;
-            if (Math.abs(touch - touchStartX) > 50) {
-                if (touch - touchStartX > 0)
-                    _sender.data.imageViewerController.back();
-                else
-                    _sender.data.imageViewerController.forward();
-            }
-        });
-        this.data.imageViewerController = new ImageGroupController();
-        let _sender = this;
-        let _imagesList = getById("image-img-list");
-        this.data.imageList = _imagesList;
-        let _forwardButton = getById("image-forward");
-        let _backButton = getById("image-back");
-        getById("image-close").addEventListener("click", ViewController.back);
-        _forwardButton.addEventListener("click", _sender.data.imageViewerController.next);
-        _backButton.addEventListener("click", _sender.data.imageViewerController.previous);
-        this.data.imageViewerController.addEventListener("loadStart", (images) => _imagesList.getElementsByTagName("IMG").remove());
-        this.data.imageViewerController.addEventListener("loadFinish", function (images) {
-            _forwardButton.classList.toggle(GLOBAL.hidden, images.length < 2);
-            _backButton.classList.toggle(GLOBAL.hidden, images.length < 2);
-        });
-        this.data.imageViewerController.addEventListener("load", async function (image, index) {
-            let _iImage = document.createElement("img");
-            _iImage.src = image.src;
-            _imagesList.appendChild(_iImage);
-            let imageIsNotLoaded = () => _sender.data.imageViewerController.remove(image.id);
-            await new Promise((resolve) => {
-                _iImage.onload = () => resolve();
-                _iImage.onerror = () => resolve(imageIsNotLoaded());
-            });
-        });
-        this.data.imageViewerController.addEventListener("open", function (image, index, prev_img, prev) {
-            try {
-                _imagesList.children[prev]?.classList.remove("active");
-                _imagesList.children[index].classList.add("active");
-                history.state.arg.routeArg[2] = image.id;
-                history.replaceState(history.state, '', APP.url.image + _sender.data.route[0] + '/' + _sender.data.route[1] + '/' + image.id);
-            } catch (e) {
-                ViewController.error(ERROR_CODE.imageNotFound);
-            }
-        });
-        this.data.imageViewerController.addEventListener("remove", function (img, index) {
-            _imagesList.children[index].remove();
-        });
-        this.data.viewerStream = new Stream({
-            load: async function (item, index, mode) {
-                await _sender.data.imageViewerController.load(item.arg.imageGroup.images);
-                let _d = _sender.data.route.slice(2).join("/");
-                let _r = _sender.data.imageViewerController.findIndexById(_d);
-                if (_r == -1)
-                    _r = _sender.data.imageViewerController.findIndexBySrc((_d[0] == '/' ? "" : '/') + _d);
-                _sender.data.route[2] = item.arg.imageGroup.images[_r]?.id;
-                _sender.data.imageViewerController.open(_sender.data.route[2]);
-            }
-        });
-        window.addEventListener("keyup", function (e) {
-            if (ViewController.currentView == _sender) {
-                if (e.key == "ArrowRight")
-                    _sender.data.imageViewerController.forward();
-                else
-                    if (e.key == "ArrowLeft")
-                        _sender.data.imageViewerController.back();
-            }
-        });
-    },
-    onNavigate: async function (arg) {
-        let _type = arg.routeArg[0];
-        let _contextId = arg.routeArg[1];
-        this.data.route = arg.routeArg;
-        await ItemController.load(this.data.viewerStream, _type, _contextId);
-    },
-    onLoad: function () {
-        this.data.imageList.classList.add(GLOBAL.loading);
-        this.rootNode.classList.remove(GLOBAL.error);
-    },
-    onLoadFinish: function () {
-        this.data.imageList.classList.remove(GLOBAL.loading);
-    },
-    onError: function (error) {
-        console.error(error);
-        let _errorNode = getById("image-view-error");
-        this.rootNode.classList.add(GLOBAL.error);
-        _errorNode.innerHTML = "<i class='mi mi-Error font-header'></i>" + error.title;
-        ViewController.finishLoadView(this);
-        if (!error.arg?.noRefresh)
-            _errorNode.appendChild(createRefreshButton());
-    },
-}, getById(VIEW.image), true, ViewController.loadingModes.always);
 ViewController.register(landingView, true);
 ViewController.register(profileView);
 ViewController.register(itemView);
 ViewController.register(groupView);
-ViewController.register(imageView);
 ViewController.addErrorType(new ErrorType(ERROR_CODE.undefinedError, "Something goes wrong!"), true);
 ViewController.addErrorType(new ErrorType(ERROR_CODE.itemsNotLoaded, "Some items cannot be loaded."));
 ViewController.addErrorType(new ErrorType(ERROR_CODE.outdatedItems, "Items are outdated"));
@@ -585,8 +487,6 @@ ViewController.addEventListener("historyPush", function (historyItem, view) {
 ViewController.addEventListener("navigateDefault", function () {
     if (history.state.defaultViewIndex != -1)
         history.go(history.state.defaultViewIndex - history.state.index);
-    else
-        ViewController.navigate();
 });
 ViewController.addEventListener("navigateToView", (view, lastView) => { view.rootNode.classList.add(GLOBAL.activeView); APPNODE.classList.replace(lastView?.id, view.id) });
 ViewController.addEventListener("navigateFromView", (lastView) => lastView.rootNode.classList.remove(GLOBAL.activeView));
@@ -594,15 +494,7 @@ ItemController.addEventListener("fetchItem", function (item) {
     let urlRex = /^(?:(?:https?|ftp):\/\/)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,})))(?::\d{2,5})?(?:\/\S*)?$/;
     item.isItemLinkToWeb = urlRex.test(item.content) ? item.content : null;
     item.isDownloaded = ItemDownloadController.isDownloaded(item.id);
-    let _images = [];
-    _images.push(APP.itemFolder + "/" + item.tile.image);
-    if (!item.isItemLinkToWeb) {
-        item.content.forEach((section) => Array.prototype.map.call(section.getElementsByTagName("IMG"), (img) => _images.push(img.dataset.shortsrc)));
-    }
-    item.arg.imageGroup = new ImageGroup(item.id, _images.map((img, index) => new ImageItem(index, img)));
 });
-ItemController.addEventListener("fetchItemFinish", () => ItemController.storage.forEach((group) =>
-    group.arg.imageGroup = new ImageGroup(group.id, group.items.map((item) => new ImageItem(item.id, APP.itemFolder + "/" + item.tile.image)))))
 ItemDownloadController.addEventListener("saveDownloads", (items) => window.localStorage[STORAGE.itemDownload] = JSON.stringify(items));
 ItemDownloadController.addEventListener("download", (id) => ItemDownloadController.modifyResourcesByItemId(id, true, cacheIfRequired));
 ItemDownloadController.addEventListener("removeDownloads", (id) => ItemDownloadController.modifyResourcesByItemId(id, false, removeFromCache));
@@ -685,19 +577,11 @@ let ItemImage = function (src, alt) {
     let _frame = document.createElement("DIV");
     let _img = document.createElement("IMG");
     let _alt = document.createElement("SPAN");
-    let _src = APP.itemFolder + "/" + src;
-    _img.src = _src;
-    _img.dataset.shortsrc = _src;
+    _img.src =  APP.itemFolder + "/" + src;
     _alt.className = "img-alt";
     _alt.innerHTML = alt || "";
     _frame.appendChild(_img);
     _frame.appendChild(_alt);
-    let _noImage = false;
-    _img.onerror = function () { _img.onload = function () { }; _img.src = "/img/image_error.webp"; _img.classList.add("no-image"); _noImage = true; }
-    _img.onload = function () {
-        if (!_noImage)
-            _frame.addEventListener("click", () => ViewController.navigate(VIEW.image, { routeArg: ["item", itemView.data.currentItem.id, _src] }));
-    };
     return _frame;
 }
 let Section = function (title, content = [], arg = {}) {
@@ -724,56 +608,4 @@ let ItemQuote = function (quote, author) {
     _quote.appendChild(_quoteText);
     _quote.appendChild(_quoteAuthor);
     return _quote;
-}
-let ImageItem = function (id, src, arg = {}) { return { id, src, arg } }
-let ImageGroup = function (id, images = []) {
-    return { id, images }
-}
-let ImageGroupController = function (images = []) {
-    EventController.call(this, {
-        "open": [],
-        "remove": [],
-        "add": [],
-        "load": [],
-        "loadStart": [],
-        "loadFinish": []
-    });
-    let _openedImageIndex = null;
-    let _images = [];
-    let _sender = this;
-    this.load = async function (images = []) {
-        _images = images;
-        _sender.invokeEvent("loadStart", [_images]);
-        await Promise.all(_images.map(async (img, index) => await _sender.invokeEvent("load", [img, index])));
-        _sender.invokeEvent("loadFinish", [_images]);
-    }
-    this.open = function (id) {
-        this.openIndex(this.findIndexById(id));
-    }
-    this.openIndex = function (index) {
-        let _previousIndex = _openedImageIndex;
-        _openedImageIndex = index;
-        this.invokeEvent("open", [_images[_openedImageIndex], _openedImageIndex, _images[_previousIndex], _previousIndex]);
-    }
-    this.add = function (image) {
-        _images.push(image);
-        this.invokeEvent("add", [image, _images.length - 1]);
-    }
-    this.remove = function (id) {
-        let _index = this.findIndexById(id);
-        let _deleted = _images.splice(_index, 1);
-        this.invokeEvent("remove", [_deleted[0], _index]);
-        if (_openedImageIndex == _index)
-            this.previous();
-    }
-    this.next = function () {
-        _sender.openIndex(_openedImageIndex < _images.length - 1 ? _openedImageIndex + 1 : 0);
-    }
-    this.previous = function () {
-        _sender.openIndex(_openedImageIndex > 0 ? _openedImageIndex - 1 : _images.length - 1);
-    }
-    this.findIndexById = (id) => _images.findIndex((img) => img.id == id)
-    this.findIndexBySrc = (src) => _images.findIndex((img) => img.src == src);
-    Object.defineProperties(this, { images: { get: () => _images } });
-    if (images.length > 0) this.load(images);
 }

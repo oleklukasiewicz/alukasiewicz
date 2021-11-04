@@ -3,7 +3,6 @@ const VIEW = {
     item: "item",
     profile: "about",
     group: "group",
-    image: "image",
 };
 const APP = {
     name: "Aleksander Łukasiewicz",
@@ -13,7 +12,6 @@ const APP = {
         item: "/" + VIEW.item + "/",
         profile: "/" + VIEW.profile + "/",
         group: "/" + VIEW.group + "/",
-        image: "/" + VIEW.image + "/"
     },
     itemFolder: "/item",
     date: (date, months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]) => (date.day + "&nbsp;" + months[date.month - 1] + ",&nbsp;" + date.year)
@@ -41,7 +39,6 @@ const ERROR_CODE = {
     outdatedItems: "OUTDATED_ITEMS",
     undefinedError: "UNDEFINED_ERROR",
     noItemsInGroup: "NO_ITEMS_IN_GROUP",
-    imageNotFound: "IMAGE_NOT_FOUND"
 }
 const ISDARKTHEME = (window.localStorage[STORAGE.theme]) ? (window.localStorage[STORAGE.theme] == "true") : (new Date().getHours() > 17 || new Date().getHours() < 8);
 const getById = (id) => document.getElementById(id);
