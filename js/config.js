@@ -577,7 +577,7 @@ let ItemImage = function (src, alt) {
     let _frame = document.createElement("DIV");
     let _img = document.createElement("IMG");
     let _alt = document.createElement("SPAN");
-    _img.src =  APP.itemFolder + "/" + src;
+    _img.src = APP.itemFolder + "/" + src;
     _alt.className = "img-alt";
     _alt.innerHTML = alt || "";
     _frame.appendChild(_img);
@@ -608,4 +608,20 @@ let ItemQuote = function (quote, author) {
     _quote.appendChild(_quoteText);
     _quote.appendChild(_quoteAuthor);
     return _quote;
+}
+let ItemLegacy = function (id, aliases = [], isItemLinkToWeb = false, folder = "/" + id, title, tileImage, tileContent, createDate, modifyDate, groups = [], arg = {}) {
+    return {
+        id, aliases,
+        title,
+        tile: { image: tileImage, content: tileContent },
+        date: { create: createDate, modify: modifyDate },
+        groups,
+        isItemLinkToWeb, folder, arg
+    }
+}
+let GroupLegacy = function (id, aliases = [], title, createDate, modifyDate, arg = {}) {
+    return {
+        id, aliases, arg, title,
+        date: { create: createDate, modify: modifyDate }
+    }
 }

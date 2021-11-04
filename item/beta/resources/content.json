@@ -1,0 +1,27 @@
+{
+    "id": "fluent-design-system",
+    "version":"0-0-0-3",
+    "arguments": {},
+    "resources": [
+        "src"
+    ],
+    "content": [
+        {
+            "type": "section",
+            "content": "Some random Content",
+            "arguments": {}
+        },
+        {
+            "type": "image",
+            "source": "just airship.web -> folder + resources folder are loaded from items.js",
+            "alt": "alt",
+            "arguments": {}
+        },
+        {
+            "type": "quote",
+            "content": "Some random Content",
+            "author": "author",
+            "arguments": {}
+        }
+    ]
+}

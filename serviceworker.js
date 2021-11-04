@@ -1,6 +1,7 @@
 const cacheName = "v-s-0-0-1-8";
 const serviceWorkerVersion = "01-06-21-v1";
-const networkOnlyFolder = "/download/";
+const networkOnlyFolder = "/resources/";
+const itemContentFileName="content.json";
 const firebaseFolder = "/v1/"
 const noCacheResources = ["/item/items.js"];
 const staticResources = [
