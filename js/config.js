@@ -415,7 +415,7 @@ const groupView = new View(VIEW.group, APP.url.group, { scrollY: -1 }, {
         let _groupTitle = getById("group-title");
         let _groupInfo = getById("group-info");
         let _data = this.data;
-        _data._groupData=getById("group-data")
+        _data._groupData = getById("group-data")
         _data._groupList = getById("group-list");
         let _galleryButton = getById("group-gallery-button")
         _galleryButton.addEventListener("click", () => ViewController.navigate(VIEW.image, { routeArg: ["group", _data.currentGroup.id, _data.currentGroup.items[0].id] }));
@@ -496,6 +496,7 @@ const imageView = new View(VIEW.image, APP.url.image, {}, {
                 "forward": [],
                 "render": [],
                 "load": [],
+                "remove": [],
                 "loadStart": [],
                 "loadFinish": [],
             });
@@ -505,8 +506,10 @@ const imageView = new View(VIEW.image, APP.url.image, {}, {
                 await Promise.all(_currentImages.map(async (image, index) => await _controller.invokeEvent("load", [image, index])));
                 await _controller.invokeEvent("loadFinish", [images]);
             }
-            _controller.removeImage = function (index) {
+            _controller.removeImage = function (src) {
+                let index = _currentImages.findIndex((image) => image.src == src);
                 _currentImages.splice(index, 1);
+                _controller.invokeEvent("remove", [index, src]);
                 if (_currentIndex >= _currentImages.length) {
                     _currentIndex = _currentImages.length - 1;
                     _controller.set(_currentIndex);
@@ -555,7 +558,7 @@ const imageView = new View(VIEW.image, APP.url.image, {}, {
             let _iImage = document.createElement("img");
             _iImage.src = image.src;
             _imagesList.appendChild(_iImage);
-            let imageIsNotLoaded = () => _sender.data.imageViewerController.removeImage(index);
+            let imageIsNotLoaded = () => _sender.data.imageViewerController.removeImage(image.src);
             await new Promise((resolve) => {
                 _iImage.onload = () => resolve();
                 _iImage.onerror = () => resolve(imageIsNotLoaded());
@@ -570,6 +573,9 @@ const imageView = new View(VIEW.image, APP.url.image, {}, {
             } catch (e) {
                 ViewController.error(ERROR_CODE.imageNotFound);
             }
+        });
+        this.data.imageViewerController.addEventListener("remove", function (index, src) {
+            _imagesList.children[index].remove();
         });
         this.data.viewerStream = new Stream({
             load: async function (item, index, mode) {
