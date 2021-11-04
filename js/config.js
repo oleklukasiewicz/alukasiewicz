@@ -786,3 +786,14 @@ let ItemImageViewer = function () {
     return _controller;
 };
 let ItemImageViewerItem = function (id, src) { return { id, src } }
+let ImageGallery = function (node = document.createElement("DIV"), images = []) {
+    node.classList.add("image-gallery");
+    node.innerHTML = `<div class="toggle-button label-right"><i class="mi mi-Picture"></i><span>Show all images</span></div>
+    <div class="image-list"></div>`;
+    node.children[0].addEventListener("click", function () { });
+    images.forEach((image) => {
+        let _img = document.createElement("IMG");
+        _img.src = image.src;
+        node.children[2].appendChild(_img);
+    })
+}
