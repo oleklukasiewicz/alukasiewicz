@@ -786,14 +786,37 @@ let ItemImageViewer = function () {
     return _controller;
 };
 let ItemImageViewerItem = function (id, src) { return { id, src } }
-let ImageGallery = function (node = document.createElement("DIV"), images = []) {
-    node.classList.add("image-gallery");
-    node.innerHTML = `<div class="toggle-button label-right"><i class="mi mi-Picture"></i><span>Show all images</span></div>
-    <div class="image-list"></div>`;
-    node.children[0].addEventListener("click", function () { });
-    images.forEach((image) => {
-        let _img = document.createElement("IMG");
-        _img.src = image.src;
-        node.children[2].appendChild(_img);
+
+let ImageItem = function (id, src, arg = {}) { return { id, src, arg } }
+let ImageGroup = function (id = new Date(), images = []) {
+    EventController.call(this, {
+        "open": [],
+        "remove": [],
+        "add": [],
+        "load": []
+    });
+    let _openedImageIndex = null;
+    let _images = images;
+    let _sender = this;
+    let _findImageIndexById = (id) => _images.findIndex((img) => img.id == id);
+    images.forEach((img, index) => _sender.invokeEvent("load", [img, index]));
+    this.open = function (id) {
+        _openedImageIndex = _findImageIndexById(id);
+        this.invokeEvent("open", [_images[_openedImageIndex], _openedImageIndex]);
+    }
+    this.add = function (image) {
+        _images.push(image);
+        this.invokeEvent("add", [image, _images.length - 1]);
+    }
+    this.remove = function (id) {
+        let _index = _findImageIndexById(id);
+        let _deleted = _images.splice(_index, 1);
+        this.invokeEvent("remove", [_deleted[0], _index]);
+    }
+    Object.defineProperties(this, {
+        images:
+        {
+            get: () => _images
+        }
     })
 }
