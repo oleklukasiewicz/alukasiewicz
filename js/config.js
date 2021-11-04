@@ -487,15 +487,15 @@ const imageView = new View(VIEW.image, APP.url.image, {}, {
                     _sender.data.imageViewerController.forward();
             }
         });
-        this.data.imageViewerController = new ItemImageViewer();
+        this.data.imageViewerController = new ImageGroupController();
         let _sender = this;
         let _imagesList = getById("image-img-list");
         this.data.imageList = _imagesList;
         let _forwardButton = getById("image-forward");
         let _backButton = getById("image-back");
         getById("image-close").addEventListener("click", ViewController.back);
-        _forwardButton.addEventListener("click", _sender.data.imageViewerController.forward);
-        _backButton.addEventListener("click", _sender.data.imageViewerController.back);
+        _forwardButton.addEventListener("click", _sender.data.imageViewerController.next);
+        _backButton.addEventListener("click", _sender.data.imageViewerController.previous);
         this.data.imageViewerController.addEventListener("loadStart", function (images) {
             _forwardButton.classList.toggle(GLOBAL.hidden, images.length < 2);
             _backButton.classList.toggle(GLOBAL.hidden, images.length < 2);
@@ -505,13 +505,13 @@ const imageView = new View(VIEW.image, APP.url.image, {}, {
             let _iImage = document.createElement("img");
             _iImage.src = image.src;
             _imagesList.appendChild(_iImage);
-            let imageIsNotLoaded = () => _sender.data.imageViewerController.removeImage(image.src);
+            let imageIsNotLoaded = () => _sender.data.imageViewerController.remove(image.id);
             await new Promise((resolve) => {
                 _iImage.onload = () => resolve();
                 _iImage.onerror = () => resolve(imageIsNotLoaded());
             });
         });
-        this.data.imageViewerController.addEventListener("render", function (image, index, prev_img, prev) {
+        this.data.imageViewerController.addEventListener("open", function (image, index, prev_img, prev) {
             try {
                 _imagesList.children[prev]?.classList.remove("active");
                 _imagesList.children[index].classList.add("active");
@@ -521,19 +521,18 @@ const imageView = new View(VIEW.image, APP.url.image, {}, {
                 ViewController.error(ERROR_CODE.imageNotFound);
             }
         });
-        this.data.imageViewerController.addEventListener("remove", function (index, src) {
+        this.data.imageViewerController.addEventListener("remove", function (img, index) {
             _imagesList.children[index].remove();
         });
         this.data.viewerStream = new Stream({
             load: async function (item, index, mode) {
-                await _sender.data.imageViewerController.loadImages(item.arg.imageGroup.images);
-                console.log(_sender.data.route.length, _sender.data.route)
+                await _sender.data.imageViewerController.load(item.arg.imageGroup.images);
                 let _d = _sender.data.route.slice(2).join("/");
-                let _r = item.arg.imageGroup.findIndexById(_d);
-                if (_r==-1)
-                _r = item.arg.imageGroup.findIndexBySrc((_d[0] == '/' ? "" : '/') + _d);
+                let _r = _sender.data.imageViewerController.findIndexById(_d);
+                if (_r == -1)
+                    _r = _sender.data.imageViewerController.findIndexBySrc((_d[0] == '/' ? "" : '/') + _d);
                 _sender.data.route[2] = item.arg.imageGroup.images[_r]?.id;
-                _sender.data.imageViewerController.setById(_sender.data.route[2]);
+                _sender.data.imageViewerController.open(_sender.data.route[2]);
             }
         });
         window.addEventListener("keyup", function (e) {
@@ -726,92 +725,55 @@ let ItemQuote = function (quote, author) {
     _quote.appendChild(_quoteAuthor);
     return _quote;
 }
-let ItemImageViewer = function () {
-    let _controller = {};
-    let _currentImages = [];
-    let _currentIndex = -1;
-    EventController.call(_controller, {
-        "back": [],
-        "forward": [],
-        "render": [],
-        "load": [],
-        "remove": [],
-        "loadStart": [],
-        "loadFinish": [],
-    });
-    _controller.loadImages = async function (images) {
-        _currentImages = images;
-        await _controller.invokeEvent("loadStart", [images]);
-        await Promise.all(_currentImages.map(async (image, index) => await _controller.invokeEvent("load", [image, index])));
-        await _controller.invokeEvent("loadFinish", [images]);
-    }
-    _controller.removeImage = function (src) {
-        let index = _currentImages.findIndex((image) => image.src == src);
-        _currentImages.splice(index, 1);
-        _controller.invokeEvent("remove", [index, src]);
-        if (_currentIndex >= _currentImages.length) {
-            _currentIndex = _currentImages.length - 1;
-            _controller.set(_currentIndex);
-        }
-    }
-    _controller.set = function (index) {
-        let _prev = _currentIndex;
-        _currentIndex = index;
-        _controller.invokeEvent("render", [_currentImages[index], index, _currentImages[_prev], _prev]);
-    }
-    _controller.setById = (id) => _controller.set(_currentImages.findIndex((img) => img.id == id));
-    _controller.forward = function () {
-        let _index = _currentIndex + 1;
-        if (_index >= _currentImages.length)
-            _index = 0;
-        _controller.set(_index);
-        _controller.invokeEvent("forward", [_currentImages[_index], _index]);
-    }
-    _controller.back = function () {
-        let _index = _currentIndex - 1;
-        if (_index < 0)
-            _index = _currentImages.length - 1;
-        _controller.set(_index);
-        _controller.invokeEvent("back", [_currentImages[_index], _index]);
-    }
-    Object.defineProperties(_controller,
-        {
-            images: { get: () => _currentImages }
-        })
-    return _controller;
-};
 let ImageItem = function (id, src, arg = {}) { return { id, src, arg } }
-let ImageGroup = function (id = new Date(), images = []) {
+let ImageGroup = function (id, images = []) {
+    return { id, images }
+}
+let ImageGroupController = function (images = []) {
     EventController.call(this, {
         "open": [],
         "remove": [],
         "add": [],
-        "load": []
+        "load": [],
+        "loadStart": [],
+        "loadFinish": []
     });
     let _openedImageIndex = null;
-    let _images = images;
+    let _images = [];
     let _sender = this;
-    let _findImageIndexById = (id) => _images.findIndex((img) => img.id == id);
-    images.forEach((img, index) => _sender.invokeEvent("load", [img, index]));
+    this.load = async function (images = []) {
+        _images = images;
+        this.invokeEvent("loadStart", [_images]);
+        await Promise.all(_images.map(async (img, index) => await _sender.invokeEvent("load", [img, index])));
+        this.invokeEvent("loadFinish", [_images]);
+    }
     this.open = function (id) {
-        _openedImageIndex = _findImageIndexById(id);
-        this.invokeEvent("open", [_images[_openedImageIndex], _openedImageIndex]);
+        this.openIndex(this.findIndexById(id));
+    }
+    this.openIndex = function (index) {
+        let _previousIndex = _openedImageIndex;
+        _openedImageIndex = index;
+        this.invokeEvent("open", [_images[_openedImageIndex], _openedImageIndex, _images[_previousIndex], _previousIndex]);
     }
     this.add = function (image) {
         _images.push(image);
         this.invokeEvent("add", [image, _images.length - 1]);
     }
     this.remove = function (id) {
-        let _index = _findImageIndexById(id);
+        let _index = this.findIndexById(id);
         let _deleted = _images.splice(_index, 1);
         this.invokeEvent("remove", [_deleted[0], _index]);
+        if (_openedImageIndex == _index)
+            this.previous();
     }
-    this.findIndexById = (id) => _findImageIndexById(id);
+    this.next = function () {
+        _sender.openIndex(_openedImageIndex < _images.length - 1 ? _openedImageIndex + 1 : 0);
+    }
+    this.previous = function () {
+        _sender.openIndex(_openedImageIndex > 0 ? _openedImageIndex - 1 : _images.length - 1);
+    }
+    this.findIndexById = (id) => _images.findIndex((img) => img.id == id)
     this.findIndexBySrc = (src) => _images.findIndex((img) => img.src == src);
-    Object.defineProperties(this, {
-        images:
-        {
-            get: () => _images
-        }
-    })
+    Object.defineProperties(this, { images: { get: () => _images } });
+    if (images.length > 0) this.load(images);
 }
