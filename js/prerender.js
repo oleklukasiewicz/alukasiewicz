@@ -6,7 +6,7 @@ const VIEW = {
 };
 const APP = {
     name: "Aleksander Łukasiewicz",
-    version: "0-0-0-2",
+    version: "0-0-0-3",
     url: {
         landing: "/",
         item: "/" + VIEW.item + "/",

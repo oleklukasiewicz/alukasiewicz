@@ -35,14 +35,6 @@ let HistoryItem = function (id, index, arg) {
         arg
     }
 }
-let ErrorType = function (code, title, content = "Error code: " + code, arg) {
-    return {
-        code,
-        title,
-        content,
-        arg
-    }
-};
 let ViewController = (function () {
     let controller = {};
     EventController.call(controller, {
@@ -52,12 +44,9 @@ let ViewController = (function () {
         "historyPush": [],
     });
     let _views = [];
-    let _errors = [];
-    let _defaultError;
     let _currentView;
     let _currentHistoryIndex = -1;
     let _defaultViewIndex = -1;
-    let _getErrorByCode = (code) => _errors.find((error) => error.code == code) || _defaultError;
     let _getViewById = (id) => _views.find((view) => view.id == id) || _defaultView;
     let _defaultView;
     let _previousView;
@@ -157,19 +146,6 @@ let ViewController = (function () {
             noHistoryPush: true
         }, historyItem.arg));
     }
-    controller.addErrorType = function (error, isDefault = false) {
-        _errors.push(error);
-        if (isDefault) _defaultError = error;
-    }
-    controller.error = async (code, error = _getErrorByCode(code)) => {
-        await _registerDelayedView(_currentView);
-        _currentView.event.onError?.call(_currentView, error);
-    }
-    controller.globalError = (code, error = _getErrorByCode(code)) => _views.forEach(async (view) => {
-        await _registerDelayedView(view);
-        view.event.onError?.call(view, error);
-    });
-    controller.forceLoadView = (view) => _invokeLoadEvent(view);
     controller.finishLoadView = (view = _currentView) => _invokeLoadFinishEvent(view)
     Object.defineProperties(controller, {
         defaultView: {
@@ -355,22 +331,12 @@ const landingView = new View(VIEW.landing, APP.url.landing, { scrollY: -1, items
     onNavigateFrom: function () {
         this.data.scrollY = window.scrollY
     },
-    onError: function (error) {
-        console.error(error);
-        let _errorNode = getById("landing-page-error");
-        _errorNode.innerHTML = "<i class='mi mi-Error font-header'></i>" + error.title;
-        this.data.iList.classList.add(GLOBAL.error);
-        ViewController.finishLoadView(this);
-        if (!error.arg?.noRefresh)
-            _errorNode.appendChild(createRefreshButton());
-    },
     onLoadFinish: function () {
         this.rootNode.classList.remove(GLOBAL.loading);
         this.data.iList.getElementsByClassName(GLOBAL.dataNode + " loading").remove();
     },
     onLoad: function () {
         this.rootNode.classList.add(GLOBAL.loading);
-        this.data.iList.classList.remove(GLOBAL.error);
     }
 }, getById(VIEW.landing), true, ViewController.loadingModes.single);
 const profileView = new View(VIEW.profile, APP.url.profile, {}, {
@@ -400,10 +366,6 @@ const itemView = new View(VIEW.item, APP.url.item, { currentItem: null }, {
         ViewController.addErrorType(new ErrorType(ERROR_CODE.itemNotFound, "Item is not available."));
         _data.itemStream = new Stream({
             load: function (item) {
-                if (!item) {
-                    ViewController.error(ERROR_CODE.itemNotFound);
-                    return;
-                }
                 if (item.isItemLinkToWeb) {
                     window.open(item.isItemLinkToWeb, '_blank').focus();
                     ViewController.navigateToDefaultView();
@@ -425,18 +387,8 @@ const itemView = new View(VIEW.item, APP.url.item, { currentItem: null }, {
         ItemDownloadController.addEventListener("download", () => _setIDBState(true));
         ItemDownloadController.addEventListener("removeDownloads", () => _setIDBState(false));
     },
-    onError: function (error) {
-        console.error(error);
-        let _errorNode = getById("item-page-error");
-        _errorNode.innerHTML = "<i class='mi mi-Error font-header'></i>" + error.title;
-        this.rootNode.classList.add(GLOBAL.error);
-        ViewController.finishLoadView(this);
-        if (!error.arg?.noRefresh)
-            _errorNode.appendChild(createRefreshButton());
-    },
     onLoad: function () {
         this.rootNode.classList.add(GLOBAL.loading);
-        this.rootNode.classList.remove(GLOBAL.error);
     },
     onLoadFinish: function () {
         this.rootNode.classList.remove(GLOBAL.loading);
@@ -454,12 +406,6 @@ const groupView = new View(VIEW.group, APP.url.group, { scrollY: -1 }, {
         this.data.itemStream = new Stream({
             load: async function (group) {
                 _data.currentGroup = group;
-                if (!group) {
-                    ViewController.error(ERROR_CODE.groupNotFound);
-                    return;
-                }
-                if (group.items.length == 0)
-                    ViewController.error(ERROR_CODE.noItemsInGroup);
                 _groupTitle.innerHTML = "";
                 _groupInfo.innerHTML = "";
                 let _items = _data._groupList.getElementsByClassName(VIEW.item);
@@ -479,19 +425,9 @@ const groupView = new View(VIEW.group, APP.url.group, { scrollY: -1 }, {
     onNavigateFrom: function () {
         Array.prototype.forEach.call(this.data._groupList.getElementsByClassName(GLOBAL.dataNode), (node) => node.classList.add("loading"));
     },
-    onError: function (error) {
-        console.error(error);
-        let _errorNode = getById("group-page-error");
-        _errorNode.innerHTML = "<i class='mi mi-Error font-header'></i>" + error.title;
-        this.rootNode.classList.add(GLOBAL.error);
-        ViewController.finishLoadView(this);
-        if (!error.arg?.noRefresh)
-            _errorNode.appendChild(createRefreshButton());
-    },
     onLoad: function () {
         this.rootNode.classList.add(GLOBAL.loading);
         this.data._groupData.classList.add(GLOBAL.loading);
-        this.data._groupList.classList.remove(GLOBAL.error);
     },
     onLoadFinish: function () {
         this.rootNode.classList.remove(GLOBAL.loading);
@@ -502,9 +438,6 @@ ViewController.register(landingView, true);
 ViewController.register(profileView);
 ViewController.register(itemView);
 ViewController.register(groupView);
-ViewController.addErrorType(new ErrorType(ERROR_CODE.undefinedError, "Something goes wrong!"), true);
-ViewController.addErrorType(new ErrorType(ERROR_CODE.itemsNotLoaded, "Some items cannot be loaded."));
-ViewController.addErrorType(new ErrorType(ERROR_CODE.outdatedItems, "Items are outdated"));
 ViewController.addEventListener("historyPush", function (historyItem, view) {
     if (historyItem.index == 0)
         history.replaceState(historyItem, '', view.url + (historyItem.arg.routeArg?.join('/') || ''));
@@ -525,15 +458,8 @@ ItemDownloadController.addEventListener("download", (id) => ItemDownloadControll
 ItemDownloadController.addEventListener("removeDownloads", (id) => ItemDownloadController.modifyResourcesByItemId(id, false, removeResourceFromCache));
 window.addEventListener("load", async function () {
     ItemDownloadController.load(window.localStorage[STORAGE.itemDownload] ? JSON.parse(window.localStorage[STORAGE.itemDownload]) : []);
-    try {
-        if (APP.version != ITEM_VERSION)
-            throw new Error(ERROR_CODE.outdatedItems);
-        await ItemController.fetchGroups(getGroups());
-        await ItemController.fetchItems(getItems());
-    } catch (e) {
-        console.error(e);
-        ViewController.globalError(e.message == ERROR_CODE.outdatedItems ? ERROR_CODE.outdatedItems : ERROR_CODE.itemsNotLoaded);
-    }
+    await ItemController.fetchGroups(getGroups());
+    await ItemController.fetchItems(getItems());
     ViewController.navigate(START_ROUTE.target, { routeArg: START_URL.slice(1, START_URL.length - 1) })
     APPNODE.classList.toggle(GLOBAL.offline, !navigator.onLine);
     setTimeout(() => document.body.classList.remove("first-start"), 300);
