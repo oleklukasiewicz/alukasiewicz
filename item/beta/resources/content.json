@@ -1,29 +1,62 @@
 {
     "id": "fluent-design-system",
-    "version":"0-0-0-3",
+    "version": "0-0-0-3",
     "arguments": {},
     "resources": [
         "/content.json",
-        "/airship.webp"
+        "/airship.webp",
+        "/airship-v2.webp"
     ],
     "content": [
         {
+            "type": "quote",
+            "content": "Natural on every device",
+            "author": "Microsoft"
+        },
+        {
             "type": "section",
-            "title":"Fluent 1",
-            "content": "Some random Content",
-            "arguments": {}
+            "title": "Design at scale",
+            "content": "The idea of establishing a design system at Microsoft started a decade ago when several product teams merged and a handful of design pioneers started working together. Their work gave rise to our first shared design language — a bold achievement given that design was in its infancy at Microsoft and the company’s success at that time was built on a myriad of siloed products."
+        },
+        {
+            "type": "text",
+            "content": "</br>These early efforts toward a shared design language built a better creative environment and fostered stronger partnerships between teams."
         },
         {
             "type": "image",
             "source": "/airship.webp",
-            "alt": "alt",
-            "arguments": {}
+            "alt": "Ocean of clouds"
         },
         {
-            "type": "quote",
-            "content": "Some random Content",
-            "author": "author",
-            "arguments": {}
+            "type": "text",
+            "content": "The Fluent Design System continues this work. Fluent is evolving to be more than a set of outcomes and will define the process by which we collectively design and build products. It represents the growth and influence of design thinking within Microsoft."
+        },
+        {
+            "type": "text",
+            "content": "</br>It’s a living thing that continues to evolve. And like any living thing, it has basic needs to grow and flourish."
+        },
+        {
+            "type": "text",
+            "content": "</br>Fluent becomes the best version of itself when there is clarity around what it is, what it could be, and why that’s important. Today, we aspire to make Fluent a collective, open design system that connects us, inspiring and influencing everything we create.."
+        },
+        {
+            "type": "section",
+            "title": "Designing how we design",
+            "content": "The value of Fluent’s collective approach is becoming more evident as we build coherence across products and platforms. A rich unified search experience, people experience across products, our recent brand iconography efforts, and alignment around the universal language of illustration are just the beginning of Fluent’s impact."
+        },
+        {
+            "type": "section",
+            "title": "A collective design system",
+            "content": "Fluent Design System builds on the momentum of great things already happening at Microsoft, standing on shoulders without stepping on toes. It celebrates those who contribute to what we collectively do, regardless of what team they work on. It borrows from engineering workflows to help us be efficient where we can, saving creative energy for where it’s most needed."
+        },
+        {
+            "type": "text",
+            "content": "</br>Rising to this challenge will take a lot of time and effort, and we all have day jobs in specific products. But it’s going to pay dividends along the way. Over time it can bring our culture, our business, our technology, and our experiences together."
+        },
+        {
+            "type": "section",
+            "title": "Partner with Microsoft Design",
+            "content": "The Fluent Design System improves with your input. We learn and improve the system based on feedback we receive from our customers, partners, and community of developers and designers. If you have something to share about Fluent design, get in touch with us here."
         }
     ]
 }

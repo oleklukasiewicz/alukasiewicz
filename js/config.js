@@ -131,7 +131,7 @@ let ViewController = (function () {
     }
     controller.navigateToDefaultView = function (arg) {
         if (_currentView != _defaultView) {
-            controller.navigate(_defaultView.id, Object.assign({ noHistoryPush: true }, arg));
+            controller.navigate(_defaultView.id, arg);
             controller.invokeEvent("navigateDefault", [arg]);
         }
     }
@@ -227,7 +227,7 @@ let ItemController = (function () {
         await Promise.all(groups.map(async (group) => {
             _generateGroup(group);
             _storage.push(group);
-            group.arg.route?.forEach((source) => _groupRoutes.push(new RouteClass(source, group)));
+            group.aliases.forEach((source) => _groupRoutes.push(new RouteClass(source, group)));
             await _controller.invokeEvent("fetchGroup", [group]);
         }));
         await _controller.invokeEvent("fetchGroupFinish");
@@ -238,8 +238,8 @@ let ItemController = (function () {
             item.id = item.id || _generateId(item.title);
             _routes.push(new RouteClass(item.id, item));
             _defaultGroup.items.push(item);
-            item.arg.route?.forEach((source) => _routes.push(new RouteClass(source, item)));
-            item.arg.group?.forEach((group) => _getGroupByRoute(group)?.items.push(item));
+            item.aliases.forEach((source) => _routes.push(new RouteClass(source, item)));
+            item.groups.forEach((group) => _getGroupByRoute(group)?.items.push(item));
             await _controller.invokeEvent("fetchItem", [item]);
         }));
         await _controller.invokeEvent("fetchItemFinish", []);
@@ -417,7 +417,7 @@ const itemView = new View(VIEW.item, APP.url.item, { currentItem: null }, {
                 _iTitle.innerHTML = item.title;
                 _iInfo.innerHTML = APP.date(item.date.create) + ((item.date.modify) ? " <u class='dotted-separator'></u> Updated " + APP.date(item.date.modify) : "");
                 _iContent.innerHTML = "";
-                item.content.content.forEach((content) => _iContent.appendChild(new ItemComponentBuilder(content, item.folder)));
+                item.content.content.forEach((content) => _iContent.append(new ItemComponentBuilder(content, item.folder, item)));
             }
         });
         window.addEventListener("online", () => _setIDBState())
@@ -449,8 +449,6 @@ const groupView = new View(VIEW.group, APP.url.group, { scrollY: -1 }, {
         let _data = this.data;
         _data._groupData = getById("group-data")
         _data._groupList = getById("group-list");
-        let _galleryButton = getById("group-gallery-button")
-        _galleryButton.addEventListener("click", () => ViewController.navigate(VIEW.image, { routeArg: ["group", _data.currentGroup.id, _data.currentGroup.items[0].id] }));
         ViewController.addErrorType(new ErrorType(ERROR_CODE.groupNotFound, "This group is not available."));
         ViewController.addErrorType(new ErrorType(ERROR_CODE.noItemsInGroup, "This group is empty"));
         this.data.itemStream = new Stream({
@@ -467,7 +465,7 @@ const groupView = new View(VIEW.group, APP.url.group, { scrollY: -1 }, {
                 let _items = _data._groupList.getElementsByClassName(VIEW.item);
                 _groupTitle.innerHTML = group.title;
                 document.title = group.title + " - " + APP.name;
-                _groupInfo.innerHTML = APP.date(group.createDate) + " <u class='dotted-separator'></u> " + group.items.length + "&nbsp;" + (group.items.length != 1 ? "items" : "item");
+                _groupInfo.innerHTML = APP.date(group.date.create) + " <u class='dotted-separator'></u> " + group.items.length + "&nbsp;" + (group.items.length != 1 ? "items" : "item");
                 _data._groupData.classList.remove(GLOBAL.loading);
                 await Promise.all(group.items.map(async (item, index) => await createItemTile(_items[index] || _data._groupList.appendChild(document.createElement("a")), item)));
             }
@@ -514,14 +512,12 @@ ViewController.addEventListener("historyPush", function (historyItem, view) {
         history.pushState(historyItem, '', view.url + (historyItem.arg.routeArg?.join('/') || ''));
 });
 ViewController.addEventListener("navigateDefault", function () {
-    if (history.state.defaultViewIndex != -1)
+    if (history.state.defaultViewIndex != -1 && (history.state.defaultViewIndex - history.state.index) != 0)
         history.go(history.state.defaultViewIndex - history.state.index);
 });
 ViewController.addEventListener("navigateToView", (view, lastView) => { view.rootNode.classList.add(GLOBAL.activeView); APPNODE.classList.replace(lastView?.id, view.id) });
 ViewController.addEventListener("navigateFromView", (lastView) => lastView.rootNode.classList.remove(GLOBAL.activeView));
 ItemController.addEventListener("fetchItem", function (item) {
-    let urlRex = /^(?:(?:https?|ftp):\/\/)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,})))(?::\d{2,5})?(?:\/\S*)?$/;
-    item.isItemLinkToWeb = urlRex.test(item.content) ? item.content : null;
     item.isDownloaded = ItemDownloadController.isDownloaded(item.id);
 });
 ItemDownloadController.addEventListener("saveDownloads", (items) => window.localStorage[STORAGE.itemDownload] = JSON.stringify(items));
@@ -559,7 +555,7 @@ let createItemTile = async function (node, item) {
         oldNode.parentElement.replaceChild(node, oldNode);
     }
     node.className = "item " + GLOBAL.dataNode + " " + GLOBAL.loading;
-    node.innerHTML = "<div class='img'><img src='" + APP.itemFolder + "/" + item.tile.image + "' alt='" + item.title + "'/></div><b class='font-subtitle'>" + item.title + "</b><span class='font-base'>" + item.tile.content + "</span><div class='labels'><div class='button'>" + (item.isItemLinkToWeb ? "Open link <i class='mi mi-OpenInNewWindow'></i>" : "Read more <i class='mi mi-BackMirrored'></i>") + "</div>" + (item.arg.modifyDate ? "<div class='label font-caption'><i class='mi mi-Update'></i> &nbsp;&nbsp;" + APP.date(item.arg.modifyDate) + "</div>" : "") + "</div>";
+    node.innerHTML = "<div class='img'><img src='" + APP.itemFolder + item.folder + item.tile.image + "' alt='" + item.title + "'/></div><b class='font-subtitle'>" + item.title + "</b><span class='font-base'>" + item.tile.content + "</span><div class='labels'><div class='button'>" + (item.isItemLinkToWeb ? "Open link <i class='mi mi-OpenInNewWindow'></i>" : "Read more <i class='mi mi-BackMirrored'></i>") + "</div>" + (item.arg.modifyDate ? "<div class='label font-caption'><i class='mi mi-Update'></i> &nbsp;&nbsp;" + APP.date(item.arg.modifyDate) + "</div>" : "") + "</div>";
     let _onClick = function () {
         event.preventDefault();
         if (item.isItemLinkToWeb)
@@ -571,7 +567,7 @@ let createItemTile = async function (node, item) {
         imageLoaded = function () {
             if (item.arg.tileImageStyle)
                 _iImage.style = item.arg.tileImageStyle;
-            cacheResource(APP.itemFolder + "/" + item.tile.image);
+            cacheResource(APP.itemFolder + item.folder + item.tile.image);
         }, imageIsNotLoaded = function () {
             item.isTileImageNotLoaded = true;
             _iImage.src = "/img/image_error.webp";
@@ -602,9 +598,9 @@ let createGroupTile = async function (node, group) {
     return node;
 }
 let ItemDate = function (day, month, year) { return { day, month, year }; };
-let ItemComponentBuilder = function (component, itemFolder) {
+let ItemComponentBuilder = function (component, itemFolder, item) {
     let _type = component.type;
-    let _arg = component.arguments;
+    let _arg = component.arguments || {};
     let _component
     switch (_type) {
         case "section":
@@ -627,6 +623,8 @@ let ItemComponentBuilder = function (component, itemFolder) {
             _alt.innerHTML = component.alt || "";
             _component.appendChild(_img);
             _component.appendChild(_alt);
+            _img.onerror = function () { _img.onload = function () { }; _img.src = "/img/image_error.webp"; _img.classList.add("no-image"); }
+            _img.onload = function () { };
             break;
         case "quote":
             _component = document.createElement("DIV");
@@ -641,7 +639,8 @@ let ItemComponentBuilder = function (component, itemFolder) {
             _component.appendChild(_quoteAuthor);
             break;
         case "text":
-            _component = component.content;
+            _component = document.createElement("DIV");
+            _component.innerHTML = component.content;
             break;
         case "multi-section":
             _component = document.createElement("DIV");
