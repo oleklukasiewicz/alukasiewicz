@@ -1,9 +1,20 @@
 const cacheName = "v-s-0-0-1-8";
 const serviceWorkerVersion = "01-06-21-v1";
-const networkOnlyFolder = "/resources/";
-const itemContentFileName="content.json";
-const firebaseFolder = "/v1/"
-const noCacheResources = ["/item/items.js"];
+const networkOnlyResources =
+    [
+        "/v1/"
+    ];
+const alwaysFreshResources =
+    [
+        "/item/items.js"
+    ];
+const itemResources =
+    [
+        "/resources/"
+    ];
+const isAlwaysFreshResource = (req) => alwaysFreshResources.find((resource) => req.includes(resource));
+const isNetworkOnlyResource = (req) => networkOnlyResources.find((resource) => req.includes(resource));
+const isItemResource = (req) => itemResources.find((resource) => req.includes(resource));
 const staticResources = [
     "/",
     "/index.html",
@@ -22,10 +33,8 @@ const staticResources = [
     "/img/profile-dark.webp",
     "/icon/favicon-32x32.png"
 ];
-const isnetworkOnly = (url) => url.includes(networkOnlyFolder) || url.includes(firebaseFolder);
-const isDynamic = (res) => noCacheResources.find((item) => (location.origin + item) == res)
-const cacheIfRequired = (resource) => caches.open(cacheName).then((cache) => caches.match(resource, { ignoreVary: true }).then((res) => !res ? cache.add(resource) : null));
-const removeFromCache = (resource) => caches.open(cacheName).then((cache) => cache.delete(resource, { ignoreVary: true, ignoreSearch: true, ignoreMethod: true }));
+const cacheResource = (resource) => caches.open(cacheName).then((cache) => caches.match(resource, { ignoreVary: true }).then((res) => !res ? cache.add(resource) : null));
+const removeResourceFromCache = (resource) => caches.open(cacheName).then((cache) => cache.delete(resource, { ignoreVary: true, ignoreSearch: true, ignoreMethod: true }));
 const fetchNetworkFailToCache = function (event) {
     event.respondWith(
         caches.open(cacheName).then((cache) =>
@@ -49,19 +58,30 @@ const fetchStaleWhenRevalidate = function (event, putInCache = true) {
         return cachedResponsePromise || networkResponsePromise;
     }())
 }
-const fetchNetworkOnly = (event) => event.respondWith(fetch(event.request));
+const fetchNetworkFailToCacheIfCached = function (event) {
+    event.respondWith(
+        caches.open(cacheName).then((cache) =>
+            fetch(event.request).then(async (response) => {
+                const isCached = await cache.match(event.request, { ignoreVary: true });
+                if (isCached)
+                    cache.put(event.request, response.clone());
+                return response;
+            }).catch(() => caches.match(event.request, { ignoreVary: true }))
+        )
+    );
+}
 self.addEventListener('install', event => {
     console.log("Service Worker installed");
     caches.open(cacheName).then((cache) => cache.addAll(staticResources));
 });
 self.addEventListener('fetch', function (event) {
-    if (!isnetworkOnly(event.request.url)) {
-        if (isDynamic(event.request.url))
-            fetchNetworkFailToCache(event);
+    if (isAlwaysFreshResource(event.request.url)) {
+        if (isItemResource(event.request.url))
+            fetchNetworkFailToCacheIfCached(event);
         else
-            fetchStaleWhenRevalidate(event, true);
+            fetchNetworkFailToCache(event);
     } else
-        fetchStaleWhenRevalidate(event, "only-if-cache");
+        fetchStaleWhenRevalidate(event, true);
 });
 self.addEventListener('activate', (e) => e.waitUntil(caches.keys().then((keyList) =>
     Promise.all(keyList.map((key) => {

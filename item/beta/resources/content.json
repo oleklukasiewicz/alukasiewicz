@@ -3,17 +3,19 @@
     "version":"0-0-0-3",
     "arguments": {},
     "resources": [
-        "src"
+        "/content.json",
+        "/airship.webp"
     ],
     "content": [
         {
             "type": "section",
+            "title":"Fluent 1",
             "content": "Some random Content",
             "arguments": {}
         },
         {
             "type": "image",
-            "source": "just airship.web -> folder + resources folder are loaded from items.js",
+            "source": "/airship.webp",
             "alt": "alt",
             "arguments": {}
         },

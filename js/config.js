@@ -207,16 +207,14 @@ let ItemController = (function () {
         _groupRoutes.push(new RouteClass(group.id, group));
         return group;
     }
-    let _downloadViaAJAX = async function (item, folder) {
+    let _downloadViaAJAX = async function (item) {
         return new Promise((resolve, reject) => {
             let xmlhttp = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject("Microsoft.XMLHTTP");
             xmlhttp.onreadystatechange = function () {
                 if (this.readyState == 4 && this.status == 200)
                     resolve(JSON.parse(this.responseText));
-                else
-                    reject(null);
             };
-            xmlhttp.open("GET", APP.itemFolder + folder + APP.resourceFolder + "/" + "content.json", true);
+            xmlhttp.open("GET", APP.itemFolder + item.folder + APP.resourceFolder + "/" + "content.json", true);
             xmlhttp.send();
         });
     }
@@ -258,9 +256,10 @@ let ItemController = (function () {
         switch (mode) {
             case _controller.loadModes.item:
                 let _targetItem = _getItemByRoute(arg);
-                if (!_targetItem.isItemLinkToWeb) {
-                    let _content = await _downloadViaAJAX(_targetItem);
+                if (!_targetItem.isItemLinkToWeb && !_targetItem.isContentCached) {
+                    let _content = await _downloadViaAJAX(_targetItem, _targetItem.folder);
                     _targetItem.content = _content;
+                    _targetItem.isContentCached = true;
                 }
                 await stream.event.load?.call(sender, _targetItem, 0, mode);
                 break;
@@ -311,7 +310,8 @@ let ItemDownloadController = (function () {
     }
     _controller.modifyResourcesByItemId = (item, state, whatToDo = function () { }) => {
         item.isDownloaded = state;
-        item.arg.downloadResources?.resources.forEach(async (file) => await whatToDo(APP.itemFolder + item.arg.downloadResources.folder + networkOnlyFolder + file));
+        console.log(item)
+        item.content.resources.forEach(async (file) => await whatToDo(APP.itemFolder + item.folder + APP.resourceFolder + file));
     }
     return _controller;
 }())
@@ -411,13 +411,13 @@ const itemView = new View(VIEW.item, APP.url.item, { currentItem: null }, {
                 }
                 _data.currentItem = item;
                 _setIDBState(item.isDownloaded, navigator.onLine);
-                _iDB.style.display = item.arg.downloadResources ? "flex" : "none";
+                _iDB.style.display = "flex";
                 document.title = item.title + " - " + APP.name;
                 incrementVisitors(APP.itemFolder + "/" + item.id, true);
                 _iTitle.innerHTML = item.title;
-                _iInfo.innerHTML = APP.date(item.createDate) + ((item.arg.modifyDate) ? " <u class='dotted-separator'></u> Updated " + APP.date(item.arg.modifyDate) : "");
+                _iInfo.innerHTML = APP.date(item.date.create) + ((item.date.modify) ? " <u class='dotted-separator'></u> Updated " + APP.date(item.date.modify) : "");
                 _iContent.innerHTML = "";
-                item.content.forEach((_s) => _iContent.appendChild(_s));
+                item.content.content.forEach((content) => _iContent.appendChild(new ItemComponentBuilder(content, item.folder)));
             }
         });
         window.addEventListener("online", () => _setIDBState())
@@ -447,7 +447,7 @@ const groupView = new View(VIEW.group, APP.url.group, { scrollY: -1 }, {
         let _groupTitle = getById("group-title");
         let _groupInfo = getById("group-info");
         let _data = this.data;
-        _data._groupData=getById("group-data")
+        _data._groupData = getById("group-data")
         _data._groupList = getById("group-list");
         let _galleryButton = getById("group-gallery-button")
         _galleryButton.addEventListener("click", () => ViewController.navigate(VIEW.image, { routeArg: ["group", _data.currentGroup.id, _data.currentGroup.items[0].id] }));
@@ -500,170 +500,10 @@ const groupView = new View(VIEW.group, APP.url.group, { scrollY: -1 }, {
         this.data._groupList.getElementsByClassName("item loading").remove();
     }
 }, getById(VIEW.group), true, ViewController.loadingModes.always);
-const imageView = new View(VIEW.image, APP.url.image, {}, {
-    onRegister: function () {
-        ViewController.addErrorType(new ErrorType(ERROR_CODE.imageNotFound, "Image not found"));
-        let touchStartX;
-        this.rootNode.addEventListener("touchstart", () => touchStartX = event.changedTouches[0].clientX);
-        this.rootNode.addEventListener("touchend", function () {
-            let touch = event.changedTouches[0].clientX;
-            if (Math.abs(touch - touchStartX) > 50) {
-                if (touch - touchStartX > 0)
-                    _sender.data.imageViewerController.back();
-                else
-                    _sender.data.imageViewerController.forward();
-            }
-        });
-        this.data.imageViewerController = (function () {
-            let _controller = {};
-            let _currentImages = [];
-            let _currentIndex = -1;
-            EventController.call(_controller, {
-                "back": [],
-                "forward": [],
-                "render": [],
-                "load": [],
-                "loadStart": [],
-                "loadFinish": [],
-            });
-            _controller.loadImages = async function (images) {
-                _currentImages = images;
-                await _controller.invokeEvent("loadStart", [images]);
-                await Promise.all(_currentImages.map(async (image, index) => await _controller.invokeEvent("load", [image, index])));
-                await _controller.invokeEvent("loadFinish", [images]);
-            }
-            _controller.removeImage = function (index) {
-                _currentImages.splice(index, 1);
-                if (_currentIndex >= _currentImages.length) {
-                    _currentIndex = _currentImages.length - 1;
-                    _controller.set(_currentIndex);
-                }
-            }
-            _controller.set = function (index) {
-                let _prev = _currentIndex;
-                _currentIndex = index;
-                _controller.invokeEvent("render", [_currentImages[index], index, _currentImages[_prev], _prev]);
-            }
-            _controller.forward = function () {
-                let _index = _currentIndex + 1;
-                if (_index >= _currentImages.length)
-                    _index = 0;
-                _controller.set(_index);
-                _controller.invokeEvent("forward", [_currentImages[_index], _index]);
-            }
-            _controller.back = function () {
-                let _index = _currentIndex - 1;
-                if (_index < 0)
-                    _index = _currentImages.length - 1;
-                _controller.set(_index);
-                _controller.invokeEvent("back", [_currentImages[_index], _index]);
-            }
-            Object.defineProperties(_controller,
-                {
-                    images: { get: () => _currentImages }
-                })
-            return _controller;
-        }());
-        let _sender = this;
-        let _imagesList = getById("image-img-list");
-        this.data.imageList = _imagesList;
-        let _forwardButton = getById("image-forward");
-        let _backButton = getById("image-back");
-        getById("image-close").addEventListener("click", ViewController.back);
-        _forwardButton.addEventListener("click", _sender.data.imageViewerController.forward);
-        _backButton.addEventListener("click", _sender.data.imageViewerController.back);
-        let imageItem = function (id, src) { return { id, src } }
-        this.data.imageViewerController.addEventListener("loadStart", function (images) {
-            _forwardButton.classList.toggle(GLOBAL.hidden, images.length < 2);
-            _backButton.classList.toggle(GLOBAL.hidden, images.length < 2);
-            _imagesList.getElementsByTagName("IMG").remove();
-        });
-        this.data.imageViewerController.addEventListener("load", async function (image, index) {
-            let _iImage = document.createElement("img");
-            _iImage.src = image.src;
-            _imagesList.appendChild(_iImage);
-            let imageIsNotLoaded = () => _sender.data.imageViewerController.removeImage(index);
-            await new Promise((resolve) => {
-                _iImage.onload = () => resolve();
-                _iImage.onerror = () => resolve(imageIsNotLoaded());
-            });
-        });
-        this.data.imageViewerController.addEventListener("render", function (image, index, prev_img, prev) {
-            try {
-                _imagesList.children[prev]?.classList.remove("active");
-                _imagesList.children[index].classList.add("active");
-                history.state.arg.routeArg[2] = image.id;
-                history.replaceState(history.state, '', APP.url.image + _sender.data.route[0] + '/' + _sender.data.route[1] + '/' + image.id);
-            } catch (e) {
-                ViewController.error(ERROR_CODE.imageNotFound);
-            }
-        });
-        this.data.viewerStream = new Stream({
-            load: async function (item, index, mode) {
-                if (mode == ItemController.loadModes.group) {
-                    await _sender.data.imageViewerController.loadImages(item.items.filter((xItem) => (!xItem.arg?.hideTileImageInGallery)).map((xItem) => new imageItem(xItem.id, APP.itemFolder + "/" + xItem.tile.image)));
-                    _sender.data.imageViewerController.set(item.items.findIndex((xItem) => xItem.id == _sender.data.route[2]));
-                } else {
-                    if (_sender.data.route[2] && _sender.data.route[2] != 0 && !item.isItemLinkToWeb) {
-                        let _target = _sender.data.route[2];
-                        if (!isNaN(_target))
-                            _target -= 1;
-                        let _img = [];
-                        let _index = 1;
-                        item.content.forEach((section) => Array.prototype.forEach.call(section.getElementsByTagName("IMG"), (img) => {
-                            _img.push(imageItem(_index, img.src));
-                            if (isNaN(_target) && _target == img.src)
-                                _target = _index - 1;
-                            _index++;
-                        }));
-                        await _sender.data.imageViewerController.loadImages(_img);
-                        _sender.data.imageViewerController.set(_target);
-                    }
-                    else {
-                        await _sender.data.imageViewerController.loadImages([new imageItem(item.id, APP.itemFolder + "/" + item.tile.image)]);
-                        _sender.data.imageViewerController.set(0);
-                    }
-                }
-            }
-        });
-        window.addEventListener("keyup", function (e) {
-            if (ViewController.currentView == _sender) {
-                if (e.key == "ArrowRight")
-                    _sender.data.imageViewerController.forward();
-                else
-                    if (e.key == "ArrowLeft")
-                        _sender.data.imageViewerController.back();
-            }
-        });
-    },
-    onNavigate: async function (arg) {
-        let _type = arg.routeArg[0];
-        let _contextId = arg.routeArg[1];
-        this.data.route = arg.routeArg;
-        await ItemController.load(this.data.viewerStream, _type, _contextId);
-    },
-    onLoad: function () {
-        this.data.imageList.classList.add(GLOBAL.loading);
-        this.rootNode.classList.remove(GLOBAL.error);
-    },
-    onLoadFinish: function () {
-        this.data.imageList.classList.remove(GLOBAL.loading);
-    },
-    onError: function (error) {
-        console.error(error);
-        let _errorNode = getById("image-view-error");
-        this.rootNode.classList.add(GLOBAL.error);
-        _errorNode.innerHTML = "<i class='mi mi-Error font-header'></i>" + error.title;
-        ViewController.finishLoadView(this);
-        if (!error.arg?.noRefresh)
-            _errorNode.appendChild(createRefreshButton());
-    },
-}, getById(VIEW.image), true, ViewController.loadingModes.always);
 ViewController.register(landingView, true);
 ViewController.register(profileView);
 ViewController.register(itemView);
 ViewController.register(groupView);
-ViewController.register(imageView);
 ViewController.addErrorType(new ErrorType(ERROR_CODE.undefinedError, "Something goes wrong!"), true);
 ViewController.addErrorType(new ErrorType(ERROR_CODE.itemsNotLoaded, "Some items cannot be loaded."));
 ViewController.addErrorType(new ErrorType(ERROR_CODE.outdatedItems, "Items are outdated"));
@@ -676,8 +516,6 @@ ViewController.addEventListener("historyPush", function (historyItem, view) {
 ViewController.addEventListener("navigateDefault", function () {
     if (history.state.defaultViewIndex != -1)
         history.go(history.state.defaultViewIndex - history.state.index);
-    else
-        ViewController.navigate();
 });
 ViewController.addEventListener("navigateToView", (view, lastView) => { view.rootNode.classList.add(GLOBAL.activeView); APPNODE.classList.replace(lastView?.id, view.id) });
 ViewController.addEventListener("navigateFromView", (lastView) => lastView.rootNode.classList.remove(GLOBAL.activeView));
@@ -687,8 +525,8 @@ ItemController.addEventListener("fetchItem", function (item) {
     item.isDownloaded = ItemDownloadController.isDownloaded(item.id);
 });
 ItemDownloadController.addEventListener("saveDownloads", (items) => window.localStorage[STORAGE.itemDownload] = JSON.stringify(items));
-ItemDownloadController.addEventListener("download", (id) => ItemDownloadController.modifyResourcesByItemId(id, true, cacheIfRequired));
-ItemDownloadController.addEventListener("removeDownloads", (id) => ItemDownloadController.modifyResourcesByItemId(id, false, removeFromCache));
+ItemDownloadController.addEventListener("download", (id) => ItemDownloadController.modifyResourcesByItemId(id, true, cacheResource));
+ItemDownloadController.addEventListener("removeDownloads", (id) => ItemDownloadController.modifyResourcesByItemId(id, false, removeResourceFromCache));
 window.addEventListener("load", async function () {
     ItemDownloadController.load(window.localStorage[STORAGE.itemDownload] ? JSON.parse(window.localStorage[STORAGE.itemDownload]) : []);
     try {
@@ -733,7 +571,7 @@ let createItemTile = async function (node, item) {
         imageLoaded = function () {
             if (item.arg.tileImageStyle)
                 _iImage.style = item.arg.tileImageStyle;
-            cacheIfRequired(APP.itemFolder + "/" + item.tile.image);
+            cacheResource(APP.itemFolder + "/" + item.tile.image);
         }, imageIsNotLoaded = function () {
             item.isTileImageNotLoaded = true;
             _iImage.src = "/img/image_error.webp";
@@ -764,48 +602,6 @@ let createGroupTile = async function (node, group) {
     return node;
 }
 let ItemDate = function (day, month, year) { return { day, month, year }; };
-let ItemImage = function (src, alt) {
-    let _frame = document.createElement("DIV");
-    let _img = document.createElement("IMG");
-    let _alt = document.createElement("SPAN");
-    _img.src = APP.itemFolder + "/" + src;
-    _alt.className = "img-alt";
-    _alt.innerHTML = alt || "";
-    _frame.appendChild(_img);
-    _frame.appendChild(_alt);
-    let _noImage = false;
-    _img.onerror = function () { _img.onload = function () { }; _img.src = "/img/image_error.webp"; _img.classList.add("no-image"); _noImage = true; }
-    _img.onload = function () {
-        if (!_noImage)
-            _frame.addEventListener("click", () => ViewController.navigate(VIEW.image, { routeArg: ["item", itemView.data.currentItem.id, _img.src] }));
-    };
-    return _frame;
-}
-let Section = function (title, content = [], arg = {}) {
-    let _section = document.createElement("DIV");
-    _section.className = "section";
-    if (!arg.noTitle) {
-        let _title = document.createElement("DIV");
-        _title.className = "section-title font-subtitle";
-        _title.innerText = title;
-        _section.append(_title);
-    }
-    content.forEach((contentElement) => { _section.append(contentElement); _section.appendChild(document.createElement("BR")) });
-    return _section;
-}
-let ItemQuote = function (quote, author) {
-    let _quote = document.createElement("DIV");
-    let _quoteText = document.createElement("DIV");
-    let _quoteAuthor = document.createElement("SPAN");
-    _quote.className = "quote";
-    _quoteText.className = "font-header";
-    _quoteAuthor.className = "font-base";
-    _quoteText.innerHTML = quote;
-    _quoteAuthor.innerHTML = author;
-    _quote.appendChild(_quoteText);
-    _quote.appendChild(_quoteAuthor);
-    return _quote;
-}
 let ItemComponentBuilder = function (component, itemFolder) {
     let _type = component.type;
     let _arg = component.arguments;
@@ -817,7 +613,7 @@ let ItemComponentBuilder = function (component, itemFolder) {
             if (!_arg.noTitle) {
                 let _title = document.createElement("DIV");
                 _title.className = "section-title font-subtitle";
-                _title.innerText = title;
+                _title.innerText = component.title;
                 _component.append(_title);
             }
             _component.append(component.content);

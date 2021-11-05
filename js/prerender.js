@@ -14,6 +14,7 @@ const APP = {
         group: "/" + VIEW.group + "/",
     },
     itemFolder: "/item",
+    resourceFolder:"/resources",
     date: (date, months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]) => (date.day + "&nbsp;" + months[date.month - 1] + ",&nbsp;" + date.year)
 };
 const GLOBAL = {
