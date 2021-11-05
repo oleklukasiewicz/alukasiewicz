@@ -109,7 +109,7 @@ body.first-start #main-theme-toggle-button>i{transition: 0s;}
 #item-content .quote > span{ margin-top: 10px;width: 100%;text-align: right;display: table;font-weight: 400;}
 #item-content .no-image{ cursor: default;}
 #item-content .img-alt{ margin: 10px 0;color: var(--color-theme-A5);display: table;}
-#item-content img{ object-fit: cover;background-color: var(--color-theme-A1);width: 100%;margin-left: auto;margin-right: auto;display: block;margin: 12px 0;cursor: pointer;}
+#item-content img{ object-fit: cover;background-color: var(--color-theme-A1);width: 100%;margin-left: auto;margin-right: auto;display: block;margin: 12px 0;cursor: pointer;min-width: 100%;min-height: 300px;}
 #item.loading{ animation-name: Blink;animation-iteration-count: infinite;animation-duration: 1.2s;}
 #item.loading .item-data{ margin-top: 25px;}
 #item.loading #item-title{ height: 26px;width: 30%;min-width: 200px;background-color: var(--color-theme-A1);}
@@ -123,6 +123,7 @@ body.first-start #main-theme-toggle-button>i{transition: 0s;}
 #group #group-info{ margin: 4px 8px 4px 0px;color: var(--color-font);min-width: 100px;height: 25px;text-align: right;}
 #group-data.loading #group-title{ background-color: var(--color-theme-A1);font-size: 0;}
 #group-data.loading #group-info{ background-color: var(--color-theme-A1);width: 20%;font-size: 0;}
+#group-data.loading #group-info>u{background-color: transparent;}
 #group-data.loading{ animation-name: Blink;animation-iteration-count: infinite;animation-duration: 1.2s;}
 #group-data.loading #group-gallery-button{display:none}
 .error .list-view,.list-view.error{ grid-template-columns: 1fr;}

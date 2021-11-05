@@ -1,14 +1,14 @@
 const APPNODE = document.getElementById("app");
 let RouteController = (function () {
-    let controller = {};
+    let _controller = {};
     let _routes = [];
     let _defaultRoute;
-    controller.add = function (route) {
+    _controller.add = function (route) {
         _routes.push(route);
         _defaultRoute = route.isDefault ? route : _defaultRoute;
     }
-    controller.resolve = (arg) => _routes.find((route) => route.source == arg) || _defaultRoute;
-    return controller;
+    _controller.resolve = (arg) => _routes.find((route) => route.source == arg) || _defaultRoute;
+    return _controller;
 }());
 RouteController.add(new RouteClass(VIEW.landing, VIEW.landing, true));
 RouteController.add(new RouteClass(VIEW.item));

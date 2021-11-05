@@ -75,7 +75,6 @@ self.addEventListener('install', event => {
     caches.open(cacheName).then((cache) => cache.addAll(staticResources));
 });
 self.addEventListener('fetch', function (event) {
-    console.log(event.request.url,isAlwaysFreshResource(event.request.url),isItemResource(event.request.url))
     if (isAlwaysFreshResource(event.request.url)) {
         if (isItemResource(event.request.url))
             fetchNetworkFailToCacheIfCached(event);

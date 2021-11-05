@@ -10,6 +10,7 @@ let Item = function (id, aliases = [], isItemLinkToWeb = false, folder = "/" + i
         isItemLinkToWeb, folder, arg
     }
 }
+let ItemDate = function (day, month, year) { return { day, month, year }; };
 let Group = function (id, aliases = [], title, createDate, modifyDate, arg = {}) {
     return {
         id, aliases, arg, title,
@@ -17,14 +18,14 @@ let Group = function (id, aliases = [], title, createDate, modifyDate, arg = {})
     }
 }
 let Stream = function (event) { return { event } }
-let View = function (id, url, data = {}, event = {}, rootNode = null, delayRegister = false, loadingMode = ViewController.loadingModes.single) {
+let View = function (id, url, data = {}, event = {}, rootNode = null, isRegisterDelayed = false, loadingMode = ViewController.loadingModes.single) {
     return {
         id,
         url,
         data,
         event,
         rootNode,
-        delayRegister,
+        isRegisterDelayed,
         loadingMode
     }
 }
@@ -36,12 +37,12 @@ let HistoryItem = function (id, index, arg) {
     }
 }
 let ViewController = (function () {
-    let controller = {};
-    EventController.call(controller, {
+    let _controller = {};
+    EventController.call(_controller, {
         "navigateToView": [],
         "navigateFromView": [],
         "navigateDefault": [],
-        "historyPush": [],
+        "historyEdit": [],
     });
     let _views = [];
     let _currentView;
@@ -51,25 +52,25 @@ let ViewController = (function () {
     let _defaultView;
     let _previousView;
     let _registerDelayedView = function (view) {
-        if (view.delayRegister && !view.registered) {
+        if (view.isRegisterDelayed && !view.registered) {
             view.event.onRegister?.call(view);
             view.registered = true;
         }
     }
     let _loadView = function (view, arg) {
         switch (view.loadingMode) {
-            case controller.loadingModes.always:
+            case _controller.loadingModes.always:
                 _invokeLoadEvent(view, arg);
                 break;
-            case controller.loadingModes.never:
+            case _controller.loadingModes.never:
                 break;
-            case controller.loadingModes.single:
+            case _controller.loadingModes.single:
                 _invokeLoadEvent(view, arg);
                 break;
         }
     }
     let _unLoadView = function (view) {
-        if (view.loadingMode == controller.loadingModes.always)
+        if (view.loadingMode == _controller.loadingModes.always)
             view.isLoaded = false;
     }
     let _invokeLoadEvent = function (view, arg) {
@@ -85,18 +86,18 @@ let ViewController = (function () {
             view.event.onLoadFinish?.call(view);
         }
     }
-    controller.navigateAndWait = function (id, arg = {}) {
+    _controller.navigateAndWait = function (id, arg = {}) {
         let _target = _getViewById(id);
         if (_currentView) {
             _currentView.event.onNavigateFrom?.call(_currentView, arg);
-            controller.invokeEvent("navigateFromView", [_currentView, arg]);
+            _controller.invokeEvent("navigateFromView", [_currentView, arg]);
             _unLoadView(_currentView);
             _previousView = _currentView;
         }
         if (!arg.noHistoryPush) {
             _currentHistoryIndex++;
             if (_target == _defaultView) _defaultViewIndex = _currentHistoryIndex;
-            controller.invokeEvent("historyPush", [Object.assign(new HistoryItem(_target.id, _currentHistoryIndex, { routeArg: arg.routeArg, historyArg: arg.historyArg }), {
+            _controller.invokeEvent("historyEdit", [Object.assign(new HistoryItem(_target.id, _currentHistoryIndex, { routeArg: arg.routeArg, historyArg: arg.historyArg }), {
                 defaultViewIndex: _defaultViewIndex
             }), _target]);
         }
@@ -108,46 +109,46 @@ let ViewController = (function () {
             _invokeLoadFinishEvent(_currentView);
         }
         _currentView = _target;
-        controller.invokeEvent("navigateToView", [_currentView, _previousView, arg]);
+        _controller.invokeEvent("navigateToView", [_currentView, _previousView, arg]);
         return _trigger;
     }
-    controller.navigate = (id, arg = {}) => controller.navigateAndWait(id, arg)(arg)
-    controller.register = function (view, isDefault = false) {
+    _controller.navigate = (id, arg = {}) => _controller.navigateAndWait(id, arg)(arg)
+    _controller.register = function (view, isDefault = false) {
         _views.push(view);
-        if (!view.delayRegister)
+        if (!view.isRegisterDelayed)
             view.event.onRegister?.call(view);
         if (isDefault) _defaultView = view;
     }
-    controller.navigateToDefaultView = function (arg) {
+    _controller.navigateToDefaultView = function (arg) {
         if (_currentView != _defaultView) {
-            controller.navigate(_defaultView.id, arg);
-            controller.invokeEvent("navigateDefault", [arg]);
+            _controller.navigate(_defaultView.id, arg);
+            _controller.invokeEvent("navigateDefault", [arg]);
         }
     }
-    controller.back = function () {
+    _controller.back = function () {
         if (history.state.index == 0)
-            controller.navigateToDefaultView();
+            _controller.navigateToDefaultView();
         else
             history.back();
     }
-    controller.moveModes = {
+    _controller.moveModes = {
         forward: 1,
         back: 0
     }
-    controller.loadingModes = {
+    _controller.loadingModes = {
         single: "single",
         always: "always",
         never: "never"
     }
-    controller.move = function (move, historyItem) {
-        if (move == controller.moveModes.forward) _currentHistoryIndex++;
+    _controller.move = function (move, historyItem) {
+        if (move == _controller.moveModes.forward) _currentHistoryIndex++;
         else _currentHistoryIndex--;
-        controller.navigate(historyItem.id, Object.assign({
+        _controller.navigate(historyItem.id, Object.assign({
             noHistoryPush: true
         }, historyItem.arg));
     }
-    controller.finishLoadView = (view = _currentView) => _invokeLoadFinishEvent(view)
-    Object.defineProperties(controller, {
+    _controller.finishLoadEventOfView = (view = _currentView) => _invokeLoadFinishEvent(view)
+    Object.defineProperties(_controller, {
         defaultView: {
             get: () => _defaultView
         },
@@ -161,7 +162,7 @@ let ViewController = (function () {
             get: () => _currentHistoryIndex
         }
     });
-    return controller;
+    return _controller;
 }());
 let ItemController = (function () {
     let _routes = [];
@@ -187,10 +188,14 @@ let ItemController = (function () {
         return new Promise((resolve, reject) => {
             let xmlhttp = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject("Microsoft.XMLHTTP");
             xmlhttp.onreadystatechange = function () {
-                if (this.readyState == 4 && this.status == 200)
-                    resolve(JSON.parse(this.responseText));
+                if (this.readyState == 4) {
+                    if (this.status == 200)
+                        resolve(JSON.parse(this.responseText));
+                    else
+                        reject("Error in AJAX request");
+                }
             };
-            xmlhttp.open("GET", APP.itemFolder + item.folder + APP.resourceFolder + "/" + "content.json", true);
+            xmlhttp.open("GET", APP.itemFolder + item.folder + APP.resourceFolder + APP.itemContentFileName, true);
             xmlhttp.send();
         });
     }
@@ -235,7 +240,8 @@ let ItemController = (function () {
                 if (!_targetItem.isItemLinkToWeb && !_targetItem.isContentCached) {
                     let _content = await _downloadViaAJAX(_targetItem, _targetItem.folder);
                     _targetItem.content = _content;
-                    _targetItem.isContentCached = true;
+                    if (_content?.version == APP.version)
+                        _targetItem.isContentCached = true;
                 }
                 await stream.event.load?.call(sender, _targetItem, 0, mode);
                 break;
@@ -284,9 +290,8 @@ let ItemDownloadController = (function () {
             _controller.download(item);
         return !_isDownloaded;
     }
-    _controller.modifyResourcesByItemId = (item, state, whatToDo = function () { }) => {
-        item.isDownloaded = state;
-        console.log(item)
+    _controller.modifyResourcesByItemId = (item, isDownloaded, whatToDo = function () { }) => {
+        item.isDownloaded = isDownloaded;
         item.content.resources.forEach(async (file) => await whatToDo(APP.itemFolder + item.folder + APP.resourceFolder + file));
     }
     return _controller;
@@ -296,7 +301,7 @@ const landingView = new View(VIEW.landing, APP.url.landing, { scrollY: -1, items
         if (this.data.scrollY >= 0)
             window.scroll(0, this.data.scrollY)
         document.title = APP.name;
-        if (!this.data.itemsLoaded)
+        if (!this.isLoaded)
             await ItemController.load(this.data.itemStream, ItemController.loadModes.all, {}, this);
     },
     onRegister: function () {
@@ -311,9 +316,9 @@ const landingView = new View(VIEW.landing, APP.url.landing, { scrollY: -1, items
         let _items = [..._data.iList.getElementsByClassName(GLOBAL.dataNode)];
         this.data.itemStream = new Stream({
             load: async (item, index, mode) => {
-                if (mode == ItemController.loadModes.allItems) {
+                if (mode == ItemController.loadModes.allItems)
                     await createItemTile(_items[index] || _data.iList.appendChild(document.createElement("A")), item);
-                } else {
+                else {
                     let gItems = item.items.filter((gItem) => !gItem.isDisplayedInLanding).slice(0, 3);
                     if (gItems.length < 3 && item.items.length > gItems.length)
                         gItems = gItems.concat(item.items.filter((gItem) => gItem.isDisplayedInLanding).slice(0, 3 - gItems.length));
@@ -324,8 +329,7 @@ const landingView = new View(VIEW.landing, APP.url.landing, { scrollY: -1, items
                         await createItemTile(_items[(index * 4) + (i + 1)] || _data.iList.insertBefore(document.createElement("A"), gNodeSibling), value, item)
                     }));
                 }
-            },
-            loadfinish: () => _data.itemsLoaded = true
+            }
         })
     },
     onNavigateFrom: function () {
@@ -363,7 +367,6 @@ const itemView = new View(VIEW.item, APP.url.item, { currentItem: null }, {
         let _iInfo = getById("item-info");
         let _iDB = getById("item-download-button");
         _iDB.addEventListener("click", () => ItemDownloadController.toggle(_data.currentItem));
-        ViewController.addErrorType(new ErrorType(ERROR_CODE.itemNotFound, "Item is not available."));
         _data.itemStream = new Stream({
             load: function (item) {
                 if (item.isItemLinkToWeb) {
@@ -373,7 +376,6 @@ const itemView = new View(VIEW.item, APP.url.item, { currentItem: null }, {
                 }
                 _data.currentItem = item;
                 _setIDBState(item.isDownloaded, navigator.onLine);
-                _iDB.style.display = "flex";
                 document.title = item.title + " - " + APP.name;
                 incrementVisitors(APP.itemFolder + "/" + item.id, true);
                 _iTitle.innerHTML = item.title;
@@ -401,18 +403,14 @@ const groupView = new View(VIEW.group, APP.url.group, { scrollY: -1 }, {
         let _data = this.data;
         _data._groupData = getById("group-data")
         _data._groupList = getById("group-list");
-        ViewController.addErrorType(new ErrorType(ERROR_CODE.groupNotFound, "This group is not available."));
-        ViewController.addErrorType(new ErrorType(ERROR_CODE.noItemsInGroup, "This group is empty"));
         this.data.itemStream = new Stream({
             load: async function (group) {
                 _data.currentGroup = group;
-                _groupTitle.innerHTML = "";
-                _groupInfo.innerHTML = "";
                 let _items = _data._groupList.getElementsByClassName(VIEW.item);
                 _groupTitle.innerHTML = group.title;
                 document.title = group.title + " - " + APP.name;
                 _groupInfo.innerHTML = APP.date(group.date.create) + " <u class='dotted-separator'></u> " + group.items.length + "&nbsp;" + (group.items.length != 1 ? "items" : "item");
-                _data._groupData.classList.remove(GLOBAL.loading);
+                this.data._groupData.classList.remove(GLOBAL.loading);
                 await Promise.all(group.items.map(async (item, index) => await createItemTile(_items[index] || _data._groupList.appendChild(document.createElement("a")), item)));
             }
         })
@@ -438,29 +436,19 @@ ViewController.register(landingView, true);
 ViewController.register(profileView);
 ViewController.register(itemView);
 ViewController.register(groupView);
-ViewController.addEventListener("historyPush", function (historyItem, view) {
-    if (historyItem.index == 0)
-        history.replaceState(historyItem, '', view.url + (historyItem.arg.routeArg?.join('/') || ''));
-    else
-        history.pushState(historyItem, '', view.url + (historyItem.arg.routeArg?.join('/') || ''));
-});
-ViewController.addEventListener("navigateDefault", function () {
-    if (history.state.defaultViewIndex != -1 && (history.state.defaultViewIndex - history.state.index) != 0)
-        history.go(history.state.defaultViewIndex - history.state.index);
-});
+ViewController.addEventListener("historyEdit", (historyItem, view) => (historyItem.index == 0) ? history.replaceState(historyItem, '', view.url + (historyItem.arg.routeArg?.join('/') || '')) :
+    history.pushState(historyItem, '', view.url + (historyItem.arg.routeArg?.join('/') || '')));
+ViewController.addEventListener("navigateDefault", () => (history.state.defaultViewIndex != -1 && (history.state.defaultViewIndex - history.state.index) != 0) ? history.go(history.state.defaultViewIndex - history.state.index) : "");
 ViewController.addEventListener("navigateToView", (view, lastView) => { view.rootNode.classList.add(GLOBAL.activeView); APPNODE.classList.replace(lastView?.id, view.id) });
 ViewController.addEventListener("navigateFromView", (lastView) => lastView.rootNode.classList.remove(GLOBAL.activeView));
-ItemController.addEventListener("fetchItem", function (item) {
-    item.isDownloaded = ItemDownloadController.isDownloaded(item.id);
-});
+ItemController.addEventListener("fetchItem", (item) => item.isDownloaded = ItemDownloadController.isDownloaded(item.id));
 ItemDownloadController.addEventListener("saveDownloads", (items) => window.localStorage[STORAGE.itemDownload] = JSON.stringify(items));
 ItemDownloadController.addEventListener("download", (id) => ItemDownloadController.modifyResourcesByItemId(id, true, cacheResource));
 ItemDownloadController.addEventListener("removeDownloads", (id) => ItemDownloadController.modifyResourcesByItemId(id, false, removeResourceFromCache));
 window.addEventListener("load", async function () {
     ItemDownloadController.load(window.localStorage[STORAGE.itemDownload] ? JSON.parse(window.localStorage[STORAGE.itemDownload]) : []);
-    await ItemController.fetchGroups(getGroups());
-    await ItemController.fetchItems(getItems());
-    ViewController.navigate(START_ROUTE.target, { routeArg: START_URL.slice(1, START_URL.length - 1) })
+    await ItemController.fetchGroups(getGroups()).then(() => ItemController.fetchItems(getItems()))
+    ViewController.navigate(START_ROUTE.target, { routeArg: START_URL.slice(1, START_URL.length - 1) });
     APPNODE.classList.toggle(GLOBAL.offline, !navigator.onLine);
     setTimeout(() => document.body.classList.remove("first-start"), 300);
 });
@@ -482,13 +470,6 @@ let createItemTile = async function (node, item) {
     }
     node.className = "item " + GLOBAL.dataNode + " " + GLOBAL.loading;
     node.innerHTML = "<div class='img'><img src='" + APP.itemFolder + item.folder + item.tile.image + "' alt='" + item.title + "'/></div><b class='font-subtitle'>" + item.title + "</b><span class='font-base'>" + item.tile.content + "</span><div class='labels'><div class='button'>" + (item.isItemLinkToWeb ? "Open link <i class='mi mi-OpenInNewWindow'></i>" : "Read more <i class='mi mi-BackMirrored'></i>") + "</div>" + (item.date.modify ? "<div class='label font-caption'><i class='mi mi-Update'></i> &nbsp;&nbsp;" + APP.date(item.date.modify) + "</div>" : "") + "</div>";
-    let _onClick = function () {
-        event.preventDefault();
-        if (item.isItemLinkToWeb)
-            window.open(item.isItemLinkToWeb, '_blank').focus();
-        else
-            ViewController.navigate(VIEW.item, { routeArg: [item.id] });
-    };
     let _iImage = node.children[0].children[0],
         imageLoaded = function () {
             if (item.arg.tileImageStyle)
@@ -504,26 +485,28 @@ let createItemTile = async function (node, item) {
         _iImage.onerror = () => resolve(imageIsNotLoaded());
     });
     node.classList.replace(GLOBAL.loading, GLOBAL.loaded);
+    node.onclick = function () {
+        event.preventDefault();
+        if (item.isItemLinkToWeb)
+            window.open(item.isItemLinkToWeb, '_blank').focus();
+        else
+            ViewController.navigate(VIEW.item, { routeArg: [item.id] });
+    };
     node.href = item.isItemLinkToWeb || APP.url.item + item.id;
-    node.onclick = _onClick;
     setTimeout(() => node.classList.remove(GLOBAL.loaded), 300);
     return node;
 }
 let createGroupTile = async function (node, group) {
-    node.className = "group " + GLOBAL.dataNode + " " + GLOBAL.loading;
+    node.className = "group " + GLOBAL.dataNode;
     node.innerHTML = "<span class='font-title'></span><a class='button'><i class='mi mi-ShowAll'></i> <span>Show all</span></a>";
     node.children[0].innerHTML = group.title;
-    let _onClick = function () {
+    node.children[1].onclick = function () {
         event.preventDefault();
         ViewController.navigate(VIEW.group, { routeArg: [group.id] });
     };
     node.children[1].href = APP.url.group + group.id;
-    node.classList.replace(GLOBAL.loading, GLOBAL.loaded);
-    node.children[1].onclick = _onClick;
-    setTimeout(() => node.classList.remove(GLOBAL.loaded), 300);
     return node;
 }
-let ItemDate = function (day, month, year) { return { day, month, year }; };
 let ItemComponentBuilder = function (component, itemFolder, item) {
     let _type = component.type;
     let _arg = component.arguments || {};
@@ -582,4 +565,3 @@ let ItemComponentBuilder = function (component, itemFolder, item) {
     }
     return _component
 }
-

@@ -1,7 +1,7 @@
 const ITEM_VERSION = "0-0-0-3";
 let getGroups = () => [
     new Group("pixel-flower", ["pixel-plants"], "Pixel plants and bloossom", new ItemDate(5, 11, 2021)),
-    new Group("best-pixelart", ["best", "best-pixel"], "Best pixelart projects", new ItemDate(5, 11, 2021)),
+    new Group("best-pixelart", ["best", "best-pixel"], "Best pixel art projects", new ItemDate(5, 11, 2021)),
 ];
 let getItems = () => [
     new Item(null, [], "https://www.instagram.com/p/CPSx-X8hdVM/", "/tree-on-rock", "Pixel Tree", "/tree-on-rock.webp", "One of the most iconic plants on the planet - a tree! Here growing on a giant rock.", new ItemDate(23, 5, 2021), null, ["pixel-flower", "best"]),
