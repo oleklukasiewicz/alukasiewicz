@@ -1,7 +1,21 @@
 Element.prototype.remove = function () { this.parentElement.removeChild(this); };
 NodeList.prototype.remove = HTMLCollection.prototype.remove = function () { for (let i = this.length - 1; i >= 0; i--)this[i].parentElement.removeChild(this[i]); };
-let Item = function (id = null, title, content, tile = {}, createDate, arg = {}) { return { id, content, title, arg, createDate, tile } }
-let Group = function (id = null, title, createDate, arg = {}) { return { title, id, arg, createDate } }
+let Item = function (id, aliases = [], isItemLinkToWeb = false, folder = "/" + id, title, tileImage, tileContent, createDate, modifyDate, groups = [], arg = {}) {
+    return {
+        id, aliases,
+        title,
+        tile: { image: tileImage, content: tileContent },
+        date: { create: createDate, modify: modifyDate },
+        groups,
+        isItemLinkToWeb, folder, arg
+    }
+}
+let Group = function (id, aliases = [], title, createDate, modifyDate, arg = {}) {
+    return {
+        id, aliases, arg, title,
+        date: { create: createDate, modify: modifyDate }
+    }
+}
 let Stream = function (event) { return { event } }
 let View = function (id, url, data = {}, event = {}, rootNode = null, delayRegister = false, loadingMode = ViewController.loadingModes.single) {
     return {
@@ -193,8 +207,21 @@ let ItemController = (function () {
         _groupRoutes.push(new RouteClass(group.id, group));
         return group;
     }
+    let _downloadViaAJAX = async function (item, folder) {
+        return new Promise((resolve, reject) => {
+            let xmlhttp = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject("Microsoft.XMLHTTP");
+            xmlhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200)
+                    resolve(JSON.parse(this.responseText));
+                else
+                    reject(null);
+            };
+            xmlhttp.open("GET", APP.itemFolder + folder + APP.resourceFolder + "/" + "content.json", true);
+            xmlhttp.send();
+        });
+    }
     let _today = new Date();
-    let _defaultGroup = _generateGroup(new Group("all", "All projects", { day: _today.getDate(), month: _today.getMonth() + 1, year: _today.getFullYear() }, { route: ["", "other"] }));
+    let _defaultGroup = _generateGroup(new Group("all", ["", "other"], "All projects", { day: _today.getDate(), month: _today.getMonth() + 1, year: _today.getFullYear() }));
     _storage.push(_defaultGroup);
     let _getGroupByRoute = (id) => _groupRoutes.find((route) => route.source == id)?.target;
     let _getItemByRoute = (id) => _routes.find((route) => route.source == id)?.target;
@@ -230,7 +257,12 @@ let ItemController = (function () {
         let _loadAllFunc = async (source) => Promise.all(source.filter(arg.streamFilter || (() => true)).sort(arg.streamSorter).map(async (item, index) => await stream.event.load?.call(sender, item, index, mode)))
         switch (mode) {
             case _controller.loadModes.item:
-                await stream.event.load?.call(sender, _getItemByRoute(arg), 0, mode);
+                let _targetItem = _getItemByRoute(arg);
+                if (!_targetItem.isItemLinkToWeb) {
+                    let _content = await _downloadViaAJAX(_targetItem);
+                    _targetItem.content = _content;
+                }
+                await stream.event.load?.call(sender, _targetItem, 0, mode);
                 break;
             case _controller.loadModes.group:
                 await stream.event.load?.call(sender, _getGroupByRoute(arg), 0, mode);
@@ -282,7 +314,7 @@ let ItemDownloadController = (function () {
         item.arg.downloadResources?.resources.forEach(async (file) => await whatToDo(APP.itemFolder + item.arg.downloadResources.folder + networkOnlyFolder + file));
     }
     return _controller;
-}());
+}())
 const landingView = new View(VIEW.landing, APP.url.landing, { scrollY: -1, itemsLoaded: false }, {
     onNavigate: async function () {
         if (this.data.scrollY >= 0)
@@ -415,13 +447,14 @@ const groupView = new View(VIEW.group, APP.url.group, { scrollY: -1 }, {
         let _groupTitle = getById("group-title");
         let _groupInfo = getById("group-info");
         let _data = this.data;
-        _data._groupData = getById("group-data")
+        _data._groupData=getById("group-data")
         _data._groupList = getById("group-list");
+        let _galleryButton = getById("group-gallery-button")
+        _galleryButton.addEventListener("click", () => ViewController.navigate(VIEW.image, { routeArg: ["group", _data.currentGroup.id, _data.currentGroup.items[0].id] }));
         ViewController.addErrorType(new ErrorType(ERROR_CODE.groupNotFound, "This group is not available."));
         ViewController.addErrorType(new ErrorType(ERROR_CODE.noItemsInGroup, "This group is empty"));
         this.data.itemStream = new Stream({
             load: async function (group) {
-                _galleryButton.classList.add(GLOBAL.disabled);
                 _data.currentGroup = group;
                 if (!group) {
                     ViewController.error(ERROR_CODE.groupNotFound);
@@ -437,10 +470,6 @@ const groupView = new View(VIEW.group, APP.url.group, { scrollY: -1 }, {
                 _groupInfo.innerHTML = APP.date(group.createDate) + " <u class='dotted-separator'></u> " + group.items.length + "&nbsp;" + (group.items.length != 1 ? "items" : "item");
                 _data._groupData.classList.remove(GLOBAL.loading);
                 await Promise.all(group.items.map(async (item, index) => await createItemTile(_items[index] || _data._groupList.appendChild(document.createElement("a")), item)));
-                group.items.forEach((item) => {
-                    if (!item.isTileImageNotLoaded)
-                        _galleryButton.classList.remove(GLOBAL.disabled);
-                });
             }
         })
     },
@@ -471,10 +500,170 @@ const groupView = new View(VIEW.group, APP.url.group, { scrollY: -1 }, {
         this.data._groupList.getElementsByClassName("item loading").remove();
     }
 }, getById(VIEW.group), true, ViewController.loadingModes.always);
+const imageView = new View(VIEW.image, APP.url.image, {}, {
+    onRegister: function () {
+        ViewController.addErrorType(new ErrorType(ERROR_CODE.imageNotFound, "Image not found"));
+        let touchStartX;
+        this.rootNode.addEventListener("touchstart", () => touchStartX = event.changedTouches[0].clientX);
+        this.rootNode.addEventListener("touchend", function () {
+            let touch = event.changedTouches[0].clientX;
+            if (Math.abs(touch - touchStartX) > 50) {
+                if (touch - touchStartX > 0)
+                    _sender.data.imageViewerController.back();
+                else
+                    _sender.data.imageViewerController.forward();
+            }
+        });
+        this.data.imageViewerController = (function () {
+            let _controller = {};
+            let _currentImages = [];
+            let _currentIndex = -1;
+            EventController.call(_controller, {
+                "back": [],
+                "forward": [],
+                "render": [],
+                "load": [],
+                "loadStart": [],
+                "loadFinish": [],
+            });
+            _controller.loadImages = async function (images) {
+                _currentImages = images;
+                await _controller.invokeEvent("loadStart", [images]);
+                await Promise.all(_currentImages.map(async (image, index) => await _controller.invokeEvent("load", [image, index])));
+                await _controller.invokeEvent("loadFinish", [images]);
+            }
+            _controller.removeImage = function (index) {
+                _currentImages.splice(index, 1);
+                if (_currentIndex >= _currentImages.length) {
+                    _currentIndex = _currentImages.length - 1;
+                    _controller.set(_currentIndex);
+                }
+            }
+            _controller.set = function (index) {
+                let _prev = _currentIndex;
+                _currentIndex = index;
+                _controller.invokeEvent("render", [_currentImages[index], index, _currentImages[_prev], _prev]);
+            }
+            _controller.forward = function () {
+                let _index = _currentIndex + 1;
+                if (_index >= _currentImages.length)
+                    _index = 0;
+                _controller.set(_index);
+                _controller.invokeEvent("forward", [_currentImages[_index], _index]);
+            }
+            _controller.back = function () {
+                let _index = _currentIndex - 1;
+                if (_index < 0)
+                    _index = _currentImages.length - 1;
+                _controller.set(_index);
+                _controller.invokeEvent("back", [_currentImages[_index], _index]);
+            }
+            Object.defineProperties(_controller,
+                {
+                    images: { get: () => _currentImages }
+                })
+            return _controller;
+        }());
+        let _sender = this;
+        let _imagesList = getById("image-img-list");
+        this.data.imageList = _imagesList;
+        let _forwardButton = getById("image-forward");
+        let _backButton = getById("image-back");
+        getById("image-close").addEventListener("click", ViewController.back);
+        _forwardButton.addEventListener("click", _sender.data.imageViewerController.forward);
+        _backButton.addEventListener("click", _sender.data.imageViewerController.back);
+        let imageItem = function (id, src) { return { id, src } }
+        this.data.imageViewerController.addEventListener("loadStart", function (images) {
+            _forwardButton.classList.toggle(GLOBAL.hidden, images.length < 2);
+            _backButton.classList.toggle(GLOBAL.hidden, images.length < 2);
+            _imagesList.getElementsByTagName("IMG").remove();
+        });
+        this.data.imageViewerController.addEventListener("load", async function (image, index) {
+            let _iImage = document.createElement("img");
+            _iImage.src = image.src;
+            _imagesList.appendChild(_iImage);
+            let imageIsNotLoaded = () => _sender.data.imageViewerController.removeImage(index);
+            await new Promise((resolve) => {
+                _iImage.onload = () => resolve();
+                _iImage.onerror = () => resolve(imageIsNotLoaded());
+            });
+        });
+        this.data.imageViewerController.addEventListener("render", function (image, index, prev_img, prev) {
+            try {
+                _imagesList.children[prev]?.classList.remove("active");
+                _imagesList.children[index].classList.add("active");
+                history.state.arg.routeArg[2] = image.id;
+                history.replaceState(history.state, '', APP.url.image + _sender.data.route[0] + '/' + _sender.data.route[1] + '/' + image.id);
+            } catch (e) {
+                ViewController.error(ERROR_CODE.imageNotFound);
+            }
+        });
+        this.data.viewerStream = new Stream({
+            load: async function (item, index, mode) {
+                if (mode == ItemController.loadModes.group) {
+                    await _sender.data.imageViewerController.loadImages(item.items.filter((xItem) => (!xItem.arg?.hideTileImageInGallery)).map((xItem) => new imageItem(xItem.id, APP.itemFolder + "/" + xItem.tile.image)));
+                    _sender.data.imageViewerController.set(item.items.findIndex((xItem) => xItem.id == _sender.data.route[2]));
+                } else {
+                    if (_sender.data.route[2] && _sender.data.route[2] != 0 && !item.isItemLinkToWeb) {
+                        let _target = _sender.data.route[2];
+                        if (!isNaN(_target))
+                            _target -= 1;
+                        let _img = [];
+                        let _index = 1;
+                        item.content.forEach((section) => Array.prototype.forEach.call(section.getElementsByTagName("IMG"), (img) => {
+                            _img.push(imageItem(_index, img.src));
+                            if (isNaN(_target) && _target == img.src)
+                                _target = _index - 1;
+                            _index++;
+                        }));
+                        await _sender.data.imageViewerController.loadImages(_img);
+                        _sender.data.imageViewerController.set(_target);
+                    }
+                    else {
+                        await _sender.data.imageViewerController.loadImages([new imageItem(item.id, APP.itemFolder + "/" + item.tile.image)]);
+                        _sender.data.imageViewerController.set(0);
+                    }
+                }
+            }
+        });
+        window.addEventListener("keyup", function (e) {
+            if (ViewController.currentView == _sender) {
+                if (e.key == "ArrowRight")
+                    _sender.data.imageViewerController.forward();
+                else
+                    if (e.key == "ArrowLeft")
+                        _sender.data.imageViewerController.back();
+            }
+        });
+    },
+    onNavigate: async function (arg) {
+        let _type = arg.routeArg[0];
+        let _contextId = arg.routeArg[1];
+        this.data.route = arg.routeArg;
+        await ItemController.load(this.data.viewerStream, _type, _contextId);
+    },
+    onLoad: function () {
+        this.data.imageList.classList.add(GLOBAL.loading);
+        this.rootNode.classList.remove(GLOBAL.error);
+    },
+    onLoadFinish: function () {
+        this.data.imageList.classList.remove(GLOBAL.loading);
+    },
+    onError: function (error) {
+        console.error(error);
+        let _errorNode = getById("image-view-error");
+        this.rootNode.classList.add(GLOBAL.error);
+        _errorNode.innerHTML = "<i class='mi mi-Error font-header'></i>" + error.title;
+        ViewController.finishLoadView(this);
+        if (!error.arg?.noRefresh)
+            _errorNode.appendChild(createRefreshButton());
+    },
+}, getById(VIEW.image), true, ViewController.loadingModes.always);
 ViewController.register(landingView, true);
 ViewController.register(profileView);
 ViewController.register(itemView);
 ViewController.register(groupView);
+ViewController.register(imageView);
 ViewController.addErrorType(new ErrorType(ERROR_CODE.undefinedError, "Something goes wrong!"), true);
 ViewController.addErrorType(new ErrorType(ERROR_CODE.itemsNotLoaded, "Some items cannot be loaded."));
 ViewController.addErrorType(new ErrorType(ERROR_CODE.outdatedItems, "Items are outdated"));
@@ -487,6 +676,8 @@ ViewController.addEventListener("historyPush", function (historyItem, view) {
 ViewController.addEventListener("navigateDefault", function () {
     if (history.state.defaultViewIndex != -1)
         history.go(history.state.defaultViewIndex - history.state.index);
+    else
+        ViewController.navigate();
 });
 ViewController.addEventListener("navigateToView", (view, lastView) => { view.rootNode.classList.add(GLOBAL.activeView); APPNODE.classList.replace(lastView?.id, view.id) });
 ViewController.addEventListener("navigateFromView", (lastView) => lastView.rootNode.classList.remove(GLOBAL.activeView));
@@ -582,6 +773,12 @@ let ItemImage = function (src, alt) {
     _alt.innerHTML = alt || "";
     _frame.appendChild(_img);
     _frame.appendChild(_alt);
+    let _noImage = false;
+    _img.onerror = function () { _img.onload = function () { }; _img.src = "/img/image_error.webp"; _img.classList.add("no-image"); _noImage = true; }
+    _img.onload = function () {
+        if (!_noImage)
+            _frame.addEventListener("click", () => ViewController.navigate(VIEW.image, { routeArg: ["item", itemView.data.currentItem.id, _img.src] }));
+    };
     return _frame;
 }
 let Section = function (title, content = [], arg = {}) {
@@ -609,19 +806,59 @@ let ItemQuote = function (quote, author) {
     _quote.appendChild(_quoteAuthor);
     return _quote;
 }
-let ItemLegacy = function (id, aliases = [], isItemLinkToWeb = false, folder = "/" + id, title, tileImage, tileContent, createDate, modifyDate, groups = [], arg = {}) {
-    return {
-        id, aliases,
-        title,
-        tile: { image: tileImage, content: tileContent },
-        date: { create: createDate, modify: modifyDate },
-        groups,
-        isItemLinkToWeb, folder, arg
+let ItemComponentBuilder = function (component, itemFolder) {
+    let _type = component.type;
+    let _arg = component.arguments;
+    let _component
+    switch (_type) {
+        case "section":
+            _component = document.createElement("DIV");
+            _component.classList.add("section");
+            if (!_arg.noTitle) {
+                let _title = document.createElement("DIV");
+                _title.className = "section-title font-subtitle";
+                _title.innerText = title;
+                _component.append(_title);
+            }
+            _component.append(component.content);
+            break;
+        case "image":
+            _component = document.createElement("DIV");
+            let _img = document.createElement("IMG");
+            _img.src = APP.itemFolder + itemFolder + APP.resourceFolder + component.source;
+            let _alt = document.createElement("SPAN");
+            _alt.className = "img-alt";
+            _alt.innerHTML = component.alt || "";
+            _component.appendChild(_img);
+            _component.appendChild(_alt);
+            break;
+        case "quote":
+            _component = document.createElement("DIV");
+            let _quoteText = document.createElement("DIV");
+            let _quoteAuthor = document.createElement("SPAN");
+            _component.className = "quote";
+            _quoteText.className = "font-header";
+            _quoteAuthor.className = "font-base";
+            _quoteText.innerHTML = component.content;
+            _quoteAuthor.innerHTML = component.author;
+            _component.appendChild(_quoteText);
+            _component.appendChild(_quoteAuthor);
+            break;
+        case "text":
+            _component = component.content;
+            break;
+        case "multi-section":
+            _component = document.createElement("DIV");
+            _component.classList.add("section");
+            if (!_arg.noTitle) {
+                let _title = document.createElement("DIV");
+                _title.className = "section-title font-subtitle";
+                _title.innerText = title;
+                _component.append(_title);
+            }
+            _component.forEach((content) => _component.append(new ItemComponentBuilder(content, itemFolder)))
+            break;
     }
+    return _component
 }
-let GroupLegacy = function (id, aliases = [], title, createDate, modifyDate, arg = {}) {
-    return {
-        id, aliases, arg, title,
-        date: { create: createDate, modify: modifyDate }
-    }
-}
+
