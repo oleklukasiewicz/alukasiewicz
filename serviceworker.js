@@ -6,7 +6,7 @@ const networkOnlyResources =
     ];
 const alwaysFreshResources =
     [
-        "/item/items.js"
+        "/item/"
     ];
 const itemResources =
     [
@@ -61,7 +61,7 @@ const fetchStaleWhenRevalidate = function (event, putInCache = true) {
 const fetchNetworkFailToCacheIfCached = function (event) {
     event.respondWith(
         caches.open(cacheName).then((cache) =>
-            fetch(event.request).then(async (response) => {
+            fetch(event.request).then(async(response) => {
                 const isCached = await cache.match(event.request, { ignoreVary: true });
                 if (isCached)
                     cache.put(event.request, response.clone());
@@ -75,6 +75,7 @@ self.addEventListener('install', event => {
     caches.open(cacheName).then((cache) => cache.addAll(staticResources));
 });
 self.addEventListener('fetch', function (event) {
+    console.log(event.request.url,isAlwaysFreshResource(event.request.url),isItemResource(event.request.url))
     if (isAlwaysFreshResource(event.request.url)) {
         if (isItemResource(event.request.url))
             fetchNetworkFailToCacheIfCached(event);
