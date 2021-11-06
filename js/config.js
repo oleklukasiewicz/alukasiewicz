@@ -11,9 +11,9 @@ let Item = function (id, aliases = [], isItemLinkToWeb = false, folder = "/" + i
     }
 }
 let ItemDate = function (day, month, year) { return { day, month, year }; };
-let Group = function (id, aliases = [], title, createDate, modifyDate, arg = {}) {
+let Group = function (id, aliases = [], title, createDate, modifyDate, groups = [], arg = {}, isDefault = false) {
     return {
-        id, aliases, arg, title,
+        id, aliases, arg, title, groups, isDefault,
         date: { create: createDate, modify: modifyDate }
     }
 }
@@ -199,9 +199,7 @@ let ItemController = (function () {
             xmlhttp.send();
         });
     }
-    let _today = new Date();
-    let _defaultGroup = _generateGroup(new Group("all", ["", "other"], "All projects", { day: _today.getDate(), month: _today.getMonth() + 1, year: _today.getFullYear() }));
-    _storage.push(_defaultGroup);
+    let _defaultGroup;
     let _getGroupByRoute = (id) => _groupRoutes.find((route) => route.source == id)?.target;
     let _getItemByRoute = (id) => _routes.find((route) => route.source == id)?.target;
     _controller.fetchGroups = async function (groups) {
@@ -209,6 +207,8 @@ let ItemController = (function () {
             _generateGroup(group);
             _storage.push(group);
             group.aliases.forEach((source) => _groupRoutes.push(new RouteClass(source, group)));
+            group.groups?.forEach((_group) => _getGroupByRoute(_group)?.items.push(group));
+            if (group.isDefault) _defaultGroup = group;
             await _controller.invokeEvent("fetchGroup", [group]);
         }));
         await _controller.invokeEvent("fetchGroupFinish");
@@ -220,7 +220,7 @@ let ItemController = (function () {
             _routes.push(new RouteClass(item.id, item));
             _defaultGroup.items.push(item);
             item.aliases.forEach((source) => _routes.push(new RouteClass(source, item)));
-            item.groups.forEach((group) => _getGroupByRoute(group)?.items.push(item));
+            item.groups?.forEach((group) => _getGroupByRoute(group)?.items.push(item));
             await _controller.invokeEvent("fetchItem", [item]);
         }));
         await _controller.invokeEvent("fetchItemFinish", []);
@@ -348,9 +348,9 @@ const profileView = new View(VIEW.profile, APP.url.profile, {}, {
 }, getById(VIEW.profile), false, ViewController.loadingModes.never);
 const itemView = new View(VIEW.item, APP.url.item, { currentItem: null }, {
     onNavigate: async function (arg) {
+        window.scroll(0, 0);
         if (ItemController.isItemsLoaded)
             await ItemController.load(this.data.itemStream, ItemController.loadModes.item, arg.routeArg[0], this);
-        window.scroll(0, 0);
     },
     onRegister: function () {
         let _data = this.data;
@@ -447,7 +447,7 @@ ItemDownloadController.addEventListener("download", (id) => ItemDownloadControll
 ItemDownloadController.addEventListener("removeDownloads", (id) => ItemDownloadController.modifyResourcesByItemId(id, false, removeResourceFromCache));
 window.addEventListener("load", async function () {
     ItemDownloadController.load(window.localStorage[STORAGE.itemDownload] ? JSON.parse(window.localStorage[STORAGE.itemDownload]) : []);
-    await ItemController.fetchGroups(getGroups()).then(() => ItemController.fetchItems(getItems()))
+    await ItemController.fetchGroups(getGroups()).then(() => ItemController.fetchItems(getItems()));
     ViewController.navigate(START_ROUTE.target, { routeArg: START_URL.slice(1, START_URL.length - 1) });
     APPNODE.classList.toggle(GLOBAL.offline, !navigator.onLine);
     setTimeout(() => document.body.classList.remove("first-start"), 300);
@@ -564,4 +564,17 @@ let ItemComponentBuilder = function (component, itemFolder, item) {
             break;
     }
     return _component
+}
+let StorageResponseBuilder = async function (response, targetNode = document.createElement("DIV"), depth = 1) {
+    response.items?.forEach(async (entry) => {
+        let _node = document.createElement("DIV");
+        if (entry.items) {
+            if (depth > 0) {
+                targetNode.appendChild(await createGroupTile(_node, entry));
+                await StorageResponseBuilder(entry, targetNode, depth - 1);
+            }
+        } else
+            targetNode.appendChild(await createItemTile(_node, entry));
+    });
+    return targetNode;
 }
