@@ -207,10 +207,10 @@ let ItemController = (function () {
             _generateGroup(group);
             _storage.push(group);
             group.aliases.forEach((source) => _groupRoutes.push(new RouteClass(source, group)));
-            group.groups?.forEach((_group) => _getGroupByRoute(_group)?.items.push(group));
             if (group.isDefault) _defaultGroup = group;
             await _controller.invokeEvent("fetchGroup", [group]);
         }));
+        _storage.forEach((group) => group.groups?.forEach((_group) => _getGroupByRoute(_group)?.items.push(group)));
         await _controller.invokeEvent("fetchGroupFinish");
         _groupsLoaded = true;
     }
@@ -302,7 +302,7 @@ const landingView = new View(VIEW.landing, APP.url.landing, { scrollY: -1, items
             window.scroll(0, this.data.scrollY)
         document.title = APP.name;
         if (!this.isLoaded)
-            await ItemController.load(this.data.itemStream, ItemController.loadModes.all, {}, this);
+            await ItemController.load(this.data.itemStream, ItemController.loadModes.group, "home", this);
     },
     onRegister: function () {
         let _data = this.data;
@@ -313,23 +313,8 @@ const landingView = new View(VIEW.landing, APP.url.landing, { scrollY: -1, items
             ViewController.navigate(VIEW.profile);
         });
         _data.iList = getById("main-list");
-        let _items = [..._data.iList.getElementsByClassName(GLOBAL.dataNode)];
         this.data.itemStream = new Stream({
-            load: async (item, index, mode) => {
-                if (mode == ItemController.loadModes.allItems)
-                    await createItemTile(_items[index] || _data.iList.appendChild(document.createElement("A")), item);
-                else {
-                    let gItems = item.items.filter((gItem) => !gItem.isDisplayedInLanding).slice(0, 3);
-                    if (gItems.length < 3 && item.items.length > gItems.length)
-                        gItems = gItems.concat(item.items.filter((gItem) => gItem.isDisplayedInLanding).slice(0, 3 - gItems.length));
-                    gItems.forEach((gItem) => gItem.isDisplayedInLanding = true);
-                    let gNode = await createGroupTile(_items[index * 4] || _data.iList.appendChild(document.createElement("div")), item);
-                    let gNodeSibling = gNode.nextSibling;
-                    await Promise.all(gItems.map(async (value, i) => {
-                        await createItemTile(_items[(index * 4) + (i + 1)] || _data.iList.insertBefore(document.createElement("A"), gNodeSibling), value, item)
-                    }));
-                }
-            }
+            load: async (item) => StorageResponseBuilder(item, _data.iList, 1, -1)
         })
     },
     onNavigateFrom: function () {
@@ -406,12 +391,11 @@ const groupView = new View(VIEW.group, APP.url.group, { scrollY: -1 }, {
         this.data.itemStream = new Stream({
             load: async function (group) {
                 _data.currentGroup = group;
-                let _items = _data._groupList.getElementsByClassName(VIEW.item);
                 _groupTitle.innerHTML = group.title;
                 document.title = group.title + " - " + APP.name;
                 _groupInfo.innerHTML = APP.date(group.date.create) + " <u class='dotted-separator'></u> " + group.items.length + "&nbsp;" + (group.items.length != 1 ? "items" : "item");
                 this.data._groupData.classList.remove(GLOBAL.loading);
-                await Promise.all(group.items.map(async (item, index) => await createItemTile(_items[index] || _data._groupList.appendChild(document.createElement("a")), item)));
+                await StorageResponseBuilder(group, _data._groupList, 1, -1);
             }
         })
     },
@@ -429,7 +413,7 @@ const groupView = new View(VIEW.group, APP.url.group, { scrollY: -1 }, {
     },
     onLoadFinish: function () {
         this.rootNode.classList.remove(GLOBAL.loading);
-        this.data._groupList.getElementsByClassName("item loading").remove();
+        this.data._groupList.getElementsByClassName("loading").remove();
     }
 }, getById(VIEW.group), true, ViewController.loadingModes.always);
 ViewController.register(landingView, true);
@@ -496,7 +480,7 @@ let createItemTile = async function (node, item) {
     setTimeout(() => node.classList.remove(GLOBAL.loaded), 300);
     return node;
 }
-let createGroupTile = async function (node, group) {
+let createGroupTile = function (node, group) {
     node.className = "group " + GLOBAL.dataNode;
     node.innerHTML = "<span class='font-title'></span><a class='button'><i class='mi mi-ShowAll'></i> <span>Show all</span></a>";
     node.children[0].innerHTML = group.title;
@@ -565,16 +549,40 @@ let ItemComponentBuilder = function (component, itemFolder, item) {
     }
     return _component
 }
-let StorageResponseBuilder = async function (response, targetNode = document.createElement("DIV"), depth = 1) {
-    response.items?.forEach(async (entry) => {
-        let _node = document.createElement("DIV");
+let StorageResponseIndexer = function (response, depth = 1, limit = 3, startIndex = 0) {
+    let _limit = limit;
+    let _index = startIndex;
+    let _alreadyIndexedEntries = 0;
+    let _indexedItems = [];
+    response.items?.forEach(async (entry, index) => {
         if (entry.items) {
             if (depth > 0) {
-                targetNode.appendChild(await createGroupTile(_node, entry));
-                await StorageResponseBuilder(entry, targetNode, depth - 1);
+                _indexedItems.push({ index: _index, entry: entry });
+                _indexedItems = _indexedItems.concat(StorageResponseIndexer(entry, depth - 1, 3, _index + 1));
+                _index = _indexedItems[_indexedItems.length - 1].index + 1;
             }
-        } else
-            targetNode.appendChild(await createItemTile(_node, entry));
+        } else {
+            if (entry.isIndexed)
+                _alreadyIndexedEntries += 1;
+            if (((_limit > 0) && (!entry.isIndexed || (response.items.length - index) <= _limit)) || _limit == -1) {
+                entry.isIndexed = true;
+                _indexedItems.push({ index: _index, entry: entry });
+                if (_limit > 0)
+                    _limit -= 1;
+                _index += 1;
+            }
+        }
     });
-    return targetNode;
+    return _indexedItems;
+}
+let StorageResponseBuilder = async function (response, targetNode = document.createElement("DIV"), depth = 1, limit = 3) {
+    let _items = [...targetNode.getElementsByClassName(GLOBAL.dataNode)];
+    let _indexedItems = StorageResponseIndexer(response, depth, limit, 0);
+    await Promise.all(_indexedItems.map(async (entry) => {
+        entry.entry.isIndexed = false;
+        if (entry.entry.items)
+            createGroupTile(_items[entry.index] || targetNode.appendChild(document.createElement("div")), entry.entry);
+        else
+            await createItemTile(_items[entry.index] || targetNode.appendChild(document.createElement("a")), entry.entry);
+    }));
 }

@@ -1,9 +1,10 @@
 const ITEM_VERSION = "0-0-0-3";
 const TODAY=new Date();
 let getGroups = () => [
-    new Group("all",["other",""],"All projects",new ItemDate(TODAY.getDate(),TODAY.getMonth(),TODAY.getFullYear()),null,null,{},true),
-    new Group("pixel-flower", ["pixel-plants"], "Pixel plants and bloossom", new ItemDate(5, 11, 2021)),
-    new Group("best-pixelart", ["best", "best-pixel"], "Best pixel art projects", new ItemDate(5, 11, 2021)),
+    new Group("all",["other",""],"All projects",new ItemDate(TODAY.getDate(),TODAY.getMonth(),TODAY.getFullYear()),null,["home"],{},true),
+    new Group("best-pixelart", ["best", "best-pixel"], "Best pixel art projects", new ItemDate(5, 11, 2021),null,["home"]),
+    new Group("pixel-flower", ["pixel-plants"], "Pixel plants and bloossom", new ItemDate(5, 11, 2021),null,["home"]),
+    new Group("home-group",["home","landing"],"Home Group")
 ];
 let getItems = () => [
     new Item(null, [], "https://www.instagram.com/p/CPSx-X8hdVM/", "/tree-on-rock", "Pixel Tree", "/tree-on-rock.webp", "One of the most iconic plants on the planet - a tree! Here growing on a giant rock.", new ItemDate(23, 5, 2021), null, ["pixel-flower", "best"]),
