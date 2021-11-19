@@ -20,6 +20,8 @@ const APP = {
 };
 const GLOBAL = {
     toggled: "toggled",
+    item:"item",
+    group:"group",
     loading: "loading",
     loaded: "loaded",
     error: "error",
@@ -34,14 +36,6 @@ const STORAGE = {
     itemDownload: "downloaded_items",
     theme: "dark_theme_selected"
 };
-const ERROR_CODE = {
-    itemsNotLoaded: "ITEMS_NOT_LOADED",
-    groupNotFound: "GROUP_NOT_FOUND",
-    itemNotFound: "ITEM_NOT_FOUND",
-    outdatedItems: "OUTDATED_ITEMS",
-    undefinedError: "UNDEFINED_ERROR",
-    noItemsInGroup: "NO_ITEMS_IN_GROUP",
-}
 const ISDARKTHEME = (window.localStorage[STORAGE.theme]) ? (window.localStorage[STORAGE.theme] == "true") : (new Date().getHours() > 17 || new Date().getHours() < 8);
 const getById = (id) => document.getElementById(id);
 let CSSVariable = function (prop, v) {

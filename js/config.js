@@ -7,14 +7,15 @@ let Item = function (id, aliases = [], isItemLinkToWeb = false, folder = "/" + i
         tile: { image: tileImage, content: tileContent },
         date: { create: createDate, modify: modifyDate },
         groups,
-        isItemLinkToWeb, folder, arg
+        isItemLinkToWeb, folder, arg,
+        type: GLOBAL.item
     }
 }
 let ItemDate = function (day, month, year) { return { day, month, year }; };
 let Group = function (id, aliases = [], title, createDate, modifyDate, groups = [], arg = {}, isDefault = false) {
     return {
         id, aliases, arg, title, groups, isDefault,
-        date: { create: createDate, modify: modifyDate }
+        date: { create: createDate, modify: modifyDate }, type: GLOBAL.group
     }
 }
 let Stream = function (event) { return { event } }
@@ -69,6 +70,10 @@ let ViewController = (function () {
                 break;
         }
     }
+    let _generateRootNode = function (view) {
+        if (typeof (view.rootNode) == "string")
+            view.rootNode = getById(view.rootNode);
+    }
     let _unLoadView = function (view) {
         if (view.loadingMode == _controller.loadingModes.always)
             view.isLoaded = false;
@@ -89,6 +94,7 @@ let ViewController = (function () {
     _controller.navigateAndWait = function (id, arg = {}) {
         let _target = _getViewById(id);
         if (_currentView) {
+            _generateRootNode(_currentView);
             _currentView.event.onNavigateFrom?.call(_currentView, arg);
             _controller.invokeEvent("navigateFromView", [_currentView, arg]);
             _unLoadView(_currentView);
@@ -109,6 +115,7 @@ let ViewController = (function () {
             _invokeLoadFinishEvent(_currentView);
         }
         _currentView = _target;
+        _generateRootNode(_currentView);
         _controller.invokeEvent("navigateToView", [_currentView, _previousView, arg]);
         return _trigger;
     }
@@ -179,7 +186,7 @@ let ItemController = (function () {
     });
     let _generateId = (id) => encodeURIComponent(id.toLowerCase().replaceAll(" ", "-"));
     let _generateGroup = function (group) {
-        group.items = [];
+        group.content = [];
         group.id = group.id || _generateId(group.title);
         _groupRoutes.push(new RouteClass(group.id, group));
         return group;
@@ -210,7 +217,7 @@ let ItemController = (function () {
             if (group.isDefault) _defaultGroup = group;
             await _controller.invokeEvent("fetchGroup", [group]);
         }));
-        _storage.forEach((group) => group.groups?.forEach((_group) => _getGroupByRoute(_group)?.items.push(group)));
+        _storage.forEach((group) => group.groups?.forEach((_group) => _getGroupByRoute(_group)?.content.push(group)));
         await _controller.invokeEvent("fetchGroupFinish");
         _groupsLoaded = true;
     }
@@ -218,9 +225,9 @@ let ItemController = (function () {
         await Promise.all(items.map(async (item) => {
             item.id = item.id || _generateId(item.title);
             _routes.push(new RouteClass(item.id, item));
-            _defaultGroup.items.push(item);
+            _defaultGroup.content.push(item);
             item.aliases.forEach((source) => _routes.push(new RouteClass(source, item)));
-            item.groups?.forEach((group) => _getGroupByRoute(group)?.items.push(item));
+            item.groups?.forEach((group) => _getGroupByRoute(group)?.content.push(item));
             await _controller.invokeEvent("fetchItem", [item]);
         }));
         await _controller.invokeEvent("fetchItemFinish", []);
@@ -239,7 +246,10 @@ let ItemController = (function () {
                 let _targetItem = _getItemByRoute(arg);
                 if (!_targetItem.isItemLinkToWeb && !_targetItem.isContentCached) {
                     let _content = await _downloadViaAJAX(_targetItem, _targetItem.folder);
-                    _targetItem.content = _content;
+                    Object.assign(_targetItem, _content);
+                    _targetItem.resources = [];
+                    _targetItem.resources.push(APP.itemContentFileName);
+                    _targetItem.content.forEach((component) => component.resource ? _targetItem.resources.push(component.resource) : "");
                     if (_content?.version == APP.version)
                         _targetItem.isContentCached = true;
                 }
@@ -249,7 +259,7 @@ let ItemController = (function () {
                 await stream.event.load?.call(sender, _getGroupByRoute(arg), 0, mode);
                 break;
             case _controller.loadModes.allItems:
-                await _loadAllFunc(_defaultGroup.items);
+                await _loadAllFunc(_defaultGroup.content);
                 break;
             default:
                 await _loadAllFunc(_storage);
@@ -292,7 +302,7 @@ let ItemDownloadController = (function () {
     }
     _controller.modifyResourcesByItemId = (item, isDownloaded, whatToDo = function () { }) => {
         item.isDownloaded = isDownloaded;
-        item.content.resources.forEach(async (file) => await whatToDo(APP.itemFolder + item.folder + APP.resourceFolder + file));
+        item.resources.forEach(async (file) => await whatToDo(APP.itemFolder + item.folder + APP.resourceFolder + file));
     }
     return _controller;
 }())
@@ -327,10 +337,10 @@ const landingView = new View(VIEW.landing, APP.url.landing, { scrollY: -1, items
     onLoad: function () {
         this.rootNode.classList.add(GLOBAL.loading);
     }
-}, getById(VIEW.landing), true, ViewController.loadingModes.single);
+}, VIEW.landing, true, ViewController.loadingModes.single);
 const profileView = new View(VIEW.profile, APP.url.profile, {}, {
     onNavigate: () => document.title = "About me - " + APP.name
-}, getById(VIEW.profile), false, ViewController.loadingModes.never);
+}, VIEW.profile, false, ViewController.loadingModes.never);
 const itemView = new View(VIEW.item, APP.url.item, { currentItem: null }, {
     onNavigate: async function (arg) {
         window.scroll(0, 0);
@@ -366,7 +376,7 @@ const itemView = new View(VIEW.item, APP.url.item, { currentItem: null }, {
                 _iTitle.innerHTML = item.title;
                 _iInfo.innerHTML = APP.date(item.date.create) + ((item.date.modify) ? " <u class='dotted-separator'></u> Updated " + APP.date(item.date.modify) : "");
                 _iContent.innerHTML = "";
-                item.content.content.forEach((content) => _iContent.append(new ItemComponentBuilder(content, item.folder, item)));
+                item.content.forEach((content) => _iContent.append(new ItemComponentBuilder(content, item.folder, item)));
             }
         });
         window.addEventListener("online", () => _setIDBState())
@@ -380,7 +390,7 @@ const itemView = new View(VIEW.item, APP.url.item, { currentItem: null }, {
     onLoadFinish: function () {
         this.rootNode.classList.remove(GLOBAL.loading);
     }
-}, getById(VIEW.item), true, ViewController.loadingModes.always);
+}, VIEW.item, true, ViewController.loadingModes.always);
 const groupView = new View(VIEW.group, APP.url.group, { scrollY: -1 }, {
     onRegister: function () {
         let _groupTitle = getById("group-title");
@@ -393,7 +403,7 @@ const groupView = new View(VIEW.group, APP.url.group, { scrollY: -1 }, {
                 _data.currentGroup = group;
                 _groupTitle.innerHTML = group.title;
                 document.title = group.title + " - " + APP.name;
-                _groupInfo.innerHTML = APP.date(group.date.create) + " <u class='dotted-separator'></u> " + group.items.length + "&nbsp;" + (group.items.length != 1 ? "items" : "item");
+                _groupInfo.innerHTML = APP.date(group.date.create) + " <u class='dotted-separator'></u> " + group.content.length + "&nbsp;" + (group.content.length != 1 ? "items" : "item");
                 this.data._groupData.classList.remove(GLOBAL.loading);
                 await StorageResponseBuilder(group, _data._groupList, 1, -1);
             }
@@ -415,7 +425,7 @@ const groupView = new View(VIEW.group, APP.url.group, { scrollY: -1 }, {
         this.rootNode.classList.remove(GLOBAL.loading);
         this.data._groupList.getElementsByClassName("loading").remove();
     }
-}, getById(VIEW.group), true, ViewController.loadingModes.always);
+}, VIEW.group, true, ViewController.loadingModes.always);
 ViewController.register(landingView, true);
 ViewController.register(profileView);
 ViewController.register(itemView);
@@ -510,7 +520,7 @@ let ItemComponentBuilder = function (component, itemFolder, item) {
         case "image":
             _component = document.createElement("DIV");
             let _img = document.createElement("IMG");
-            _img.src = APP.itemFolder + itemFolder + APP.resourceFolder + component.source;
+            _img.src = APP.itemFolder + itemFolder + APP.resourceFolder + component.resource;
             let _alt = document.createElement("SPAN");
             _alt.className = "img-alt";
             _alt.innerHTML = component.alt || "";
@@ -549,22 +559,22 @@ let ItemComponentBuilder = function (component, itemFolder, item) {
     }
     return _component
 }
-let StorageResponseIndexer = function (response, depth = 1, limit = 3, startIndex = 0) {
+let StorageResponseIndexer = function (response, depth = 1, limit = 3, startIndex = 0, limitOfDepth = 3) {
     let _limit = limit;
     let _index = startIndex;
     let _alreadyIndexedEntries = 0;
     let _indexedItems = [];
-    response.items?.forEach(async (entry, index) => {
-        if (entry.items) {
+    response.content?.forEach(async (entry, index) => {
+        if (entry.type == GLOBAL.group) {
             if (depth > 0) {
                 _indexedItems.push({ index: _index, entry: entry });
-                _indexedItems = _indexedItems.concat(StorageResponseIndexer(entry, depth - 1, 3, _index + 1));
+                _indexedItems = _indexedItems.concat(StorageResponseIndexer(entry, depth - 1, limitOfDepth, _index + 1));
                 _index = _indexedItems[_indexedItems.length - 1].index + 1;
             }
         } else {
             if (entry.isIndexed)
                 _alreadyIndexedEntries += 1;
-            if (((_limit > 0) && (!entry.isIndexed || (response.items.length - index) <= _limit)) || _limit == -1) {
+            if (((_limit > 0) && (!entry.isIndexed || (response.content.length - index) <= _limit)) || _limit == -1) {
                 entry.isIndexed = true;
                 _indexedItems.push({ index: _index, entry: entry });
                 if (_limit > 0)
@@ -580,7 +590,7 @@ let StorageResponseBuilder = async function (response, targetNode = document.cre
     let _indexedItems = StorageResponseIndexer(response, depth, limit, 0);
     await Promise.all(_indexedItems.map(async (entry) => {
         entry.entry.isIndexed = false;
-        if (entry.entry.items)
+        if (entry.entry.type == GLOBAL.group)
             createGroupTile(_items[entry.index] || targetNode.appendChild(document.createElement("div")), entry.entry);
         else
             await createItemTile(_items[entry.index] || targetNode.appendChild(document.createElement("a")), entry.entry);

@@ -1,12 +1,5 @@
 {
-    "id": "fluent-design-system",
     "version": "0-0-0-3",
-    "arguments": {},
-    "resources": [
-        "/content.json",
-        "/airship.webp",
-        "/airship-v2.webp"
-    ],
     "content": [
         {
             "type": "quote",
@@ -24,8 +17,9 @@
         },
         {
             "type": "image",
-            "source": "/airship.webp",
-            "alt": "Ocean of clouds"
+            "resource": "/airship.webp",
+            "alt": "Ocean of clouds",
+            "id":"airship-image"
         },
         {
             "type": "text",
