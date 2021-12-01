@@ -206,6 +206,17 @@ let ItemController = (function () {
             xmlhttp.send();
         });
     }
+    let _loadFullItem = async function (item) {
+        if (!item.isItemLinkToWeb && !item.isContentCached) {
+            let _content = await _downloadViaAJAX(item, item.folder);
+            Object.assign(item, _content, { resources: [] });
+            item.resources.push(APP.itemContentFileName);
+            item.content.forEach((component) => component.resource ? item.resources.push(component.resource) : "");
+            if (_content?.version == APP.version)
+                item.isContentCached = true;
+        }
+        return item;
+    }
     let _defaultGroup;
     let _getGroupByRoute = (id) => _groupRoutes.find((route) => route.source == id)?.target;
     let _getItemByRoute = (id) => _routes.find((route) => route.source == id)?.target;
@@ -243,17 +254,7 @@ let ItemController = (function () {
         let _loadAllFunc = async (source) => Promise.all(source.filter(arg.streamFilter || (() => true)).sort(arg.streamSorter).map(async (item, index) => await stream.event.load?.call(sender, item, index, mode)))
         switch (mode) {
             case _controller.loadModes.item:
-                let _targetItem = _getItemByRoute(arg);
-                if (!_targetItem.isItemLinkToWeb && !_targetItem.isContentCached) {
-                    let _content = await _downloadViaAJAX(_targetItem, _targetItem.folder);
-                    Object.assign(_targetItem, _content);
-                    _targetItem.resources = [];
-                    _targetItem.resources.push(APP.itemContentFileName);
-                    _targetItem.content.forEach((component) => component.resource ? _targetItem.resources.push(component.resource) : "");
-                    if (_content?.version == APP.version)
-                        _targetItem.isContentCached = true;
-                }
-                await stream.event.load?.call(sender, _targetItem, 0, mode);
+                await stream.event.load?.call(sender, await _controller.getItemById(arg), 0, mode);
                 break;
             case _controller.loadModes.group:
                 await stream.event.load?.call(sender, _getGroupByRoute(arg), 0, mode);
@@ -265,32 +266,44 @@ let ItemController = (function () {
                 await _loadAllFunc(_storage);
                 break;
         }
-        await stream.event.loadfinish?.call(sender);
+        await stream.event.loadFinish?.call(sender);
     }
-    Object.defineProperties(_controller, { storage: { get: () => _storage }, isItemsLoaded: { get: () => _itemsLoaded }, isGroupsLoaded: { get: () => _groupsLoaded } });
+    Object.defineProperties(_controller, {
+        storage: { get: () => _storage }, isItemsLoaded: { get: () => _itemsLoaded }, isGroupsLoaded: { get: () => _groupsLoaded }, getItemSnapshotById: { value: _getItemByRoute }, getGroupById: { value: _getGroupByRoute }, getItemById: { value: async (id) => await _loadFullItem(_getItemByRoute(id)) }
+    });
     return _controller;
 }());
-let ItemDownloadController = (function () {
+let ResourceDownloadController = (function () {
     let _controller = {};
     let _downloadedItems = [];
+    let _streams = [];
     EventController.call(_controller, {
         "download": [],
-        "saveDownloads": [],
-        "removeDownloads": []
+        "save": [],
+        "remove": []
     });
+    let _invokeStream = async (event, arg = []) => await Promise.all(_streams.map(async (stream) => await stream.event[event]?.call(stream, ...arg)));
+    _controller.addStream = (stream) => _streams.push(stream);
     _controller.isDownloaded = (id) => _downloadedItems.includes(id);
     _controller.load = (items) => _downloadedItems = items;
-    _controller.download = function (item) {
+    _controller.download = async function (item) {
         item.isDownloaded = true;
         _downloadedItems.push(item.id);
         _controller.invokeEvent("download", [item]);
-        _controller.invokeEvent("saveDownloads", [_downloadedItems]);
+        await _invokeStream("downloadStart", [item]);
+        await Promise.all(item.resources.map(async (resource, index) => await _invokeStream("download", [resource, item, index])));
+        await _invokeStream("downloadFinish", [item]);
+        _controller.invokeEvent("save", [_downloadedItems]);
     }
-    _controller.remove = function (item) {
+    _controller.remove = async function (item) {
         item.isDownloaded = false;
         _downloadedItems.splice(_downloadedItems.findIndex((id) => id == item.id), 1);
-        _controller.invokeEvent("removeDownloads", [item]);
-        _controller.invokeEvent("saveDownloads", [_downloadedItems]);
+        _controller.invokeEvent("remove", [item]);
+        await _invokeStream("downloadRemoveStart", [item]);
+        await Promise.all(item.resources.map(async (resource) => await _invokeStream("downloadRemove", [resource, item])));
+
+        await _invokeStream("downloadRemoveFinish", [item]);
+        _controller.invokeEvent("save", [_downloadedItems]);
     }
     _controller.toggle = function (item) {
         let _isDownloaded = _controller.isDownloaded(item.id);
@@ -299,10 +312,6 @@ let ItemDownloadController = (function () {
         else
             _controller.download(item);
         return !_isDownloaded;
-    }
-    _controller.modifyResourcesByItemId = (item, isDownloaded, whatToDo = function () { }) => {
-        item.isDownloaded = isDownloaded;
-        item.resources.forEach(async (file) => await whatToDo(APP.itemFolder + item.folder + APP.resourceFolder + file));
     }
     return _controller;
 }())
@@ -361,7 +370,11 @@ const itemView = new View(VIEW.item, APP.url.item, { currentItem: null }, {
         let _iContent = getById("item-content");
         let _iInfo = getById("item-info");
         let _iDB = getById("item-download-button");
-        _iDB.addEventListener("click", () => ItemDownloadController.toggle(_data.currentItem));
+        _iDB.addEventListener("click", () => ResourceDownloadController.toggle(_data.currentItem));
+        ResourceDownloadController.addStream(new Stream({
+            downloadStart: () =>_iDB.classList.replace("toggled", "progress"),
+            downloadFinish: () => _iDB.classList.replace("progress", "toggled")
+        }));
         _data.itemStream = new Stream({
             load: function (item) {
                 if (item.isItemLinkToWeb) {
@@ -381,8 +394,8 @@ const itemView = new View(VIEW.item, APP.url.item, { currentItem: null }, {
         });
         window.addEventListener("online", () => _setIDBState())
         window.addEventListener("offline", () => _setIDBState());
-        ItemDownloadController.addEventListener("download", () => _setIDBState(true));
-        ItemDownloadController.addEventListener("removeDownloads", () => _setIDBState(false));
+        ResourceDownloadController.addEventListener("download", () => _setIDBState(true));
+        ResourceDownloadController.addEventListener("remove", () => _setIDBState(false));
     },
     onLoad: function () {
         this.rootNode.classList.add(GLOBAL.loading);
@@ -426,6 +439,12 @@ const groupView = new View(VIEW.group, APP.url.group, { scrollY: -1 }, {
         this.data._groupList.getElementsByClassName("loading").remove();
     }
 }, VIEW.group, true, ViewController.loadingModes.always);
+const ItemDownloadStream = new Stream(
+    {
+        download: async (file, item) => await cacheResource(APP.itemFolder + item.folder + APP.resourceFolder + file),
+        downloadRemove: async (file, item) => await removeResourceFromCache(APP.itemFolder + item.folder + APP.resourceFolder + file)
+    });
+ResourceDownloadController.addStream(ItemDownloadStream);
 ViewController.register(landingView, true);
 ViewController.register(profileView);
 ViewController.register(itemView);
@@ -435,12 +454,10 @@ ViewController.addEventListener("historyEdit", (historyItem, view) => (historyIt
 ViewController.addEventListener("navigateDefault", () => (history.state.defaultViewIndex != -1 && (history.state.defaultViewIndex - history.state.index) != 0) ? history.go(history.state.defaultViewIndex - history.state.index) : "");
 ViewController.addEventListener("navigateToView", (view, lastView) => { view.rootNode.classList.add(GLOBAL.activeView); APPNODE.classList.replace(lastView?.id, view.id) });
 ViewController.addEventListener("navigateFromView", (lastView) => lastView.rootNode.classList.remove(GLOBAL.activeView));
-ItemController.addEventListener("fetchItem", (item) => item.isDownloaded = ItemDownloadController.isDownloaded(item.id));
-ItemDownloadController.addEventListener("saveDownloads", (items) => window.localStorage[STORAGE.itemDownload] = JSON.stringify(items));
-ItemDownloadController.addEventListener("download", (id) => ItemDownloadController.modifyResourcesByItemId(id, true, cacheResource));
-ItemDownloadController.addEventListener("removeDownloads", (id) => ItemDownloadController.modifyResourcesByItemId(id, false, removeResourceFromCache));
+ItemController.addEventListener("fetchItem", (item) => item.isDownloaded = ResourceDownloadController.isDownloaded(item.id));
+ResourceDownloadController.addEventListener("save", (items) => window.localStorage[STORAGE.itemDownload] = JSON.stringify(items));
 window.addEventListener("load", async function () {
-    ItemDownloadController.load(window.localStorage[STORAGE.itemDownload] ? JSON.parse(window.localStorage[STORAGE.itemDownload]) : []);
+    ResourceDownloadController.load(window.localStorage[STORAGE.itemDownload] ? JSON.parse(window.localStorage[STORAGE.itemDownload]) : []);
     await ItemController.fetchGroups(getGroups()).then(() => ItemController.fetchItems(getItems()));
     ViewController.navigate(START_ROUTE.target, { routeArg: START_URL.slice(1, START_URL.length - 1) });
     APPNODE.classList.toggle(GLOBAL.offline, !navigator.onLine);
