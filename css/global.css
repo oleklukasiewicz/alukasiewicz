@@ -46,8 +46,8 @@ body.first-start{ overflow-y: scroll;}
 body.no-scroll{ overflow-y: hidden;}
 #main-header-base{ width: 100%;backdrop-filter: var(--acrylic);background-color: var(--color-theme-acrylic);transition: var(--transition-bg-only);}
 #main-header{ height: 50px;display: table;padding: var(--size-margin-base) var(--size-margin-laptop);max-width: var(--view-max-width);margin: auto;box-sizing: border-box;user-select: none;}
-#main-header-status{ padding: 8px 12px 8px 8px;font-size: var(--size-font-base);line-height: 14px;box-sizing: border-box;vertical-align: top;display: none;}
-#app.offline #main-header-status{ display: inline-table;}
+#main-header-status{ padding: 8px 12px 8px 8px;font-size: var(--size-font-base);line-height: 14px;box-sizing: border-box;vertical-align: top;opacity: 0; transform: translateY(4px);transition: var(--time);}
+#app.offline #main-header-status{ opacity: 1; transform: translateY(0px);}
 #main-header-status > i{ margin-right: 6px;vertical-align: bottom;}
 #main-theme-toggle-button{ display: block;overflow: hidden;}
 body.first-start #main-theme-toggle-button > i{ transition: 0s;}

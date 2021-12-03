@@ -1,5 +1,5 @@
-const cacheName = "v-s-0-0-1-8";
-const serviceWorkerVersion = "01-06-21-v1";
+const cacheName = "v-s-0-0-1-9";
+const serviceWorkerVersion = "03-12-21-v1";
 const networkOnlyResources =
     [
         "/v1/"
@@ -58,10 +58,11 @@ const fetchStaleWhenRevalidate = function (event, putInCache = true) {
         return cachedResponsePromise || networkResponsePromise;
     }())
 }
+const fetchNetworkOnly = (event) => event.respondWith(fetch(event.request));
 const fetchNetworkFailToCacheIfCached = function (event) {
     event.respondWith(
         caches.open(cacheName).then((cache) =>
-            fetch(event.request).then(async(response) => {
+            fetch(event.request).then(async (response) => {
                 const isCached = await cache.match(event.request, { ignoreVary: true });
                 if (isCached)
                     cache.put(event.request, response.clone());
@@ -75,13 +76,17 @@ self.addEventListener('install', event => {
     caches.open(cacheName).then((cache) => cache.addAll(staticResources));
 });
 self.addEventListener('fetch', function (event) {
-    if (isAlwaysFreshResource(event.request.url)) {
-        if (isItemResource(event.request.url))
-            fetchNetworkFailToCacheIfCached(event);
-        else
-            fetchNetworkFailToCache(event);
-    } else
-        fetchStaleWhenRevalidate(event, true);
+    if (isNetworkOnlyResource(event.request.url)) {
+        fetchNetworkOnly(event);
+    } else {
+        if (isAlwaysFreshResource(event.request.url)) {
+            if (isItemResource(event.request.url))
+                fetchNetworkFailToCacheIfCached(event);
+            else
+                fetchNetworkFailToCache(event);
+        } else
+            fetchStaleWhenRevalidate(event, true);
+    }
 });
 self.addEventListener('activate', (e) => e.waitUntil(caches.keys().then((keyList) =>
     Promise.all(keyList.map((key) => {
