@@ -33,6 +33,7 @@ const GLOBAL = {
 const START_URL = (window.location.pathname + (window.location.pathname.substr(-1) == "/" ? "" : "/")).substring(1).split("/");
 const STORAGE = {
     itemDownload: "downloaded_items",
+    itemPending:"pending_items",
     theme: "dark_theme_selected"
 };
 const ISDARKTHEME = (window.localStorage[STORAGE.theme]) ? (window.localStorage[STORAGE.theme] == "true") : (new Date().getHours() > 17 || new Date().getHours() < 8);
