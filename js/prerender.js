@@ -28,8 +28,7 @@ const GLOBAL = {
     offline: "offline",
     disabled: "disabled",
     activeView: "active-view",
-    dataNode: "data-node",
-    hidden: "hidden"
+    dataNode: "data-node"
 };
 const START_URL = (window.location.pathname + (window.location.pathname.substr(-1) == "/" ? "" : "/")).substring(1).split("/");
 const STORAGE = {

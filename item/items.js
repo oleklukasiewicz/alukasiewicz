@@ -1,7 +1,7 @@
 const ITEM_VERSION = "0-0-0-3";
 const TODAY=new Date();
 let getGroups = () => [
-    new Group("all",["other",""],"All projects",new ItemDate(TODAY.getDate(),TODAY.getMonth(),TODAY.getFullYear()),null,["home"],{},true),
+    new Group("all",["other",""],"All projects",new ItemDate(TODAY.getDate(),TODAY.getMonth()+1,TODAY.getFullYear()),null,["home"],{},true),
     new Group("best-pixelart", ["best", "best-pixel"], "Best pixel art", new ItemDate(5, 11, 2021),null,["home"]),
     new Group("pixel-flower", ["pixel-plants"], "Plants and blossom", new ItemDate(5, 11, 2021),null,["home"]),
     new Group("home-group",["home","landing"],"Home Group")
