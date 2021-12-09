@@ -315,6 +315,15 @@ let ResourceDownloadController = (function () {
             _controller.invokeEvent("savePending", [_pendingItems]);
         }
     }
+    _controller.removeFromPending = (item) => {
+        if (_pendingItems.includes(item.id)) {
+            let _index = _pendingItems.findIndex((id) => id == item.id);
+            _pendingItems.splice(_index, 1);
+            item.isPending = false;
+            _pendingItemsObj.splice(_index, 1);
+            _controller.invokeEvent("savePending", [_pendingItems]);
+        }
+    }
     _controller.download = async function (item) {
         item.isDownloading = true;
         _downloadedItems.push(item.id);
@@ -406,8 +415,12 @@ const itemView = new View(VIEW.item, APP.url.item, { currentItem: null }, {
             else {
                 if (navigator.onLine)
                     ResourceDownloadController.download(_data.currentItem);
-                else
-                    ResourceDownloadController.addToPending(_data.currentItem);
+                else {
+                    if (_data.currentItem.isPending)
+                        ResourceDownloadController.removeFromPending(_data.currentItem);
+                    else
+                        ResourceDownloadController.addToPending(_data.currentItem);
+                }
             }
         });
         ResourceDownloadController.addStream(new Stream({
