@@ -278,6 +278,7 @@ let ResourceDownloadController = (function () {
     let _downloadedItems = [];
     let _streams = [];
     let _pendingItems = [];
+    let _pendingItemsObj = [];
     EventController.call(_controller, {
         "download": [],
         "save": [],
@@ -288,28 +289,41 @@ let ResourceDownloadController = (function () {
     _controller.addStream = (stream) => _streams.push(stream);
     _controller.isDownloaded = (id) => _downloadedItems.includes(id);
     _controller.load = (items) => _downloadedItems = items;
-    _controller.loadPending = (items) => _pendingItems = items;
+    _controller.loadPending = async (items) => {
+        _pendingItems = items;
+        await Promise.all(_pendingItems.map(async (id) => {
+            let item = await ItemController.getItemById(id);
+            item.isPending = true;
+            _pendingItemsObj.push(item);
+        }))
+    };
     _controller.downloadPending = async function () {
-        console.trace();
-        await Promise.all(_pendingItems.map(async (itemId) => {
+        await Promise.all(_pendingItems.map(async (itemId, index) => {
             if (!_downloadedItems.includes(itemId))
-                await _controller.download(await ItemController.getItemById(itemId));
+                await _controller.download(_pendingItemsObj[index]);
         }
         ));
-        _pendingItems = []; _controller.invokeEvent("savePending", [_pendingItems]);
+        _pendingItems = [];
+        _pendingItemsObj = [];
+        _controller.invokeEvent("savePending", [_pendingItems]);
     }
-    _controller.addToPending = (id) => {
-        if (!_pendingItems.includes(id)) {
-            _pendingItems.push(id);
+    _controller.addToPending = (item) => {
+        if (!_pendingItems.includes(item.id)) {
+            _pendingItems.push(item.id);
+            item.isPending = true;
+            _pendingItemsObj.push(item);
             _controller.invokeEvent("savePending", [_pendingItems]);
         }
     }
     _controller.download = async function (item) {
-        item.isDownloaded = true;
+        item.isDownloading = true;
         _downloadedItems.push(item.id);
         _controller.invokeEvent("download", [item]);
         await _invokeStream("downloadStart", [item]);
         await Promise.all(item.resources.map(async (resource, index) => await _invokeStream("download", [resource, item, index])));
+        item.isDownloading = false;
+        item.isDownloaded = true;
+        item.isPending = false;
         await _invokeStream("downloadFinish", [item]);
         _controller.invokeEvent("save", [_downloadedItems]);
     }
@@ -322,14 +336,6 @@ let ResourceDownloadController = (function () {
 
         await _invokeStream("downloadRemoveFinish", [item]);
         _controller.invokeEvent("save", [_downloadedItems]);
-    }
-    _controller.toggle = function (item) {
-        let _isDownloaded = _controller.isDownloaded(item.id);
-        if (_isDownloaded)
-            _controller.remove(item);
-        else
-            _controller.download(item);
-        return !_isDownloaded;
     }
     return _controller;
 }())
@@ -376,14 +382,18 @@ const itemView = new View(VIEW.item, APP.url.item, { currentItem: null }, {
     },
     onRegister: function () {
         let _data = this.data;
-        let _setIDBState = function (isDownloaded = _data.currentItem.isDownloaded, isOnline = navigator.onLine) {
-            if (isDownloaded) {
+        let _setIDBState = function () {
+            _iDB.classList.remove(GLOBAL.toggled);
+            _iDB.classList.remove(GLOBAL.pending);
+            _iDB.classList.remove(GLOBAL.progress);
+            if (_data.currentItem.isDownloaded)
                 _iDB.classList.add(GLOBAL.toggled);
-                _iDB.classList.remove("progress");
-            }
             else {
-                _iDB.classList.remove(GLOBAL.toggled);
-                //_iDB.classList.toggle(GLOBAL.disabled, !isOnline)
+                if (_data.currentItem.isDownloading)
+                    _iDB.classList.add(GLOBAL.progress);
+                else
+                    if (_data.currentItem.isPending)
+                        _iDB.classList.add(GLOBAL.pending);
             }
         }
         let _iTitle = getById("item-title");
@@ -397,13 +407,12 @@ const itemView = new View(VIEW.item, APP.url.item, { currentItem: null }, {
                 if (navigator.onLine)
                     ResourceDownloadController.download(_data.currentItem);
                 else
-                    ResourceDownloadController.addToPending(_data.currentItem.id);
+                    ResourceDownloadController.addToPending(_data.currentItem);
             }
         });
         ResourceDownloadController.addStream(new Stream({
-            downloadStart: () => _iDB.classList.replace("toggled", "progress"),
-            downloadPending: () => _iDB.classList.replace("toggled", "pending"),
-            downloadFinish: () => _iDB.classList.replace("progress", "toggled")
+            downloadStart: _setIDBState,
+            downloadFinish: _setIDBState
         }));
         _data.itemStream = new Stream({
             load: function (item) {
@@ -422,10 +431,8 @@ const itemView = new View(VIEW.item, APP.url.item, { currentItem: null }, {
                 item.content.forEach((content) => _iContent.append(new ItemComponentBuilder(content, item.folder, item)));
             }
         });
-        window.addEventListener("online", () => _setIDBState())
-        window.addEventListener("offline", () => _setIDBState());
-        ResourceDownloadController.addEventListener("download", () => _setIDBState(true));
-        ResourceDownloadController.addEventListener("remove", () => _setIDBState(false));
+        ResourceDownloadController.addEventListener("remove", _setIDBState);
+        ResourceDownloadController.addEventListener("savePending", _setIDBState);
     },
     onLoad: function () {
         this.rootNode.classList.add(GLOBAL.loading);
@@ -492,7 +499,7 @@ window.addEventListener("load", async function () {
     await ItemController.fetchGroups(getGroups()).then(() => ItemController.fetchItems(getItems()));
     ViewController.navigate(START_ROUTE.target, { routeArg: START_URL.slice(1, START_URL.length - 1) });
     APPNODE.classList.toggle(GLOBAL.offline, !navigator.onLine);
-    ResourceDownloadController.loadPending(window.localStorage[STORAGE.itemPending] ? JSON.parse(window.localStorage[STORAGE.itemPending]) : []);
+    await ResourceDownloadController.loadPending(window.localStorage[STORAGE.itemPending] ? JSON.parse(window.localStorage[STORAGE.itemPending]) : []);
     if (this.navigator.onLine)
         ResourceDownloadController.downloadPending();
     setTimeout(() => document.body.classList.remove("first-start"), 300);

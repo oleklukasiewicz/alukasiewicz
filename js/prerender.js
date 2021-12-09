@@ -20,6 +20,8 @@ const APP = {
 };
 const GLOBAL = {
     toggled: "toggled",
+    pending:"pending",
+    progress:"progress",
     item:"item",
     group:"group",
     loading: "loading",
