@@ -495,18 +495,18 @@ ItemController.addEventListener("fetchItem", (item) => item.isDownloaded = Resou
 ResourceDownloadController.addEventListener("save", (items) => window.localStorage[STORAGE.itemDownload] = JSON.stringify(items));
 ResourceDownloadController.addEventListener("savePending", (items) => window.localStorage[STORAGE.itemPending] = JSON.stringify(items));
 window.addEventListener("load", async function () {
-    ResourceDownloadController.load(window.localStorage[STORAGE.itemDownload] ? JSON.parse(window.localStorage[STORAGE.itemDownload]) : []);
+    ResourceDownloadController.load(LocalStorageArrayParser(STORAGE.itemDownload));
     await ItemController.fetchGroups(getGroups()).then(() => ItemController.fetchItems(getItems()));
     ViewController.navigate(START_ROUTE.target, { routeArg: START_URL.slice(1, START_URL.length - 1) });
     APPNODE.classList.toggle(GLOBAL.offline, !navigator.onLine);
-    await ResourceDownloadController.loadPending(window.localStorage[STORAGE.itemPending] ? JSON.parse(window.localStorage[STORAGE.itemPending]) : []);
+    await ResourceDownloadController.loadPending(LocalStorageArrayParser(STORAGE.itemPending));
     if (this.navigator.onLine)
         ResourceDownloadController.downloadPending();
     setTimeout(() => document.body.classList.remove("first-start"), 300);
 });
 window.addEventListener("online", () => {
     APPNODE.classList.remove(GLOBAL.offline);
-    ResourceDownloadController.loadPending(window.localStorage[STORAGE.itemPending] ? JSON.parse(window.localStorage[STORAGE.itemPending]) : []);
+    ResourceDownloadController.loadPending(LocalStorageArrayParser(STORAGE.itemPending));
     ResourceDownloadController.downloadPending();
 });
 window.addEventListener("offline", () => APPNODE.classList.add(GLOBAL.offline));
@@ -563,7 +563,7 @@ let createGroupTile = function (node, group) {
     node.children[1].href = APP.url.group + group.id;
     return node;
 }
-let ItemComponentBuilder = function (component, itemFolder, item) {
+let ItemComponentBuilder = function (component, itemFolder) {
     let _type = component.type;
     let _arg = component.arguments || {};
     let _component
@@ -622,26 +622,21 @@ let ItemComponentBuilder = function (component, itemFolder, item) {
     return _component
 }
 let StorageResponseIndexer = function (response, depth = 1, limit = 3, startIndex = 0, limitOfDepth = 3) {
-    let _limit = limit;
-    let _index = startIndex;
-    let _alreadyIndexedEntries = 0;
     let _indexedItems = [];
-    response.content?.forEach(async (entry, index) => {
+    response.content?.forEach((entry, index) => {
         if (entry.type == GLOBAL.group) {
             if (depth > 0) {
-                _indexedItems.push({ index: _index, entry: entry });
-                _indexedItems = _indexedItems.concat(StorageResponseIndexer(entry, depth - 1, limitOfDepth, _index + 1));
-                _index = _indexedItems[_indexedItems.length - 1].index + 1;
+                _indexedItems.push({ index: startIndex, entry: entry });
+                _indexedItems = _indexedItems.concat(StorageResponseIndexer(entry, depth - 1, limitOfDepth, startIndex + 1));
+                startIndex = _indexedItems[_indexedItems.length - 1].index + 1;
             }
         } else {
-            if (entry.isIndexed)
-                _alreadyIndexedEntries += 1;
-            if (((_limit > 0) && (!entry.isIndexed || (response.content.length - index) <= _limit)) || _limit == -1) {
+            if (((limit > 0) && (!entry.isIndexed || (response.content.length - index) <= limit)) || limit == -1) {
                 entry.isIndexed = true;
-                _indexedItems.push({ index: _index, entry: entry });
-                if (_limit > 0)
-                    _limit -= 1;
-                _index += 1;
+                _indexedItems.push({ index: startIndex, entry: entry });
+                if (limit > 0)
+                    limit -= 1;
+                startIndex += 1;
             }
         }
     });
@@ -658,3 +653,4 @@ let StorageResponseBuilder = async function (response, targetNode = document.cre
             await createItemTile(_items[entry.index] || targetNode.appendChild(document.createElement("a")), entry.entry);
     }));
 }
+let LocalStorageArrayParser = (name, _default = []) => window.localStorage[name] ? JSON.parse(window.localStorage[name]) : _default;
