@@ -7,6 +7,7 @@ let getGroups = () => [
     new Group("home-group",["home","landing"],"Home Group")
 ];
 let getItems = () => [
+    new Item(null,[],"https://www.instagram.com/p/CPSx-X8hdVM/","/lily/","Water lily","/lily-blank.webp","Mandatory element in every organic picture of river or lake.",new ItemDate(10,12,2021),null,["pixel-flower","best"]),
     new Item(null, [], "https://www.instagram.com/p/CPSx-X8hdVM/", "/tree-on-rock", "Pixel Tree", "/tree-on-rock.webp", "One of the most iconic plants on the planet - a tree! Here growing on a giant rock.", new ItemDate(23, 5, 2021), null, ["pixel-flower", "best"]),
     new Item(null,[],"https://www.reddit.com/r/PixelArt/comments/qi9rq8/the_crocus/","/crocus","Wonderfull spice","/crocus-base.webp","One of the most common summer plant - Crocus but also the most expensive spice in the world!",new ItemDate(20, 10, 2021),null,["best","pixel-plants"]),
     new Item(null,[],"https://www.instagram.com/p/CMXFzXihSGw/","/airship","Ocean of clouds","/airship-v2.webp","The great adventure does not have to take place at sea. Now with new frame and clouds!",new ItemDate(27, 10, 2020),new ItemDate(13, 3, 2021),["best"]),
