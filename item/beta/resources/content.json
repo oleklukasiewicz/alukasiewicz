@@ -17,7 +17,7 @@
         },
         {
             "type": "image",
-            "resource": "/airship.webp",
+            "resource": ["/airship.webp"],
             "alt": "Ocean of clouds",
             "id":"airship-image"
         },

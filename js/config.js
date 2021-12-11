@@ -211,7 +211,7 @@ let ItemController = (function () {
             let _content = await _downloadViaAJAX(item, item.folder);
             Object.assign(item, _content, { resources: [] });
             item.resources.push(APP.itemContentFileName);
-            item.content.forEach((component) => component.resource ? item.resources.push(component.resource) : "");
+            item.content.forEach((component) => component.resource ? item.resources.push(...component.resource) : "");
             if (_content?.version == APP.version)
                 item.isContentCached = true;
         }
