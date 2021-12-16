@@ -590,8 +590,9 @@ let ItemComponentBuilder = function (component, itemFolder) {
             break;
         case "image":
             _component = document.createElement("DIV");
+            _component.classList.add("image");
             let _img = document.createElement("IMG");
-            _img.src = APP.itemFolder + itemFolder + APP.resourceFolder + component.resource;
+            _img.src = APP.itemFolder + itemFolder + APP.resourceFolder + component.resource[0];
             let _alt = document.createElement("SPAN");
             _alt.className = "img-alt";
             _alt.innerHTML = component.alt || "";
@@ -627,6 +628,24 @@ let ItemComponentBuilder = function (component, itemFolder) {
             }
             _component.forEach((content) => _component.append(new ItemComponentBuilder(content, itemFolder)))
             break;
+        case "gallery":
+            _component = document.createElement("DIV");
+            _component.classList.add("gallery");
+            _component.innerHTML = "<div><b class='font-subtitle'>"+component.title+"</b></div><div class='list'></div>";
+            let _button =document.createElement("A");
+            _button.innerHTML="<i class='mi mi-Picture'></i><span>Show all</span>";
+            _button.classList.add("button")
+            _component.children[0].appendChild(_button);
+            let _max = component.resource.length > 5 ? 5 : component.resource.length;
+            for (let i = 0; i < _max; i++) {
+                let res = component.resource[i];
+                let _img = document.createElement("IMG");
+                _img.src = APP.itemFolder + itemFolder + APP.resourceFolder + res;
+                _component.children[1].appendChild(_img);
+            };
+            break;
+        default:
+            _component = document.createElement("DIV");
     }
     return _component
 }

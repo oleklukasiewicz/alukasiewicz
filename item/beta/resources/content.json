@@ -30,6 +30,18 @@
             "content": "</br>It’s a living thing that continues to evolve. And like any living thing, it has basic needs to grow and flourish."
         },
         {
+            "type":"gallery",
+            "title":"A most beautiful pixel arts",
+            "resource":[
+                "/gallery/crocus-base.webp",
+                "/gallery/lily-blank.webp",
+                "/gallery/rose_plant.webp",
+                "/gallery/isometric_castle.webp",
+                "/airship.webp"
+            ],
+            "id":"airship-gallery"
+        },
+        {
             "type": "text",
             "content": "</br>Fluent becomes the best version of itself when there is clarity around what it is, what it could be, and why that’s important. Today, we aspire to make Fluent a collective, open design system that connects us, inspiring and influencing everything we create.."
         },
