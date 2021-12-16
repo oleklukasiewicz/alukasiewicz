@@ -986,9 +986,17 @@ u.dotted-separator{
 {
     margin: 20px 0px;
 }
+.gallery>div
+{
+    width: 100%;
+}
 .gallery>div>b
 {
-   display: inline-table;
+   display: inline-block;
+   max-width: 50%;
+   text-overflow: ellipsis;
+   overflow: hidden;
+   white-space: nowrap;
 }
 .gallery>div>.button
 {
