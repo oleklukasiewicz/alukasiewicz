@@ -1,3 +1,10 @@
+/*
+Moving items do deploy
+1. Check ITEM_VERSION
+2. Move "landing" alias from home-group to all
+3. Remove beta item
+4. Check all Items
+*/
 const ITEM_VERSION = "0-0-0-3";
 const TODAY=new Date();
 let getGroups = () => [

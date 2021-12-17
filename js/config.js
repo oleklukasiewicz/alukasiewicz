@@ -360,7 +360,7 @@ const landingView = new View(VIEW.landing, APP.url.landing, { scrollY: -1, items
             window.scroll(0, this.data.scrollY)
         document.title = APP.name;
         if (!this.isLoaded)
-            await ItemController.load(this.data.itemStream, ItemController.loadModes.group, "home", this);
+            await ItemController.load(this.data.itemStream, ItemController.loadModes.group, "landing", this);
     },
     onRegister: function () {
         let _data = this.data;
