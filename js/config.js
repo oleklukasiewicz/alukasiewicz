@@ -207,6 +207,7 @@ let ItemController = (function () {
         });
     }
     let _loadFullItem = async function (item) {
+        //check is components.js and components.css are downloaded id not -> download
         if (!item.isItemLinkToWeb && !item.isContentCached) {
             let _content = await _downloadViaAJAX(item, item.folder);
             Object.assign(item, _content, { resources: [] });
@@ -214,6 +215,7 @@ let ItemController = (function () {
             item.content.forEach((component) => component.resource ? item.resources.push(...component.resource) : "");
             if (_content?.version == APP.version)
                 item.isContentCached = true;
+            //check content component version if newer -> download new version of components.css and js
         }
         return item;
     }

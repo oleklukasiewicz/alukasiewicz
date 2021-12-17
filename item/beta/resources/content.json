@@ -1,5 +1,6 @@
 {
     "version": "0-0-0-3",
+    "component_version": 1,
     "content": [
         {
             "type": "quote",
@@ -17,9 +18,11 @@
         },
         {
             "type": "image",
-            "resource": ["/airship.webp"],
+            "resource": [
+                "/airship.webp"
+            ],
             "alt": "Ocean of clouds",
-            "id":"airship-image"
+            "id": "airship-image"
         },
         {
             "type": "text",
@@ -30,16 +33,16 @@
             "content": "</br>It’s a living thing that continues to evolve. And like any living thing, it has basic needs to grow and flourish."
         },
         {
-            "type":"gallery",
-            "title":"A most beautiful pixel arts",
-            "resource":[
+            "type": "gallery",
+            "title": "A most beautiful pixel arts",
+            "resource": [
                 "/gallery/crocus-base.webp",
                 "/gallery/lily-blank.webp",
                 "/gallery/rose_plant.webp",
                 "/gallery/isometric_castle.webp",
                 "/airship.webp"
             ],
-            "id":"airship-gallery"
+            "id": "airship-gallery"
         },
         {
             "type": "text",
