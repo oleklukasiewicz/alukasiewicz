@@ -91,7 +91,7 @@ let ViewController = (function () {
             view.event.onLoadFinish?.call(view);
         }
     }
-    _controller.navigateAndWait = function (id, arg = {}) {
+    _controller.navigate = async function (id, arg = {}) {
         let _target = _getViewById(id);
         if (_currentView) {
             _generateRootNode(_currentView);
@@ -107,19 +107,14 @@ let ViewController = (function () {
                 defaultViewIndex: _defaultViewIndex
             }), _target]);
         }
-        let _trigger = async function (_arg) {
-            let __arg = Object.assign(arg, _arg)
-            await _registerDelayedView(_currentView);
-            _loadView(_currentView, __arg);
-            await _currentView.event.onNavigate?.call(_currentView, __arg);
-            _invokeLoadFinishEvent(_currentView);
-        }
         _currentView = _target;
         _generateRootNode(_currentView);
+        await _registerDelayedView(_currentView);
+        _loadView(_currentView, arg);
+        await _currentView.event.onNavigate?.call(_currentView, arg);
+        _invokeLoadFinishEvent(_currentView);
         _controller.invokeEvent("navigateToView", [_currentView, _previousView, arg]);
-        return _trigger;
     }
-    _controller.navigate = (id, arg = {}) => _controller.navigateAndWait(id, arg)(arg)
     _controller.register = function (view, isDefault = false) {
         _views.push(view);
         if (!view.isRegisterDelayed)
@@ -353,6 +348,23 @@ let ResourceDownloadController = (function () {
         _controller.invokeEvent("save", [item, _downloadedItems]);
     }
     return _controller;
+}());
+let ErrorController = (function () {
+    /*
+    Errors:
+    G    Items not loaded,
+    L    Cant find group or item or resource,
+    L    Cant load item, group or resource,
+    G    Outdated items,
+    L    Undefined error
+    */
+    let _handlers = [];
+    let _errorHistory=[];
+    _controller = {};
+    _component.addHandler = function (stream) {
+        _handlers.push(stream);
+    }
+
 }())
 const landingView = new View(VIEW.landing, APP.url.landing, { scrollY: -1, itemsLoaded: false }, {
     onNavigate: async function () {
@@ -491,12 +503,12 @@ const groupView = new View(VIEW.group, APP.url.group, { scrollY: -1 }, {
         this.data._groupList.getElementsByClassName("loading").remove();
     }
 }, VIEW.group, true, ViewController.loadingModes.always);
-ResourceDownloadController.addEventListener("download", async (item, file) => await cacheResource(APP.itemFolder + item.folder + APP.resourceFolder + file));
-ResourceDownloadController.addEventListener("remove", async (item, file) => await removeResourceFromCache(APP.itemFolder + item.folder + APP.resourceFolder + file));
 ViewController.register(landingView, true);
 ViewController.register(profileView);
 ViewController.register(itemView);
 ViewController.register(groupView);
+ResourceDownloadController.addEventListener("download", async (item, file) => await cacheResource(APP.itemFolder + item.folder + APP.resourceFolder + file));
+ResourceDownloadController.addEventListener("remove", async (item, file) => await removeResourceFromCache(APP.itemFolder + item.folder + APP.resourceFolder + file));
 ViewController.addEventListener("historyEdit", (historyItem, view) => (historyItem.index == 0) ? history.replaceState(historyItem, '', view.url + (historyItem.arg.routeArg?.join('/') || '')) :
     history.pushState(historyItem, '', view.url + (historyItem.arg.routeArg?.join('/') || '')));
 ViewController.addEventListener("navigateDefault", () => (history.state.defaultViewIndex != -1 && (history.state.defaultViewIndex - history.state.index) != 0) ? history.go(history.state.defaultViewIndex - history.state.index) : "");
@@ -522,13 +534,6 @@ window.addEventListener("online", () => {
 });
 window.addEventListener("offline", () => APPNODE.classList.add(GLOBAL.offline));
 window.addEventListener("popstate", (event) => ViewController.move(((ViewController.currentHistoryIndex) - event.state.index <= 0), event.state));
-let createRefreshButton = function () {
-    let _bt = document.createElement("a");
-    _bt.className = "button";
-    _bt.innerHTML = "<i class='mi mi-Update'></i><span>Refresh page</span>";
-    _bt.onclick = function () { window.location.reload(true); }
-    return _bt;
-}
 let createItemTile = async function (node, item) {
     if (node.nodeName != "A") {
         let oldNode = node;
@@ -574,6 +579,40 @@ let createGroupTile = function (node, group) {
     node.children[1].href = APP.url.group + group.id;
     return node;
 }
+let StorageResponseIndexer = function (response, depth = 1, limit = 3, startIndex = 0, limitOfDepth = 3) {
+    let _indexedItems = [];
+    response.content?.forEach((entry, index) => {
+        if (entry.type == GLOBAL.group) {
+            if (depth > 0) {
+                _indexedItems.push({ index: startIndex, entry: entry });
+                _indexedItems = _indexedItems.concat(StorageResponseIndexer(entry, depth - 1, limitOfDepth, startIndex + 1));
+                startIndex = _indexedItems[_indexedItems.length - 1].index + 1;
+            }
+        } else {
+            if (((limit > 0) && (!entry.isIndexed || (response.content.length - index) <= limit)) || limit == -1) {
+                entry.isIndexed = true;
+                _indexedItems.push({ index: startIndex, entry: entry });
+                if (limit > 0)
+                    limit -= 1;
+                startIndex += 1;
+            }
+        }
+    });
+    return _indexedItems;
+}
+let StorageResponseBuilder = async function (response, targetNode = document.createElement("DIV"), depth = 1, limit = 3) {
+    let _items = [...targetNode.getElementsByClassName(GLOBAL.dataNode)];
+    let _indexedItems = StorageResponseIndexer(response, depth, limit, 0);
+    await Promise.all(_indexedItems.map(async (entry) => {
+        entry.entry.isIndexed = false;
+        if (entry.entry.type == GLOBAL.group)
+            createGroupTile(_items[entry.index] || targetNode.appendChild(document.createElement("div")), entry.entry);
+        else
+            await createItemTile(_items[entry.index] || targetNode.appendChild(document.createElement("a")), entry.entry);
+    }));
+}
+let LocalStorageArrayParser = (name, _default = []) => window.localStorage[name] ? JSON.parse(window.localStorage[name]) : _default;
+//Item component builder for basic item content controls and sections
 let ItemComponentBuilder = function (component, itemFolder) {
     let _type = component.type;
     let _arg = component.arguments || {};
@@ -633,9 +672,9 @@ let ItemComponentBuilder = function (component, itemFolder) {
         case "gallery":
             _component = document.createElement("DIV");
             _component.classList.add("gallery");
-            _component.innerHTML = "<div><b class='font-subtitle'>"+component.title+"</b></div><div class='list'></div>";
-            let _button =document.createElement("A");
-            _button.innerHTML="<i class='mi mi-Picture'></i><span>Show all</span>";
+            _component.innerHTML = "<div><b class='font-subtitle'>" + component.title + "</b></div><div class='list'></div>";
+            let _button = document.createElement("A");
+            _button.innerHTML = "<i class='mi mi-Picture'></i><span>Show all</span>";
             _button.classList.add("button")
             _component.children[0].appendChild(_button);
             let _max = component.resource.length > 5 ? 5 : component.resource.length;
@@ -651,36 +690,3 @@ let ItemComponentBuilder = function (component, itemFolder) {
     }
     return _component
 }
-let StorageResponseIndexer = function (response, depth = 1, limit = 3, startIndex = 0, limitOfDepth = 3) {
-    let _indexedItems = [];
-    response.content?.forEach((entry, index) => {
-        if (entry.type == GLOBAL.group) {
-            if (depth > 0) {
-                _indexedItems.push({ index: startIndex, entry: entry });
-                _indexedItems = _indexedItems.concat(StorageResponseIndexer(entry, depth - 1, limitOfDepth, startIndex + 1));
-                startIndex = _indexedItems[_indexedItems.length - 1].index + 1;
-            }
-        } else {
-            if (((limit > 0) && (!entry.isIndexed || (response.content.length - index) <= limit)) || limit == -1) {
-                entry.isIndexed = true;
-                _indexedItems.push({ index: startIndex, entry: entry });
-                if (limit > 0)
-                    limit -= 1;
-                startIndex += 1;
-            }
-        }
-    });
-    return _indexedItems;
-}
-let StorageResponseBuilder = async function (response, targetNode = document.createElement("DIV"), depth = 1, limit = 3) {
-    let _items = [...targetNode.getElementsByClassName(GLOBAL.dataNode)];
-    let _indexedItems = StorageResponseIndexer(response, depth, limit, 0);
-    await Promise.all(_indexedItems.map(async (entry) => {
-        entry.entry.isIndexed = false;
-        if (entry.entry.type == GLOBAL.group)
-            createGroupTile(_items[entry.index] || targetNode.appendChild(document.createElement("div")), entry.entry);
-        else
-            await createItemTile(_items[entry.index] || targetNode.appendChild(document.createElement("a")), entry.entry);
-    }));
-}
-let LocalStorageArrayParser = (name, _default = []) => window.localStorage[name] ? JSON.parse(window.localStorage[name]) : _default;
