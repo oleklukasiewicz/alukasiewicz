@@ -149,10 +149,10 @@ let ViewController = (function () {
         await _registerDelayedView(_currentView);
         if (_currentView.data.errorHandler)
             ErrorController.setCurrentHandler(_currentView.data.errorHandler);
+            _controller.invokeEvent("navigateToView", [_currentView, _previousView, arg]);
         _loadView(_currentView, arg);
         await _currentView.event.onNavigate?.call(_currentView, arg);
         _invokeLoadFinishEvent(_currentView);
-        _controller.invokeEvent("navigateToView", [_currentView, _previousView, arg]);
     }
     _controller.register = async function (view, isDefault = false) {
         _views.push(view);
@@ -532,8 +532,7 @@ const groupView = new View(VIEW.group, APP.url.group, { scrollY: -1 }, {
     },
     onNavigate: async function (arg) {
         window.scroll(0, 0);
-        if (ItemController.isItemsLoaded)
-            await ItemController.load(this.data.itemStream, ItemController.loadModes.group, arg.routeArg[0], this);
+        await ItemController.load(this.data.itemStream, ItemController.loadModes.group, arg.routeArg[0], this);
     },
     onNavigateFrom: function () {
         Array.prototype.forEach.call(this.data._groupList.getElementsByClassName(GLOBAL.dataNode), (node) => node.classList.add("loading"));
@@ -568,8 +567,8 @@ ResourceDownloadController.addEventListener("save", (item, items) => window.loca
 ResourceDownloadController.addEventListener("savePending", (item, items) => window.localStorage[STORAGE.itemPending] = JSON.stringify(items));
 window.addEventListener("load", async function () {
     ResourceDownloadController.load(LocalStorageArrayParser(STORAGE.itemDownload));
-    ErrorController.addError(new ErrorClass("item_load_error", "Items cannot be loaded", "Try refreshing the page", ["item_outdated", "item_not_found", "item_error","group_not_found"]));
-    ErrorController.addError(new ErrorClass("item_outdated", "Items are outdated", "Try refreshing the page", ["item_load_error", "item_not_found", "item_error","group_not_found"]));
+    ErrorController.addError(new ErrorClass("item_load_error", "Items cannot be loaded", "Try refreshing the page", ["item_outdated", "item_not_found", "item_error", "group_not_found"]));
+    ErrorController.addError(new ErrorClass("item_outdated", "Items are outdated", "Try refreshing the page", ["item_load_error", "item_not_found", "item_error", "group_not_found"]));
     if (APP.version != ITEM_VERSION)
         ErrorController.invokeError("item_outdated", true);
     else {
