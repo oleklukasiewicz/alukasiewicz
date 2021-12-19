@@ -763,10 +763,28 @@ body.first-start #main-theme-toggle-button > i{
     box-shadow: 0 2px 8px rgba(0,0,0,.08);
     box-sizing: border-box;
     padding: 20px;
+    margin: 0 var(--size-margin-laptop);
+    transition: var(--transition-border);
 }
 .error-msg > i{
     width: 100%;
     margin: 50px 0 50px;
+}
+#item.error > #main-list,
+#landing.error > #projects-header{
+    display: none;
+}
+#item.error > #item-content,
+#item.error > #item-data{
+    display: none;
+}
+#group.error > #group-data,
+#group.error > #group-list{
+    display: none;
+}
+#group.error,
+#item.error{
+    animation: none;
 }
 u.dotted-separator{
     border-radius: 50%;
@@ -926,6 +944,9 @@ u.dotted-separator{
     .list-view{
         padding: 20px var(--size-margin-base) 30px;
     }
+    .error-msg{
+        margin: 0 var(--size-margin-base);
+    }
 }
 @media only screen and (max-width:540px){
     #main-header-base{
@@ -982,26 +1003,22 @@ u.dotted-separator{
         background-color: var(--color-theme);
     }
 }
-.gallery
-{
-    margin: 20px 0px;
+.gallery{
+    margin: 20px 0;
 }
-.gallery>div
-{
+.gallery > div{
     width: 100%;
 }
-.gallery>div>b
-{
-   display: inline-block;
-   max-width: 50%;
-   text-overflow: ellipsis;
-   overflow: hidden;
-   white-space: nowrap;
+.gallery > div > b{
+    display: inline-block;
+    max-width: 50%;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
 }
-.gallery>div>.button
-{
-   display: inline-table;
-   float: right;
+.gallery > div > .button{
+    display: inline-table;
+    float: right;
 }
 .gallery > .list{
     margin-top: 20px;
