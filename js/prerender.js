@@ -14,16 +14,16 @@ const APP = {
         group: "/" + VIEW.group + "/",
     },
     itemFolder: "/item",
-    resourceFolder:"/resources",
-    itemContentFileName:"/content.json",
+    resourceFolder: "/resources",
+    itemContentFileName: "/content.json",
     date: (date, months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]) => (date.day + "&nbsp;" + months[date.month - 1] + ",&nbsp;" + date.year)
 };
 const GLOBAL = {
     toggled: "toggled",
-    pending:"pending",
-    progress:"progress",
-    item:"item",
-    group:"group",
+    pending: "pending",
+    progress: "progress",
+    item: "item",
+    group: "group",
     loading: "loading",
     loaded: "loaded",
     error: "error",
@@ -35,7 +35,7 @@ const GLOBAL = {
 const START_URL = (window.location.pathname + (window.location.pathname.substr(-1) == "/" ? "" : "/")).substring(1).split("/");
 const STORAGE = {
     itemDownload: "downloaded_items",
-    itemPending:"pending_items",
+    itemPending: "pending_items",
     theme: "dark_theme_selected"
 };
 const ISDARKTHEME = (window.localStorage[STORAGE.theme]) ? (window.localStorage[STORAGE.theme] == "true") : (new Date().getHours() > 17 || new Date().getHours() < 8);
@@ -116,8 +116,10 @@ let ThemeController = (function () {
     let _lightTheme;
     let _darkTheme;
     controller.registerTheme = function (theme) {
-        if (theme.isDark) _darkTheme = theme;
-        else _lightTheme = theme;
+        theme.isDark ?
+            _darkTheme = theme
+            :
+            _lightTheme = theme;
     }
     controller.load = function (isDark) {
         controller.theme = isDark ? _darkTheme : _lightTheme;

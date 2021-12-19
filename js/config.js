@@ -196,9 +196,9 @@ let ItemController = (function () {
             let xmlhttp = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject("Microsoft.XMLHTTP");
             xmlhttp.onreadystatechange = function () {
                 if (this.readyState == 4) {
-                    if (this.status == 200)
-                        resolve(JSON.parse(this.responseText));
-                    else
+                    this.status == 200 ?
+                        resolve(JSON.parse(this.responseText))
+                        :
                         reject("Error in AJAX request");
                 }
             };
@@ -324,12 +324,11 @@ let ResourceDownloadController = (function () {
             _controller.invokeEvent("savePending", [item, _pendingItems]);
         }
     }
-    _controller.downloadWhenAvailble = async function (item) {
-        if (navigator.onLine)
-            await _controller.download(item);
-        else
-            await _controller.addToPending(item);
-    }
+    _controller.downloadWhenAvailble = async (item) =>
+        navigator.onLine ?
+            await _controller.download(item)
+            :
+            await _controller.addToPending(item)
     _controller.removeFromPending = (item) => {
         if (_pendingItems.includes(item.id)) {
             let _index = _pendingItems.findIndex((id) => id == item.id);
@@ -431,10 +430,10 @@ const itemView = new View(VIEW.item, APP.url.item, { currentItem: null }, {
             if (_data.currentItem.isDownloaded)
                 ResourceDownloadController.remove(_data.currentItem);
             else {
-                if (_data.currentItem.isPending)
-                    ResourceDownloadController.removeFromPending(_data.currentItem);
-                else
-                    ResourceDownloadController.downloadWhenAvailble(_data.currentItem);
+                _data.currentItem.isPending ?
+                    ResourceDownloadController.removeFromPending(_data.currentItem)
+                    :
+                    ResourceDownloadController.downloadWhenAvailble(_data.currentItem)
             }
         });
         ResourceDownloadController.addEventListener("downloadStart", _setIDBState);
@@ -579,9 +578,9 @@ let createItemTile = async function (node, item) {
     node.classList.replace(GLOBAL.loading, GLOBAL.loaded);
     node.onclick = function () {
         event.preventDefault();
-        if (item.isItemLinkToWeb)
-            window.open(item.isItemLinkToWeb, '_blank').focus();
-        else
+        item.isItemLinkToWeb ?
+            window.open(item.isItemLinkToWeb, '_blank').focus()
+            :
             ViewController.navigate(VIEW.item, { routeArg: [item.id] });
     };
     node.href = item.isItemLinkToWeb || APP.url.item + item.id;
@@ -625,9 +624,9 @@ let StorageResponseBuilder = async function (response, targetNode = document.cre
     let _indexedItems = StorageResponseIndexer(response, depth, limit, 0);
     await Promise.all(_indexedItems.map(async (entry) => {
         entry.entry.isIndexed = false;
-        if (entry.entry.type == GLOBAL.group)
-            createGroupTile(_items[entry.index] || targetNode.appendChild(document.createElement("div")), entry.entry);
-        else
+        entry.entry.type == GLOBAL.group ?
+            createGroupTile(_items[entry.index] || targetNode.appendChild(document.createElement("div")), entry.entry)
+            :
             await createItemTile(_items[entry.index] || targetNode.appendChild(document.createElement("a")), entry.entry);
     }));
 }
@@ -638,9 +637,7 @@ let createErrorMsg = function (err, node) {
         let _but = document.createElement("A");
         _but.classList.add("button")
         _but.innerHTML = "<i class='mi mi-Refresh'></i><span>Refresh page</span>";
-        _but.addEventListener("click", function () {
-            window.location.reload(true);
-        });
+        _but.addEventListener("click", () => window.location.reload(true));
         node.appendChild(_but);
     }
 }
@@ -672,7 +669,7 @@ let ItemComponentBuilder = function (component, itemFolder) {
             _component.appendChild(_img);
             _component.appendChild(_alt);
             _img.onerror = function () { _img.onload = function () { }; _img.src = "/img/image_error.webp"; _img.classList.add("no-image"); }
-            _img.onload = function () { };
+            // _img.onload = function () { };
             break;
         case "quote":
             _component = document.createElement("DIV");
