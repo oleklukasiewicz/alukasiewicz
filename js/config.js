@@ -37,6 +37,9 @@ let HistoryItem = function (id, index, arg) {
         arg
     }
 }
+let ErrorClass = function (id, title, message, chaninedErrorIDs = []) {
+    return { id, title, message, chaninedErrorIDs }
+}
 let ViewController = (function () {
     let _controller = {};
     EventController.call(_controller, {
@@ -54,6 +57,10 @@ let ViewController = (function () {
     let _previousView;
     let _registerDelayedView = function (view) {
         if (view.isRegisterDelayed && !view.registered) {
+            if (view.event.onError) {
+                view.data.errorHandler = new Stream({ error: (err) => view.event.onError.call(view,err) });
+                ErrorController.addHandler(view.data.errorHandler,true,view);
+            }
             view.event.onRegister?.call(view);
             view.registered = true;
         }
@@ -108,6 +115,8 @@ let ViewController = (function () {
             }), _target]);
         }
         _currentView = _target;
+        if (_currentView.data.errorHandler)
+            ErrorController.setCurrentHandler(_currentView.data.errorHandler);
         _generateRootNode(_currentView);
         await _registerDelayedView(_currentView);
         _loadView(_currentView, arg);
@@ -115,10 +124,10 @@ let ViewController = (function () {
         _invokeLoadFinishEvent(_currentView);
         _controller.invokeEvent("navigateToView", [_currentView, _previousView, arg]);
     }
-    _controller.register = function (view, isDefault = false) {
+    _controller.register =async function (view, isDefault = false) {
         _views.push(view);
         if (!view.isRegisterDelayed)
-            view.event.onRegister?.call(view);
+            await _registerDelayedView(view);
         if (isDefault) _defaultView = view;
     }
     _controller.navigateToDefaultView = function (arg) {
@@ -350,28 +359,41 @@ let ResourceDownloadController = (function () {
     return _controller;
 }());
 let ErrorController = (function () {
-    /*
-    Errors:
-    G    Items not loaded,
-    L    Cant find group or item or resource,
-    L    Cant load item, group or resource,
-    G    Outdated items,
-    L    Undefined error
-    */
     let _handlers = [];
-    let _errorHistory=[];
+    let _errors = [];
+    let _preventedErrors = [];
+    let _currentHandler = null;
+    let _currentGlobalError;
     _controller = {};
-    _component.addHandler = function (stream) {
-        _handlers.push(stream);
+    _controller.addHandler = (stream, loadError = false, sender = null) => {
+        if (loadError)
+            stream.event?.error.call(sender || stream, _currentGlobalError);
     }
-
-}())
+    _controller.addError = function (error) {
+        if (_errors.findIndex((_error) => error.id == _error.id) == -1)
+            _errors.push(error);
+    }
+    _controller.invokeError = function (errorId, globalInvoke = false, sender = null) {
+        let __error = _errors.find((_error) => (errorId == _error.id) || (errorId.id == _error.id));
+        if (!_preventedErrors.includes(__error.id)) {
+            __error.chaninedErrorIDs.forEach((err) => _preventedErrors.push(err));
+            if (globalInvoke) {
+                _handlers.forEach((handler) => handler.event?.error.call(sender || handler, __error));
+                _currentGlobalError = __error;
+            }
+            else
+                _currentHandler.event?.error.call(sender || _currentHandler, __error);
+        }
+    }
+    _controller.setCurrentHandler = (handler) => _currentHandler = handler;
+    return _controller;
+}());
 const landingView = new View(VIEW.landing, APP.url.landing, { scrollY: -1, itemsLoaded: false }, {
     onNavigate: async function () {
         if (this.data.scrollY >= 0)
             window.scroll(0, this.data.scrollY)
         document.title = APP.name;
-        if (!this.isLoaded)
+        if (!this.isLoaded && ItemController.isItemsLoaded && ItemController.isGroupsLoaded)
             await ItemController.load(this.data.itemStream, ItemController.loadModes.group, "landing", this);
     },
     onRegister: function () {
@@ -396,6 +418,10 @@ const landingView = new View(VIEW.landing, APP.url.landing, { scrollY: -1, items
     },
     onLoad: function () {
         this.rootNode.classList.add(GLOBAL.loading);
+    },
+    onError: function (err) {
+        
+        createErrorMsg(err, this.rootNode.getElementsByClassName("error-msg"));
     }
 }, VIEW.landing, true, ViewController.loadingModes.single);
 const profileView = new View(VIEW.profile, APP.url.profile, {}, {
@@ -466,6 +492,9 @@ const itemView = new View(VIEW.item, APP.url.item, { currentItem: null }, {
     },
     onLoadFinish: function () {
         this.rootNode.classList.remove(GLOBAL.loading);
+    },
+    onError: function (err) {
+        createErrorMsg(err, this.rootNode.getElementsByClassName("error-msg"));
     }
 }, VIEW.item, true, ViewController.loadingModes.always);
 const groupView = new View(VIEW.group, APP.url.group, { scrollY: -1 }, {
@@ -519,7 +548,15 @@ ResourceDownloadController.addEventListener("save", (item, items) => window.loca
 ResourceDownloadController.addEventListener("savePending", (item, items) => window.localStorage[STORAGE.itemPending] = JSON.stringify(items));
 window.addEventListener("load", async function () {
     ResourceDownloadController.load(LocalStorageArrayParser(STORAGE.itemDownload));
-    await ItemController.fetchGroups(getGroups()).then(() => ItemController.fetchItems(getItems()));
+    ErrorController.addError(new ErrorClass("item_load_error", "Items cannot be loaded", "", ["item_outdated", "item_not_found", "item_error"]));
+    ErrorController.addError(new ErrorClass("item_outdated", "Items cannot be loaded", "", ["item_load_error", "item_not_found", "item_error"]));
+    try {
+        await ItemController.fetchGroups(getGroups()).then(() => ItemController.fetchItems(getItems()));
+    } catch {
+        ErrorController.invokeError("item_load_error", true);
+    }
+    if (APP.version != ITEM_VERSION)
+        ErrorController.invokeError("item_outdated", true);
     await ViewController.navigate(START_ROUTE.target, { routeArg: START_URL.slice(1, START_URL.length - 1) });
     APPNODE.classList.toggle(GLOBAL.offline, !navigator.onLine);
     await ResourceDownloadController.loadPending(LocalStorageArrayParser(STORAGE.itemPending));
@@ -612,6 +649,9 @@ let StorageResponseBuilder = async function (response, targetNode = document.cre
     }));
 }
 let LocalStorageArrayParser = (name, _default = []) => window.localStorage[name] ? JSON.parse(window.localStorage[name]) : _default;
+let createErrorMsg = function (err, node) {
+    console.log(err, node);
+}
 //Item component builder for basic item content controls and sections
 let ItemComponentBuilder = function (component, itemFolder) {
     let _type = component.type;
