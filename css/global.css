@@ -11,8 +11,8 @@
     --size-font-icon: 12px;
     --size-font-header: 46px;
     --size-font-caption: 12px;
-    --size-margin-base: 10px;
-    --size-margin-laptop: 30px;
+    --size-margin-base: 30px;
+    --size-max-width:600px;
     --time: 0.3s;
     --time-A1: 0.6s;
     --transition: color var(--time),background-color var(--time);
@@ -227,7 +227,7 @@ body.first-start{
 #main-header{
     height: 50px;
     display: table;
-    padding: var(--size-margin-base) var(--size-margin-laptop);
+    padding: 10px var(--size-margin-base);
     max-width: var(--view-max-width);
     margin: auto;
     box-sizing: border-box;
@@ -287,7 +287,7 @@ body.first-start #main-theme-toggle-button > i{
     margin: 0 auto;
     max-width: var(--view-max-width);
     box-sizing: border-box;
-    padding: 0 var(--size-margin-laptop) 20px;
+    padding: 0 var(--size-margin-base) 20px;
     user-select: none;
     width: 100%;
     line-height: 18px;
@@ -317,13 +317,13 @@ body.first-start #main-theme-toggle-button > i{
 }
 #about,
 #item{
-    padding: var(--size-margin-laptop);
+    padding: var(--size-margin-base);
 }
 #profile-header{
     background-color: var(--color-theme-A1);
     border: 1px solid var(--color-theme-A2);
     box-shadow: 0 2px 8px rgba(0,0,0,.08);
-    margin: 12px var(--size-margin-laptop) 20px;
+    margin: 12px var(--size-margin-base) 20px;
     transition: var(--transition-border);
     box-sizing: border-box;
     display: flex;
@@ -352,7 +352,7 @@ body.first-start #main-theme-toggle-button > i{
 }
 .list-view{
     overflow: hidden;
-    padding: 20px var(--size-margin-laptop) 30px;
+    padding: 20px var(--size-margin-base) 30px;
     box-sizing: border-box;
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
@@ -513,9 +513,20 @@ body.first-start #main-theme-toggle-button > i{
 .list-view.error > .data-node{
     display: none;
 }
+#about{
+    margin: 0 auto;
+    max-width: var(--size-max-width);
+}
 #about > #profile-content{
-    max-width: 400px;
     text-align: justify;
+}
+#about-links
+{
+    display: grid;
+    margin: 10px auto;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap:  10px;
+    max-width: 420px;
 }
 #item-data{
     margin-top: 16px;
@@ -544,7 +555,7 @@ body.first-start #main-theme-toggle-button > i{
 }
 #item-download-button{
     padding: 8px 8px;
-    margin-top: 0px;
+    margin-top: 0;
     height: 30px;
     overflow: hidden;
     display: block;
@@ -602,7 +613,7 @@ body.first-start #main-theme-toggle-button > i{
     display: table;
     width: 100%;
     letter-spacing: .1px;
-    max-width: 600px;
+    max-width: var(--size-max-width);
     margin: 0 auto 40px;
 }
 #item-content > .section{
@@ -706,7 +717,7 @@ body.first-start #main-theme-toggle-button > i{
 }
 #group-data{
     user-select: none;
-    margin: 46px var(--size-margin-laptop) 0;
+    margin: 46px var(--size-margin-base) 0;
     display: flex;
     flex-wrap: wrap;
 }
@@ -764,7 +775,7 @@ body.first-start #main-theme-toggle-button > i{
     box-shadow: 0 2px 8px rgba(0,0,0,.08);
     box-sizing: border-box;
     padding: 20px;
-    margin: 0 var(--size-margin-laptop);
+    margin: 0 var(--size-margin-base);
     transition: var(--transition-border);
 }
 .error-msg > i{
@@ -864,21 +875,35 @@ u.dotted-separator{
     background-color: var(--color-theme-A5);
 }
 .button.instagram,
+.button.github,
 .button.twitter{
     background-color: transparent;
-    display: inline-table;
-    margin-right: 4px;
+    display: inline-block;
+    overflow: hidden;
+    text-align: center;
+    max-width: 130px;
 }
 .button.instagram > svg,
+.button.github>svg,
 .button.twitter > svg{
     height: 13px;
     width: 13px;
     fill: var(--color-font);
     display: inline-table;
-    flex: 1;
-    transform: translateY(1px);
+    margin-bottom:8px ;
+    transform: translateY(0px);
+}
+.button.instagram > span,
+.button.github>span,
+.button.twitter > span
+{
+    vertical-align: top;
+    width: 75px;
+    display: inline-table;
+    text-align: left;
 }
 .button.instagram:hover > svg,
+.button.github:hover>svg,
 .button.twitter:hover > svg{
     fill: #fff;
 }
@@ -893,12 +918,21 @@ u.dotted-separator{
     color: #fff;
 }
 .button.twitter:active{
-    background-color: rgba(29,161,242,.8);
+    background-color: rgba(29, 161, 242, 0.8);
     box-shadow: 0 2px 12px -1px rgba(29,161,242,.2);
 }
 .button.instagram:active{
     box-shadow: 0 2px 12px -1px rgba(237,73,86,.2);
     background-color: rgba(237,73,86,.8);
+}
+.button.github:hover{
+    box-shadow: 0 2px 12px -1px rgba(45, 51, 59,.7);
+    background-color: #2d333b;
+    color: #fff;
+}
+.button.github:active{
+    box-shadow: 0 2px 12px -1px rgba(45, 51, 59,.2);
+    background-color: rgba(45, 51, 59,.8);
 }
 ::-webkit-scrollbar{
     width: 8px;
@@ -927,26 +961,8 @@ u.dotted-separator{
         grid-column-start: 1;
         grid-column-end: 3;
     }
-    #group #group-data,
-    #profile-header{
-        margin-left: var(--size-margin-base);
-        margin-right: var(--size-margin-base);
-    }
-    #about,
-    #footer > div,
-    #item,
-    #main-header{
-        padding-left: var(--size-margin-base);
-        padding-right: var(--size-margin-base);
-    }
-    #image{
-        padding: var(--size-margin-base);
-    }
-    .list-view{
-        padding: 20px var(--size-margin-base) 30px;
-    }
-    .error-msg{
-        margin: 0 var(--size-margin-base);
+    :root{
+        --size-margin-base: 10px;
     }
 }
 @media only screen and (max-width:540px){
