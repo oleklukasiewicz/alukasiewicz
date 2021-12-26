@@ -520,14 +520,6 @@ body.first-start #main-theme-toggle-button > i{
 #about > #profile-content{
     text-align: justify;
 }
-#about-links
-{
-    display: grid;
-    margin: 10px auto;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap:  10px;
-    max-width: 420px;
-}
 #item-data{
     margin-top: 16px;
     margin-bottom: 25px;
@@ -853,15 +845,15 @@ u.dotted-separator{
 .toggle-button:active{
     background-color: var(--color-theme-active);
 }
-.toggle-button.toggled{
+.toggle-button.toggled,.button.primary{
     background-color: var(--color-accent);
     color: var(--color-font-accent);
 }
-.toggle-button.toggled:hover{
+.toggle-button.toggled:hover,.button.primary:hover{
     background-color: var(--color-accent-light-A1);
     box-shadow: 0 2px 12px -1px var(--color-accent-shadow);
 }
-.toggle-button.toggled:active{
+.toggle-button.toggled:active,.button.primary:active{
     background-color: var(--color-accent-light-A2);
     box-shadow: 0 2px 8px -1px var(--color-accent-shadow);
 }
@@ -881,7 +873,10 @@ u.dotted-separator{
     display: inline-block;
     overflow: hidden;
     text-align: center;
-    max-width: 130px;
+    padding: 12px;
+    width: 37px;
+    height: 37px;
+    margin-right: 4px;
 }
 .button.instagram > svg,
 .button.github>svg,
@@ -898,7 +893,7 @@ u.dotted-separator{
 .button.twitter > span
 {
     vertical-align: top;
-    width: 75px;
+    width: 65px;
     display: inline-table;
     text-align: left;
 }
