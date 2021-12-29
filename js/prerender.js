@@ -90,7 +90,7 @@ let darkTheme = new Theme("#222222", accentTheme.concat([
 let lightTheme = new Theme("#fbfbfb", accentTheme.concat([
     new CSSVariable("--color-theme", "#fbfbfb"),
     new CSSVariable("--color-font", "#4f4f4f"),
-    new CSSVariable("--color-theme-A1", "#F1f1f1"),
+    new CSSVariable("--color-theme-A1", "#F4f4f4"),
     new CSSVariable("--color-theme-A2", "#E8E8E8"),
     new CSSVariable("--color-theme-A3", "#D8D8D8"),
     new CSSVariable("--color-theme-A4", "#c8c8c8"),

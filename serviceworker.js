@@ -31,6 +31,7 @@ const staticResources = [
     "/img/image_error.webp",
     "/img/profile.webp",
     "/img/profile-dark.webp",
+    "/img/tree-at-rock.png",
     "/icon/favicon-32x32.png"
 ];
 const cacheResource = (resource) => caches.open(cacheName).then((cache) => caches.match(resource, { ignoreVary: true }).then((res) => !res ? cache.add(resource) : null));
