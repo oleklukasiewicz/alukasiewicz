@@ -876,12 +876,12 @@ u.dotted-separator{
 }
 .button.primary:hover,
 .toggle-button.toggled:hover{
-    background-color: var(--color-accent-light-A1);
+    background-color: var(--color-accent-A1);
     box-shadow: 0 2px 12px -1px var(--color-accent-shadow);
 }
 .button.primary:active,
 .toggle-button.toggled:active{
-    background-color: var(--color-accent-light-A2);
+    background-color: var(--color-accent-A2);
     box-shadow: 0 2px 8px -1px var(--color-accent-shadow);
 }
 .button{
@@ -971,7 +971,7 @@ u.dotted-separator{
     background: var(--color-theme-A6);
 }
 ::selection{
-    background: var(--color-accent-light-A2);
+    background: var(--color-accent-A2);
     color: var(--color-font-accent);
 }
 @media only screen and (max-width:790px){
