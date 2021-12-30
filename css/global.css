@@ -93,9 +93,6 @@
 .mi-MobQuietHours:before{
     content: "\ECCE";
 }
-.mi-Design:before{
-    content: "\EB2F";
-}
 .mi-NetworkOffline:before{
     content: "\ED10";
 }
@@ -323,7 +320,7 @@ body.first-start #main-theme-toggle-button > i{
     background-color: var(--color-theme-A1);
     border: 1px solid var(--color-theme-A2);
     box-shadow: 0 2px 8px rgba(0,0,0,.08);
-    margin: 12px var(--size-margin-base) 20px;
+    margin: 12px var(--size-margin-base) 0px;
     transition: var(--transition-border);
     box-sizing: border-box;
     display: flex;
@@ -346,13 +343,9 @@ body.first-start #main-theme-toggle-button > i{
     font-weight: 350;
     margin-bottom: 20px;
 }
-#projects-header{
-    text-align: center;
-    user-select: none;
-}
 .list-view{
     overflow: hidden;
-    padding: 20px var(--size-margin-base) 30px;
+    padding: 10px var(--size-margin-base) 30px;
     box-sizing: border-box;
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
@@ -539,8 +532,7 @@ body.first-start #main-theme-toggle-button > i{
     display: block;
     flex: 1;
 }
-#about-data
-{
+#about-data{
     margin: 0 auto;
     max-width: var(--size-max-width);
 }
@@ -798,16 +790,11 @@ body.first-start #main-theme-toggle-button > i{
     width: 100%;
     margin: 50px 0 50px;
 }
-#item.error > #main-list,
-#landing.error > #projects-header{
-    display: none;
-}
-#item.error > #item-content,
-#item.error > #item-data{
-    display: none;
-}
 #group.error > #group-data,
-#group.error > #group-list{
+#group.error > #group-list,
+#item.error > #item-content,
+#item.error > #item-data,
+#item.error > #main-list{
     display: none;
 }
 #group.error,
@@ -1031,7 +1018,6 @@ u.dotted-separator{
 @media only screen and (max-width:430px){
     .list-view{
         grid-template-columns: 100%;
-        margin-top: 10px;
     }
     .list-view > .group{
         grid-column-start: 1;
