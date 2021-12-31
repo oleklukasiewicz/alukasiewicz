@@ -108,6 +108,9 @@
 .mi-Accept:before{
     content: "\EA01";
 }
+.mi-Contact:before{
+    content: "\EB16";
+}
 .al-logo{
     display: inline-block;
     max-height: var(--logo-height);
@@ -230,26 +233,32 @@ body.first-start{
     box-sizing: border-box;
     user-select: none;
 }
-#main-header-status{
+.header-ico{
     padding: 8px 12px 8px 8px;
     font-size: var(--size-font-base);
     line-height: 14px;
     box-sizing: border-box;
     vertical-align: top;
-    opacity: 0;
-    transform: translateY(4px);
     transition: var(--time);
 }
-#app.offline #main-header-status{
-    opacity: 1;
-    transform: translateY(0);
-}
-#main-header-status > i{
+.header-ico > i{
     margin-right: 6px;
     vertical-align: bottom;
 }
+#main-offline-ico{
+    opacity: 0;
+    transform: translateY(4px);
+}
+#app.offline #main-offline-ico{
+    opacity: 1;
+    transform: translateY(0);
+}
+#main-header-icons,
+#main-header-icons-left{
+    display: inline-flex;
+}
 #main-theme-toggle-button{
-    display: block;
+    display: inline-block;
     overflow: hidden;
 }
 body.first-start #main-theme-toggle-button > i{
@@ -320,7 +329,7 @@ body.first-start #main-theme-toggle-button > i{
     background-color: var(--color-theme-A1);
     border: 1px solid var(--color-theme-A2);
     box-shadow: 0 2px 8px rgba(0,0,0,.08);
-    margin: 12px var(--size-margin-base) 0px;
+    margin: 12px var(--size-margin-base) 0;
     transition: var(--transition-border);
     box-sizing: border-box;
     display: flex;
@@ -342,169 +351,6 @@ body.first-start #main-theme-toggle-button > i{
     color: var(--color-font);
     font-weight: 350;
     margin-bottom: 20px;
-}
-.list-view{
-    overflow: hidden;
-    padding: 10px var(--size-margin-base) 30px;
-    box-sizing: border-box;
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    width: 100%;
-    gap: 10px;
-}
-.list-view > .item{
-    width: 100%;
-    min-width: 10px;
-    text-decoration: none;
-    display: grid;
-    grid-template-rows: auto auto 1fr auto;
-    grid-template-columns: 100%;
-    z-index: 1;
-    cursor: default;
-    user-select: none;
-    transition: box-shadow var(--time-A1) cubic-bezier(.16,1,.29,.99),transform var(--time-A1) cubic-bezier(.16,1,.29,.99),opacity var(--time),border-color var(--time),background-color var(--time);
-    color: var(--color-font);
-    cursor: pointer;
-}
-.list-view > .item:hover{
-    box-shadow: 0 12px 30px 0 rgba(0,0,0,.13);
-    transform: translateY(-4px);
-    background-color: var(--color-theme-A1);
-}
-.list-view > .item:active{
-    box-shadow: 0 6px 10px 0 rgba(0,0,0,.13);
-    transform: translateY(-2px);
-    background-color: var(--color-theme-A1);
-}
-.list-view > .item > .img{
-    width: 100%;
-    background-color: var(--color-theme-A1);
-    transition: var(--transition-bg-only);
-    position: relative;
-}
-.list-view > .item > .img:after{
-    content: "";
-    display: block;
-    padding-bottom: 100%;
-}
-.list-view > .item > .img > img{
-    width: 100%;
-    height: 100%;
-    transition: opacity var(--time);
-    position: absolute;
-    will-change: opacity;
-    object-fit: cover;
-}
-.list-view > .item > span{
-    margin: 12px 20px 0;
-}
-.list-view > .item > b{
-    font-weight: 700;
-    margin: 20px 20px 0;
-}
-.list-view > .item > .labels{
-    padding: 20px;
-    display: flex;
-    height: 72px;
-    box-sizing: border-box;
-}
-.list-view > .item > .labels > .button{
-    transition: var(--transition-bg-only);
-    width: 112px;
-}
-.list-view > .item > .labels > .button > i{
-    float: right;
-}
-.list-view > .item > .labels > .label > i{
-    transform: translateY(1px);
-}
-.list-view > .item > .labels > .label{
-    color: var(--color-font);
-    padding-left: 20px;
-    text-align: right;
-    overflow: hidden;
-    max-height: 32px;
-    box-sizing: border-box;
-    line-height: 32px;
-    flex: 1;
-}
-.list-view > .item.loading{
-    animation-name: Blink;
-    animation-iteration-count: infinite;
-    animation-duration: 1.2s;
-    transform: none;
-    background-color: transparent;
-    box-shadow: none;
-    pointer-events: none;
-}
-.list-view > .item.loading > .img > img{
-    opacity: 0;
-}
-.list-view > .item.loading > b{
-    height: 28px;
-    background-color: var(--color-theme-A1);
-}
-.list-view > .item.loading > span{
-    height: 36px;
-    margin-top: 14px;
-    margin-bottom: 22px;
-    border-top: 16px solid var(--color-theme-A1);
-    border-bottom: 16px solid var(--color-theme-A1);
-    box-sizing: border-box;
-}
-.list-view > .item.loading > .labels > .button{
-    background-color: var(--color-theme-A1);
-}
-.list-view > .item.loading *{
-    font-size: 0;
-}
-.list-view > .item.loaded > .img > img{
-    opacity: 1;
-}
-.list-view > .group{
-    grid-column-start: 1;
-    grid-column-end: 4;
-    box-sizing: border-box;
-    padding: 20px;
-    font-weight: 700;
-    user-select: none;
-    width: 100%;
-    display: flex;
-    overflow: hidden;
-}
-.list-view > .group > span{
-    text-overflow: ellipsis;
-    overflow: hidden;
-    white-space: nowrap;
-    width: calc(100% - 82px);
-    flex: 1;
-    margin-right: 10px;
-}
-.list-view > .group > .button{
-    float: right;
-    font-weight: 400;
-    padding: 8px 12px;
-    height: 32px;
-}
-.list-view > .group.loading{
-    animation-name: Blink;
-    animation-iteration-count: infinite;
-    animation-duration: 1.2s;
-    transform: none;
-    pointer-events: none;
-}
-.list-view > .group.loading > span{
-    height: 28px;
-    background-color: var(--color-theme-A1);
-    margin-right: 20%;
-    margin-top: 2px;
-}
-.list-view > .group.loading > .button{
-    color: transparent;
-    background-color: var(--color-theme-A1);
-}
-.list-view.error > .data-node{
-    display: none;
 }
 #about{
     margin: 0 auto;
@@ -809,6 +655,169 @@ u.dotted-separator{
     display: inline-table;
     vertical-align: middle;
     margin: -2px 4px 0;
+}
+.list-view{
+    overflow: hidden;
+    padding: 10px var(--size-margin-base) 30px;
+    box-sizing: border-box;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    width: 100%;
+    gap: 10px;
+}
+.list-view > .item{
+    width: 100%;
+    min-width: 10px;
+    text-decoration: none;
+    display: grid;
+    grid-template-rows: auto auto 1fr auto;
+    grid-template-columns: 100%;
+    z-index: 1;
+    cursor: default;
+    user-select: none;
+    transition: box-shadow var(--time-A1) cubic-bezier(.16,1,.29,.99),transform var(--time-A1) cubic-bezier(.16,1,.29,.99),opacity var(--time),border-color var(--time),background-color var(--time);
+    color: var(--color-font);
+    cursor: pointer;
+}
+.list-view > .item:hover{
+    box-shadow: 0 12px 30px 0 rgba(0,0,0,.13);
+    transform: translateY(-4px);
+    background-color: var(--color-theme-A1);
+}
+.list-view > .item:active{
+    box-shadow: 0 6px 10px 0 rgba(0,0,0,.13);
+    transform: translateY(-2px);
+    background-color: var(--color-theme-A1);
+}
+.list-view > .item > .img{
+    width: 100%;
+    background-color: var(--color-theme-A1);
+    transition: var(--transition-bg-only);
+    position: relative;
+}
+.list-view > .item > .img:after{
+    content: "";
+    display: block;
+    padding-bottom: 100%;
+}
+.list-view > .item > .img > img{
+    width: 100%;
+    height: 100%;
+    transition: opacity var(--time);
+    position: absolute;
+    will-change: opacity;
+    object-fit: cover;
+}
+.list-view > .item > span{
+    margin: 12px 20px 0;
+}
+.list-view > .item > b{
+    font-weight: 700;
+    margin: 20px 20px 0;
+}
+.list-view > .item > .labels{
+    padding: 20px;
+    display: flex;
+    height: 72px;
+    box-sizing: border-box;
+}
+.list-view > .item > .labels > .button{
+    transition: var(--transition-bg-only);
+    width: 112px;
+}
+.list-view > .item > .labels > .button > i{
+    float: right;
+}
+.list-view > .item > .labels > .label > i{
+    transform: translateY(1px);
+}
+.list-view > .item > .labels > .label{
+    color: var(--color-font);
+    padding-left: 20px;
+    text-align: right;
+    overflow: hidden;
+    max-height: 32px;
+    box-sizing: border-box;
+    line-height: 32px;
+    flex: 1;
+}
+.list-view > .item.loading{
+    animation-name: Blink;
+    animation-iteration-count: infinite;
+    animation-duration: 1.2s;
+    transform: none;
+    background-color: transparent;
+    box-shadow: none;
+    pointer-events: none;
+}
+.list-view > .item.loading > .img > img{
+    opacity: 0;
+}
+.list-view > .item.loading > b{
+    height: 28px;
+    background-color: var(--color-theme-A1);
+}
+.list-view > .item.loading > span{
+    height: 36px;
+    margin-top: 14px;
+    margin-bottom: 22px;
+    border-top: 16px solid var(--color-theme-A1);
+    border-bottom: 16px solid var(--color-theme-A1);
+    box-sizing: border-box;
+}
+.list-view > .item.loading > .labels > .button{
+    background-color: var(--color-theme-A1);
+}
+.list-view > .item.loading *{
+    font-size: 0;
+}
+.list-view > .item.loaded > .img > img{
+    opacity: 1;
+}
+.list-view > .group{
+    grid-column-start: 1;
+    grid-column-end: 4;
+    box-sizing: border-box;
+    padding: 20px;
+    font-weight: 700;
+    user-select: none;
+    width: 100%;
+    display: flex;
+    overflow: hidden;
+}
+.list-view > .group > span{
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    width: calc(100% - 82px);
+    flex: 1;
+    margin-right: 10px;
+}
+.list-view > .group > .button{
+    float: right;
+    font-weight: 400;
+    padding: 8px 12px;
+    height: 32px;
+}
+.list-view > .group.loading{
+    animation-name: Blink;
+    animation-iteration-count: infinite;
+    animation-duration: 1.2s;
+    transform: none;
+    pointer-events: none;
+}
+.list-view > .group.loading > span{
+    height: 28px;
+    background-color: var(--color-theme-A1);
+    margin-right: 20%;
+    margin-top: 2px;
+}
+.list-view > .group.loading > .button{
+    color: transparent;
+    background-color: var(--color-theme-A1);
+}
+.list-view.error > .data-node{
+    display: none;
 }
 .button,
 .toggle-button{

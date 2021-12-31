@@ -397,7 +397,7 @@ const landingView = new View(VIEW.landing, APP.url.landing, { scrollY: -1, items
     }
 }, VIEW.landing, true, ViewController.loadingModes.single);
 const profileView = new View(VIEW.profile, APP.url.profile, {}, {
-    onNavigate: () => document.title = "About me - " + APP.name
+    onNavigate: () => { window.scroll(0, 0); document.title = "About me - " + APP.name }
 }, VIEW.profile, false, ViewController.loadingModes.never);
 const itemView = new View(VIEW.item, APP.url.item, { currentItem: null }, {
     onNavigate: () => window.scroll(0, 0),
@@ -563,9 +563,11 @@ let createItemTile = async function (node, item) {
     node.innerHTML = "<div class='img'><img src='" + APP.itemFolder + item.folder + item.tile.image + "' alt='" + item.title + "'/></div><b class='font-subtitle'>" + item.title + "</b><span class='font-base'>" + item.tile.content + "</span><div class='labels'><div class='button'>" + (item.isItemLinkToWeb ? "Open link <i class='mi mi-OpenInNewWindow'></i>" : "Read more <i class='mi mi-BackMirrored'></i>") + "</div>" + (item.date.modify ? "<div class='label font-caption'><i class='mi mi-Update'></i> &nbsp;&nbsp;" + APP.date(item.date.modify) + "</div>" : "") + "</div>";
     let _iImage = node.children[0].children[0],
         imageLoaded = function () {
-            if (item.arg.tileImageStyle)
-                _iImage.style = item.arg.tileImageStyle;
-            cacheResource(APP.itemFolder + item.folder + item.tile.image);
+            if (!item.isTileImageNotLoaded) {
+                if (item.arg.tileImageStyle)
+                    _iImage.style = item.arg.tileImageStyle;
+                cacheResource(APP.itemFolder + item.folder + item.tile.image);
+            }
         }, imageIsNotLoaded = function () {
             item.isTileImageNotLoaded = true;
             _iImage.src = "/img/image_error.webp";
