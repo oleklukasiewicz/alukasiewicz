@@ -11,6 +11,9 @@ let Item = function (id, aliases = [], isItemLinkToWeb = false, folder = "/" + i
         type: GLOBAL.item
     }
 }
+let ResourceMap = function (resource, hash, firstGroupIndex, lastGroupIndex) {
+    return { resource, hash, firstGroupIndex, lastGroupIndex }
+}
 let ItemDate = function (day, month, year) { return { day, month, year }; };
 let Group = function (id, aliases = [], title, createDate, modifyDate, groups = [], arg = {}, isDefault = false) {
     return {
@@ -40,6 +43,18 @@ let HistoryItem = function (id, index, arg) {
 let ErrorClass = function (id, title, message, chaninedErrorIDs = [], refreshRequire = true) {
     return { id, title, message, chaninedErrorIDs, refreshRequire }
 }
+//hashing algorythm
+const cyrb53 = function (str, seed = 0) {
+    let h1 = 0xdeadbeef ^ seed, h2 = 0x41c6ce57 ^ seed;
+    for (let i = 0, ch; i < str.length; i++) {
+        ch = str.charCodeAt(i);
+        h1 = Math.imul(h1 ^ ch, 2654435761);
+        h2 = Math.imul(h2 ^ ch, 1597334677);
+    }
+    h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^ Math.imul(h2 ^ (h2 >>> 13), 3266489909);
+    h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^ Math.imul(h1 ^ (h1 >>> 13), 3266489909);
+    return 4294967296 * (2097151 & h2) + (h1 >>> 0);
+};
 let ViewController = (function () {
     let _controller = {};
     EventController.call(_controller, {
@@ -121,6 +136,7 @@ let ViewController = (function () {
             }), _target]);
         }
         _currentView = _target;
+        _currentView.lastNavigationArguments = arg;
         _generateRootNode(_currentView);
         await _registerDelayedView(_currentView);
         _controller.invokeEvent("navigateToView", [_currentView, _previousView, arg]);
@@ -184,6 +200,10 @@ let ItemController = (function () {
         "fetchItem": [],
         "fetchItemFinish": []
     });
+    let _getResourceGroupByHash = function (item, hash) {
+        let target = item.resources.find((resMap) => resMap.hash == hash);
+        return target ? { resource: target, group: item.resources.slice(target.firstGroupIndex, target.lastGroupIndex + 1) } : null;
+    }
     let _generateId = (id) => encodeURIComponent(id.toLowerCase().replaceAll(" ", "-"));
     let _generateGroup = function (group) {
         group.content = [];
@@ -217,8 +237,16 @@ let ItemController = (function () {
         if (!item.isItemLinkToWeb && !item.isContentCached) {
             let _content = await _downloadViaAJAX(item, item.folder);
             Object.assign(item, _content, { resources: [] });
-            item.resources.push(APP.itemContentFileName);
-            item.content.forEach((component) => component.resource ? item.resources.push(...component.resource) : "");
+            item.resources.push(new ResourceMap(APP.itemContentFileName, "", 0, 0));
+            item.content.forEach((component, componentIndex) => {
+                let _resIndex = item.resources.length;
+                if (component.resource) {
+                    component.resource.forEach(res => {
+                        item.resources.push(new ResourceMap(res, cyrb53(componentIndex + _resIndex + item.folder + res), _resIndex, _resIndex + component.resource.length - 1));
+                    })
+                }
+            });
+            item.findResourceByHash = (hash) => _getResourceGroupByHash(item, hash);
             if (_content?.version == APP.version)
                 item.isContentCached = true;
             //check content component version if newer -> download new version of components.css and js
@@ -342,7 +370,7 @@ let ResourceDownloadController = (function () {
         item.isDownloading = true;
         _downloadedItems.push(item.id);
         _controller.invokeEvent("downloadStart", [item]);
-        await Promise.all(item.resources.map(async (resource, index) => await _controller.invokeEvent("download", [item, resource, index])));
+        await Promise.all(item.resources.map(async (resourceList, index) => await _controller.invokeEvent("download", [item, resourceList.resource, index])));
         item.isDownloading = false;
         item.isDownloaded = true;
         item.isPending = false;
@@ -353,7 +381,7 @@ let ResourceDownloadController = (function () {
         item.isDownloaded = false;
         _downloadedItems.splice(_downloadedItems.findIndex((id) => id == item.id), 1);
         _controller.invokeEvent("removeStart", [item]);
-        await Promise.all(item.resources.map(async (resource) => await _controller.invokeEvent("remove", [item, resource])));
+        await Promise.all(item.resources.map(async (resource) => await _controller.invokeEvent("remove", [item, resource.resource])));
         _controller.invokeEvent("removeFinish", [item]);
         _controller.invokeEvent("save", [item, _downloadedItems]);
     }
@@ -400,7 +428,7 @@ const profileView = new View(VIEW.profile, APP.url.profile, {}, {
     onNavigate: () => { window.scroll(0, 0); document.title = "About me - " + APP.name }
 }, VIEW.profile, false, ViewController.loadingModes.never);
 const itemView = new View(VIEW.item, APP.url.item, { currentItem: null }, {
-    onNavigate: () => window.scroll(0, 0),
+    onNavigate: (arg) => window.scroll(0, 0),
     onNavigateFrom: function () {
         this.rootNode.classList.remove("error");
     },
@@ -446,6 +474,13 @@ const itemView = new View(VIEW.item, APP.url.item, { currentItem: null }, {
                     return;
                 }
                 _data.currentItem = item;
+                if (this.lastNavigationArguments.routeArg.length > 1) {
+                    let res = item.findResourceByHash(this.lastNavigationArguments.routeArg[1]);
+                    if (res) {
+                        console.log(res);
+                        return;
+                    }
+                }
                 _setIDBState(item);
                 document.title = item.title + " - " + APP.name;
                 incrementVisitors(APP.itemFolder + "/" + item.id, true);
