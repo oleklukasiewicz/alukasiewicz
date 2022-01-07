@@ -142,10 +142,8 @@ let ViewController = (function () {
         await _registerDelayedView(_currentView);
         _controller.invokeEvent("navigateToView", [_currentView, _previousView, arg]);
         await _currentView.event.onNavigate?.call(_currentView, arg);
-        if (_currentView.loadingMode != _controller.loadingModes.never) {
-            await _invokeLoadEvent(_currentView, arg);
-            await _invokeLoadFinishEvent(_currentView, arg);
-        }
+        if (_currentView.loadingMode != _controller.loadingModes.never)
+            await _invokeLoadEvent(_currentView, arg).then(() => _invokeLoadFinishEvent(_currentView, arg))
     }
     _controller.register = async function (view, isDefault = false) {
         _views.push(view);
@@ -297,7 +295,7 @@ let ItemController = (function () {
                 await stream.event.load?.call(sender, await _controller.getItemById(arg), 0, mode);
                 break;
             case _controller.loadModes.group:
-                await stream.event.load?.call(sender, _getGroupByRoute(arg), 0, mode);
+                await stream.event.load?.call(sender, await _getGroupByRoute(arg), 0, mode);
                 break;
             case _controller.loadModes.allItems:
                 await _loadAllFunc(_defaultGroup.content);
@@ -416,7 +414,7 @@ const landingView = new View(VIEW.landing, APP.url.landing, { scrollY: -1, items
     },
     onLoadFinish: function () {
         this.rootNode.classList.remove(GLOBAL.loading);
-        this.data.iList.getElementsByClassName(GLOBAL.dataNode + " loading").remove();
+        this.data.iList.getElementsByClassName(GLOBAL.dataNode + " no-data").remove();
     },
     onLoad: async function () {
         this.rootNode.classList.add(GLOBAL.loading);
@@ -531,7 +529,7 @@ const groupView = new View(VIEW.group, APP.url.group, { scrollY: -1 }, {
     },
     onNavigate: () => window.scroll(0, 0),
     onNavigateFrom: function () {
-        Array.prototype.forEach.call(this.data._groupList.getElementsByClassName(GLOBAL.dataNode), (node) => node.classList.add("loading"));
+        Array.prototype.forEach.call(this.data._groupList.getElementsByClassName(GLOBAL.dataNode), (node) => node.classList.add("loading","no-data"));
         this.rootNode.classList.remove(GLOBAL.error);
     },
     onLoad: async function (arg) {
@@ -541,7 +539,7 @@ const groupView = new View(VIEW.group, APP.url.group, { scrollY: -1 }, {
     },
     onLoadFinish: function () {
         this.rootNode.classList.remove(GLOBAL.loading);
-        this.data._groupList.getElementsByClassName("loading").remove();
+        this.data._groupList.getElementsByClassName("no-data").remove();
     },
     onError: function (err) {
         this.rootNode.classList.add(GLOBAL.error);
@@ -767,7 +765,7 @@ let StorageResponseBuilder = async function (response, targetNode = document.cre
     await Promise.all(_indexedItems.map(async (entry) => {
         entry.entry.isIndexed = false;
         entry.entry.type == GLOBAL.group ?
-            createGroupTile(_items[entry.index] || targetNode.appendChild(document.createElement("div")), entry.entry)
+            await createGroupTile(_items[entry.index] || targetNode.appendChild(document.createElement("div")), entry.entry)
             :
             await createItemTile(_items[entry.index] || targetNode.appendChild(document.createElement("a")), entry.entry);
     }));

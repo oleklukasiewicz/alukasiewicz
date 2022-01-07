@@ -619,7 +619,7 @@ body.first-start #main-theme-toggle-button > i{
     display: flex;
     flex-direction: column;
     max-width: 100%;
-    max-height: calc(100vh - 170px);
+    height: calc(100vh - 170px);
 }
 #image-viewer-list
 {
@@ -630,7 +630,7 @@ body.first-start #main-theme-toggle-button > i{
 }
 #image-viewer-list>img
 {
-    margin: 0 auto;
+    margin: auto auto;
     max-width: 100%;
     object-fit: contain;
     display: none;
