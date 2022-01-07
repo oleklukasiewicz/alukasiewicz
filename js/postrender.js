@@ -14,6 +14,8 @@ RouteController.add(new RouteClass(VIEW.landing, VIEW.landing, true));
 RouteController.add(new RouteClass(VIEW.item));
 RouteController.add(new RouteClass(VIEW.profile));
 RouteController.add(new RouteClass(VIEW.group));
+RouteController.add(new RouteClass(VIEW.resource));
+
 //loading start view
 const START_ROUTE = RouteController.resolve(START_URL[0]);
 getById(START_ROUTE.target).classList.add(GLOBAL.activeView);

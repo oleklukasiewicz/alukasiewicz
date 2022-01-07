@@ -3,15 +3,17 @@ const VIEW = {
     item: "item",
     profile: "about",
     group: "group",
+    resource:"resource"
 };
 const APP = {
     name: "Aleksander Łukasiewicz",
     version: "0-0-0-3",
     url: {
-        landing: "/",
-        item: "/" + VIEW.item + "/",
-        profile: "/" + VIEW.profile + "/",
-        group: "/" + VIEW.group + "/",
+        landing: "",
+        item: VIEW.item,
+        profile: VIEW.profile,
+        group: VIEW.group,
+        resource:VIEW.resource
     },
     itemFolder: "/item",
     resourceFolder: "/resources",

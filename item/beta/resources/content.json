@@ -19,7 +19,10 @@
         {
             "type": "image",
             "resource": [
-                "/airship.webp"
+                {
+                    "src": "/airship.webp",
+                    "type": "image"
+                }
             ],
             "alt": "Ocean of clouds",
             "id": "airship-image"
@@ -36,11 +39,26 @@
             "type": "gallery",
             "title": "A most beautiful pixel arts",
             "resource": [
-                "/gallery/crocus-base.webp",
-                "/gallery/lily-blank.webp",
-                "/gallery/rose_plant.webp",
-                "/gallery/isometric_castle.webp",
-                "/airship.webp"
+                {
+                    "src": "/gallery/crocus-base.webp",
+                    "type": "image"
+                },
+                {
+                    "src": "/gallery/lily-blank.webp",
+                    "type": "image"
+                },
+                {
+                    "src": "/gallery/rose_plant.webp",
+                    "type": "image"
+                },
+                {
+                    "src": "/gallery/isometric_castle.webp",
+                    "type": "image"
+                },
+                {
+                    "src": "/airship.webp",
+                    "type": "image"
+                }
             ],
             "id": "airship-gallery"
         },

@@ -75,6 +75,12 @@
 .mi-BackMirrored:before{
     content: "\EA29";
 }
+.mi-Back:before{
+    content: "\EA28";
+}
+.mi-Close:before{
+    content: "\EAA5";
+}
 .mi-Picture:before{
     content: "\ED63";
 }
@@ -322,7 +328,7 @@ body.first-start #main-theme-toggle-button > i{
     display: table;
 }
 #about,
-#item{
+#item,#resource{
     padding: var(--size-margin-base);
 }
 #profile-header{
@@ -607,6 +613,52 @@ body.first-start #main-theme-toggle-button > i{
 }
 #group-data.loading #group-gallery-button{
     display: none;
+}
+#image-viewer
+{   
+    display: flex;
+    flex-direction: column;
+    max-width: 100%;
+    max-height: calc(100vh - 170px);
+}
+#image-viewer-list
+{
+    display: flex;
+    overflow: hidden;
+    height: 100%;
+    max-width: 100%;
+}
+#image-viewer-list>img
+{
+    margin: 0 auto;
+    max-width: 100%;
+    object-fit: contain;
+    display: none;
+}
+#image-viewer-list>img.active-view
+{
+    display: table;
+}
+#image-viewer-controls
+{
+    width: 100%;
+    display: table;
+    margin-bottom: 4px;
+}
+#image-viewer-controls>a
+{
+display: inline-block;
+height: 30px;
+padding: 8px 9px;
+width: 30px;
+}
+#image-viewer-prev
+{
+    margin-right: 4px;
+}
+#image-viewer-close
+{
+float: right;
 }
 .error .list-view,
 .list-view.error{
