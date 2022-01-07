@@ -21,7 +21,7 @@ let Group = function (id, aliases = [], title, createDate, modifyDate, groups = 
         date: { create: createDate, modify: modifyDate }, type: GLOBAL.group
     }
 }
-let Stream = function (event) { return { event } }
+let Stream = function (load, loadFinish, event) { return { load, loadFinish, event } }
 let View = function (id, url, data = {}, event = {}, rootNode = null, isRegisterDelayed = false, loadingMode = ViewController.loadingModes.single) {
     return {
         id,
@@ -111,6 +111,7 @@ let ViewController = (function () {
             view.isLoading = true;
             await view.event.onLoad?.call(view, arg);
         }
+        return view;
     }
     let _invokeLoadFinishEvent = async function (view) {
         if (view.isLoading && !view.isLoaded) {
@@ -143,7 +144,7 @@ let ViewController = (function () {
         _controller.invokeEvent("navigateToView", [_currentView, _previousView, arg]);
         await _currentView.event.onNavigate?.call(_currentView, arg);
         if (_currentView.loadingMode != _controller.loadingModes.never)
-            await _invokeLoadEvent(_currentView, arg).then(() => _invokeLoadFinishEvent(_currentView, arg))
+            await _invokeLoadEvent(_currentView, arg).then((view) => _invokeLoadFinishEvent(view))
     }
     _controller.register = async function (view, isDefault = false) {
         _views.push(view);
@@ -173,8 +174,7 @@ let ViewController = (function () {
         never: "never"
     }
     _controller.move = function (move, historyItem) {
-        if (move == _controller.moveModes.forward) _currentHistoryIndex++;
-        else _currentHistoryIndex--;
+        _currentHistoryIndex += (move == _controller.moveModes.forward ? 1 : -1);
         _controller.navigate(historyItem.id, Object.assign({
             noHistoryPush: true
         }, historyItem.arg));
@@ -214,44 +214,41 @@ let ItemController = (function () {
         return new Promise((resolve, reject) => {
             let xmlhttp = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject("Microsoft.XMLHTTP");
             xmlhttp.onreadystatechange = function () {
-                if (this.readyState == 4) {
-                    this.status == 200 ?
+                if (this.readyState == 4)
+                    (this.status == 200 ?
                         resolve(JSON.parse(this.responseText))
                         :
-                        reject("Error in AJAX request");
-                }
+                        reject("Error in AJAX request"))
             };
             xmlhttp.open("GET", APP.itemFolder + item.folder + APP.resourceFolder + APP.itemContentFileName, true);
             xmlhttp.send();
         });
     }
-    ViewController.addError(new ErrorClass("item_not_found", "Item don't exist", "We don't have what you're looking for"));
+    ViewController.addError(new ErrorClass("item_not_found", "Item don't exist", "We don't have what you're looking for", ["image_not_found"]));
     ViewController.addError(new ErrorClass("group_not_found", "Group don't exist", "We don't have what you're looking for"));
     let _loadFullItem = async function (item) {
         if (!item) {
             ViewController.invokeError("item_not_found");
             return;
         }
-        //check is components.js and components.css are downloaded id not -> download
+        //TODO: check is components.js and components.css are downloaded id not -> download
         if (!item.isItemLinkToWeb && !item.isContentCached) {
             let _content = await _downloadViaAJAX(item, item.folder);
             Object.assign(item, _content, { resources: [] });
             item.resources.push(new ResourceMap({ src: APP.itemContentFileName }, "", 0, 0));
             item.content.forEach((component, componentIndex) => {
                 if (component.resource) {
-                    let _resIndex = item.resources.length;
-                    let _lastIndex = _resIndex + component.resource.length - 1;
-                    component.resIndex = _resIndex;
-                    component.resLastIndex = _lastIndex;
+                    component.resIndex = item.resources.length;
+                    component.resLastIndex = item.resources.length + component.resource.length - 1;
                     component.resource.forEach(res => {
-                        item.resources.push(new ResourceMap(res, cyrb53(componentIndex + _resIndex + item.folder + res.src), _resIndex, _lastIndex));
+                        item.resources.push(new ResourceMap(res, cyrb53(componentIndex + component.resIndex + item.folder + res.src), component.resIndex, component.resLastIndex));
                     })
                 }
             });
             item.findResourceByHash = (hash) => _getResourceGroupByHash(item, hash);
             if (_content?.version == APP.version)
                 item.isContentCached = true;
-            //check content component version if newer -> download new version of components.css and js
+            //TODO: check content component version if newer -> download new version of components.css and js
         }
         return item;
     }
@@ -289,13 +286,13 @@ let ItemController = (function () {
         all: "all"
     }
     _controller.load = async function (stream = new Stream(), mode = _controller.loadModes.all, arg = {}, sender = stream) {
-        let _loadAllFunc = async (source) => Promise.all(source.filter(arg.streamFilter || (() => true)).sort(arg.streamSorter).map(async (item, index) => await stream.event.load?.call(sender, item, index, mode)))
+        let _loadAllFunc = async (source) => Promise.all(source.filter(arg.streamFilter || (() => true)).sort(arg.streamSorter).map(async (item, index) => await stream.load?.call(sender, item, index, mode)))
         switch (mode) {
             case _controller.loadModes.item:
-                await stream.event.load?.call(sender, await _controller.getItemById(arg), 0, mode);
+                await stream.load?.call(sender, await _controller.getItemById(arg), 0, mode);
                 break;
             case _controller.loadModes.group:
-                await stream.event.load?.call(sender, await _getGroupByRoute(arg), 0, mode);
+                await stream.load?.call(sender, await _getGroupByRoute(arg), 0, mode);
                 break;
             case _controller.loadModes.allItems:
                 await _loadAllFunc(_defaultGroup.content);
@@ -304,10 +301,15 @@ let ItemController = (function () {
                 await _loadAllFunc(_storage);
                 break;
         }
-        await stream.event.loadFinish?.call(sender);
+        await stream.loadFinish?.call(sender);
     }
     Object.defineProperties(_controller, {
-        storage: { get: () => _storage }, isItemsLoaded: { get: () => _itemsLoaded }, isGroupsLoaded: { get: () => _groupsLoaded }, getItemSnapshotById: { value: _getItemByRoute }, getGroupById: { value: _getGroupByRoute }, getItemById: { value: async (id) => await _loadFullItem(_getItemByRoute(id)) }
+        storage: { get: () => _storage },
+        isItemsLoaded: { get: () => _itemsLoaded },
+        isGroupsLoaded: { get: () => _groupsLoaded },
+        getItemSnapshotById: { value: _getItemByRoute },
+        getGroupById: { value: _getGroupByRoute },
+        getItemById: { value: async (id) => await _loadFullItem(_getItemByRoute(id)) }
     });
     return _controller;
 }());
@@ -342,8 +344,7 @@ let ResourceDownloadController = (function () {
                 await _controller.download(_pendingItemsObj[index]);
         }
         ));
-        _pendingItems = [];
-        _pendingItemsObj = [];
+        _pendingItems = _pendingItemsObj = [];
         _controller.invokeEvent("savePending", [{}, _pendingItems]);
     }
     _controller.addToPending = (item) => {
@@ -404,9 +405,7 @@ const landingView = new View(VIEW.landing, APP.url.landing, { scrollY: -1, items
             ViewController.navigate(VIEW.profile);
         });
         _data.iList = getById("main-list");
-        this.data.itemStream = new Stream({
-            load: async (item) => StorageResponseBuilder(item, _data.iList, 1, -1)
-        })
+        this.data.itemStream = new Stream(async (item) => StorageResponseBuilder(item, _data.iList, 1, -1));
     },
     onNavigateFrom: function () {
         this.data.scrollY = window.scrollY;
@@ -468,26 +467,20 @@ const itemView = new View(VIEW.item, APP.url.item, { currentItem: null }, {
         });
         ResourceDownloadController.addEventListener("downloadStart", _setIDBState);
         ResourceDownloadController.addEventListener("downloadFinish", _setIDBState);
-        _data.itemStream = new Stream({
-            load: function (item) {
-                if (item.isItemLinkToWeb) {
-                    window.open(item.isItemLinkToWeb, '_blank').focus();
-                    ViewController.navigateToDefaultView();
-                    return;
-                }
-                _data.currentItem = item;
-                if (this.lastNavigationArguments.routeArg.length > 1)
-                    ViewController.navigate(VIEW.resource, { routeArg: this.lastNavigationArguments.routeArg, currentItem: item });
-                else {
-                    _setIDBState(item);
-                    document.title = item.title + " - " + APP.name;
-                    incrementVisitors(APP.itemFolder + "/" + item.id, true);
-                    _iTitle.innerHTML = item.title;
-                    _iInfo.innerHTML = APP.date(item.date.create) + ((item.date.modify) ? " <u class='dotted-separator'></u> Updated " + APP.date(item.date.modify) : "");
-                    _iContent.innerHTML = "";
-                    item.content.forEach((content) => _iContent.append(new ItemComponentBuilder(content, item.folder, item)));
-                }
+        _data.itemStream = new Stream(function (item) {
+            if (item.isItemLinkToWeb) {
+                window.open(item.isItemLinkToWeb, '_blank').focus();
+                ViewController.navigateToDefaultView();
+                return;
             }
+            _data.currentItem = item;
+            _setIDBState(item);
+            document.title = item.title + " - " + APP.name;
+            incrementVisitors(APP.itemFolder + "/" + item.id, true);
+            _iTitle.innerHTML = item.title;
+            _iInfo.innerHTML = APP.date(item.date.create) + ((item.date.modify) ? " <u class='dotted-separator'></u> Updated " + APP.date(item.date.modify) : "");
+            _iContent.innerHTML = "";
+            item.content.forEach((content) => _iContent.append(new ItemComponentBuilder(content, item.folder, item)));
         });
         ResourceDownloadController.addEventListener("remove", _setIDBState);
         ResourceDownloadController.addEventListener("savePending", _setIDBState);
@@ -512,24 +505,22 @@ const groupView = new View(VIEW.group, APP.url.group, { scrollY: -1 }, {
         let _data = this.data;
         _data._groupData = getById("group-data")
         _data._groupList = getById("group-list");
-        this.data.itemStream = new Stream({
-            load: async function (group) {
-                if (!group) {
-                    ViewController.invokeError("item_not_found");
-                    return;
-                }
-                _data.currentGroup = group;
-                _groupTitle.innerHTML = group.title;
-                document.title = group.title + " - " + APP.name;
-                _groupInfo.innerHTML = APP.date(group.date.create) + " <u class='dotted-separator'></u> " + group.content.length + "&nbsp;" + (group.content.length != 1 ? "items" : "item");
-                this.data._groupData.classList.remove(GLOBAL.loading);
-                await StorageResponseBuilder(group, _data._groupList, 1, -1);
+        this.data.itemStream = new Stream(async function (group) {
+            if (!group) {
+                ViewController.invokeError("item_not_found");
+                return;
             }
-        })
+            _data.currentGroup = group;
+            _groupTitle.innerHTML = group.title;
+            document.title = group.title + " - " + APP.name;
+            _groupInfo.innerHTML = APP.date(group.date.create) + " <u class='dotted-separator'></u> " + group.content.length + "&nbsp;" + (group.content.length != 1 ? "items" : "item");
+            this.data._groupData.classList.remove(GLOBAL.loading);
+            await StorageResponseBuilder(group, _data._groupList, 1, -1);
+        });
     },
     onNavigate: () => window.scroll(0, 0),
     onNavigateFrom: function () {
-        Array.prototype.forEach.call(this.data._groupList.getElementsByClassName(GLOBAL.dataNode), (node) => node.classList.add("loading","no-data"));
+        Array.prototype.forEach.call(this.data._groupList.getElementsByClassName(GLOBAL.dataNode), (node) => node.classList.add("loading", "no-data"));
         this.rootNode.classList.remove(GLOBAL.error);
     },
     onLoad: async function (arg) {
@@ -552,6 +543,7 @@ const resourceView = new View(VIEW.resource, APP.url.resource, {},
             document.title = "Gallery - " + APP.name
         },
         onRegister: function () {
+            ViewController.addError(new ErrorClass("image_not_found", "Image not found", "Try refresh page", [], true));
             let _sender = this;
             this.data.resSlider = new ResourceSlider();
             let _resList = getById("image-viewer-list");
@@ -565,24 +557,31 @@ const resourceView = new View(VIEW.resource, APP.url.resource, {},
                 _resList.children[old]?.classList.remove(GLOBAL.activeView);
                 history.replaceState(history.state, '', "/" + _sender.url + "/" + _sender.data.currentItem.id + "/" + res.hash);
             });
-            this.data.resSlider.addEventListener("load", function (res, index) {
-                let _img = document.createElement("IMG");
-                _img.src = APP.itemFolder + _sender.data.currentItem.folder + APP.resourceFolder + res.resource.src;
-                _resList.appendChild(_img);
+            this.data.resSlider.addEventListener("load", async function (res) {
+                await new Promise((resolve, reject) => {
+                    let _img = document.createElement("IMG");
+                    _img.src = APP.itemFolder + _sender.data.currentItem.folder + APP.resourceFolder + res.resource.src;
+                    _resList.appendChild(_img);
+                    _img.onload = resolve;
+                    _img.onerror = function () {
+                        _img.src = "/img/image_error.webp";
+                    };
+                });
             });
             this.data.resSlider.addEventListener("loadFinish", function (res) {
                 _nextBtn.classList.toggle(GLOBAL.disabled, res.length < 2);
                 _prevBtn.classList.toggle(GLOBAL.disabled, res.length < 2);
             })
-            this.data.resSlider.addEventListener("close", function (res, index) {
-                _resList.innerHTML = "";
-            })
+            this.data.resSlider.addEventListener("close", () => _resList.innerHTML = "")
         },
         onLoad: async function (arg) {
             this.rootNode.classList.add(GLOBAL.loading);
-            let item = arg.currentItem || await ItemController.getItemById(arg.routeArg[0]);
-            this.data.currentItem = item;
-            let resourceGroup = item.findResourceByHash(arg.routeArg[1]);
+            this.data.currentItem = arg.currentItem || await ItemController.getItemById(arg.routeArg[0]);
+            let resourceGroup = this.data.currentItem.findResourceByHash(arg.routeArg[1]);
+            if (!resourceGroup) {
+                ViewController.invokeError("image_not_found", false);
+                return;
+            }
             await this.data.resSlider.loadResources(resourceGroup.group, resourceGroup.resource);
         },
         onLoadFinish: function () {
@@ -591,6 +590,10 @@ const resourceView = new View(VIEW.resource, APP.url.resource, {},
         onNavigateFrom: function () {
             this.rootNode.classList.remove(GLOBAL.error);
             this.data.resSlider.close();
+        },
+        onError: function (err) {
+            this.rootNode.classList.add(GLOBAL.error);
+            createErrorMsg(err, getById("resources-error-node"));
         }
     }, VIEW.resource, true, ViewController.loadingModes.always);
 ViewController.register(landingView, true);
@@ -602,8 +605,7 @@ ResourceDownloadController.addEventListener("download", async (item, file) => aw
 ResourceDownloadController.addEventListener("remove", async (item, file) => await removeResourceFromCache(APP.itemFolder + item.folder + APP.resourceFolder + file));
 ViewController.addEventListener("historyEdit", (historyItem, view) => {
     //url params are getted from navigation controller from navigate() arg
-    let _areArg = historyItem.arg.routeArg?.length > 0;
-    let _url = "/" + view.url + (_areArg ? ("/" + (historyItem.arg.routeArg?.join('/') || '')) : "");
+    let _url = "/" + view.url + ((historyItem.arg.routeArg?.length > 0) ? ("/" + (historyItem.arg.routeArg?.join('/') || '')) : "");
     (historyItem.index == 0) ?
         history.replaceState(historyItem, '', _url)
         :
@@ -616,9 +618,10 @@ ItemController.addEventListener("fetchItem", (item) => item.isDownloaded = Resou
 ResourceDownloadController.addEventListener("save", (item, items) => window.localStorage[STORAGE.itemDownload] = JSON.stringify(items));
 ResourceDownloadController.addEventListener("savePending", (item, items) => window.localStorage[STORAGE.itemPending] = JSON.stringify(items));
 window.addEventListener("load", async function () {
+    homeButton.addEventListener("click", () => ViewController.navigateToDefaultView());
     ResourceDownloadController.load(LocalStorageArrayParser(STORAGE.itemDownload));
-    ViewController.addError(new ErrorClass("item_load_error", "Items cannot be loaded", "Try refreshing the page", ["item_outdated", "item_not_found", "item_error", "group_not_found"]));
-    ViewController.addError(new ErrorClass("item_outdated", "Items are outdated", "Try refreshing the page", ["item_load_error", "item_not_found", "item_error", "group_not_found"]));
+    ViewController.addError(new ErrorClass("item_load_error", "Items cannot be loaded", "Try refreshing the page", ["item_outdated", "item_not_found", "item_error", "group_not_found", "image_not_found"]));
+    ViewController.addError(new ErrorClass("item_outdated", "Items are outdated", "Try refreshing the page", ["item_load_error", "item_not_found", "item_error", "group_not_found", "image_not_found"]));
     if (APP.version != ITEM_VERSION)
         ViewController.invokeError("item_outdated", true);
     else {
@@ -722,16 +725,14 @@ let ResourceSlider = function () {
     }
     this.close = async () => { _oldIndex = -1; _currentIndex = -1; await _sender.invokeEvent("close", [_res[_currentIndex], _currentIndex]) };
     this.next = async function () {
-        let _index = _currentIndex;
-        _index += 1;
+        let _index = _currentIndex + 1;
         if (_index >= _res.length)
             _index = 0;
         await _renderIndex(_index);
         await _sender.invokeEvent("next", [_res[_currentIndex], _index])
     }
     this.previous = async function () {
-        let _index = _currentIndex;
-        _index -= 1;
+        let _index = _currentIndex - 1;
         if (_index < 0)
             _index = _res.length - 1;
         await _renderIndex(_index);

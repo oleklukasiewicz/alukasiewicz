@@ -328,7 +328,8 @@ body.first-start #main-theme-toggle-button > i{
     display: table;
 }
 #about,
-#item,#resource{
+#item,
+#resource{
     padding: var(--size-margin-base);
 }
 #profile-header{
@@ -614,51 +615,58 @@ body.first-start #main-theme-toggle-button > i{
 #group-data.loading #group-gallery-button{
     display: none;
 }
-#image-viewer
-{   
+#resource.error>#image-viewer
+{
+    display: none;
+}
+#image-viewer{
     display: flex;
     flex-direction: column;
     max-width: 100%;
     height: calc(100vh - 170px);
 }
-#image-viewer-list
-{
+#image-viewer-list{
     display: flex;
     overflow: hidden;
     height: 100%;
     max-width: 100%;
 }
-#image-viewer-list>img
-{
+#resource.loading #image-viewer-list{
+    animation-name: Blink;
+    animation-iteration-count: infinite;
+    animation-duration: 1.2s;
+    background-color: var(--color-theme-A2);
+}
+#resource.loading #image-viewer-next,
+#resource.loading #image-viewer-prev{
+    display: none;
+}
+#image-viewer-list > img{
     margin: auto auto;
     max-width: 100%;
+    max-height: 100%;
     object-fit: contain;
     display: none;
 }
-#image-viewer-list>img.active-view
-{
+#image-viewer-list > img.active-view{
     display: table;
 }
-#image-viewer-controls
-{
+#image-viewer-controls{
     width: 100%;
     display: table;
     margin-bottom: 4px;
 }
-#image-viewer-controls>a
-{
-display: inline-block;
-height: 30px;
-padding: 8px 9px;
-width: 30px;
+#image-viewer-controls > a{
+    display: inline-block;
+    height: 30px;
+    padding: 8px 9px;
+    width: 30px;
 }
-#image-viewer-prev
-{
+#image-viewer-prev{
     margin-right: 4px;
 }
-#image-viewer-close
-{
-float: right;
+#image-viewer-close{
+    float: right;
 }
 .error .list-view,
 .list-view.error{

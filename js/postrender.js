@@ -25,4 +25,3 @@ let homeButton = getById("home-button");
 themeButton.classList.toggle(GLOBAL.toggled, ThemeController.theme.isDark);
 ThemeController.addEventListener("themeSet", (theme) => themeButton.classList.toggle(GLOBAL.toggled, theme.isDark))
 themeButton.addEventListener("click", () => ThemeController.set(!themeButton.classList.contains(GLOBAL.toggled)));
-homeButton.addEventListener("click", () => ViewController.navigateToDefaultView());
