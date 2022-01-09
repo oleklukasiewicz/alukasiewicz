@@ -689,7 +689,7 @@ body.first-start #main-theme-toggle-button > i{
     box-shadow: 0 2px 8px rgba(0,0,0,.08);
     box-sizing: border-box;
     padding: 20px;
-    margin: 0 var(--size-margin-base);
+    margin: 10px var(--size-margin-base);
     transition: var(--transition-border);
 }
 .error-msg > i{
