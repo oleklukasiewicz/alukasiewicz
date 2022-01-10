@@ -21,7 +21,8 @@
             "resource": [
                 {
                     "src": "/airship.webp",
-                    "type": "image"
+                    "type": "image",
+                    "alt":"Airship"
                 }
             ],
             "alt": "Ocean of clouds",
@@ -41,23 +42,28 @@
             "resource": [
                 {
                     "src": "/gallery/crocus-base.webp",
-                    "type": "image"
+                    "type": "image",
+                    "alt":"Crocus"
                 },
                 {
                     "src": "/gallery/lily-blank.webp",
-                    "type": "image"
+                    "type": "image",
+                    "alt":"Lily"
                 },
                 {
                     "src": "/gallery/rose_plant.webp",
-                    "type": "image"
+                    "type": "image",
+                    "alt":"Rose"
                 },
                 {
                     "src": "/gallery/isometric_castle.webp",
-                    "type": "image"
+                    "type": "image",
+                    "alt":"Castle"
                 },
                 {
                     "src": "/airship.webp",
-                    "type": "image"
+                    "type": "image",
+                    "alt":"Airship"
                 }
             ],
             "id": "airship-gallery"

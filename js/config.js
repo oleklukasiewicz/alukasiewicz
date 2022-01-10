@@ -1009,6 +1009,7 @@ let ItemComponentBuilder = function (component, itemFolder, item) {
             //generating img
             let _img = document.createElement("IMG");
             _img.src = APP.itemFolder + itemFolder + APP.resourceFolder + component.resource[0].src;
+            _img.alt = component.resource[0].alt || "";
             _img.onerror = function () { _img.onload = function () { }; _img.src = "/img/image_error.webp"; _img.classList.add("no-image"); }
             _img.onload = function () {
                 _img.onclick = function () {
@@ -1080,6 +1081,7 @@ let ItemComponentBuilder = function (component, itemFolder, item) {
             for (let i = 0; i < _max; i++) {
                 let res = component.resource[i];
                 let _img = document.createElement("IMG");
+                _img.alt = res.alt || "";
                 _img.src = APP.itemFolder + itemFolder + APP.resourceFolder + res.src;
                 _component.children[1].appendChild(_img);
                 _img.onload = function () {
