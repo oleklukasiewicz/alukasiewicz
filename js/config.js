@@ -1,26 +1,71 @@
-Element.prototype.remove = function () { this.parentElement.removeChild(this); };
-NodeList.prototype.remove = HTMLCollection.prototype.remove = function () { for (let i = this.length - 1; i >= 0; i--)this[i].parentElement.removeChild(this[i]); };
+//adding remove feature for nodes and nodes lists
+Element.prototype.remove = function () {
+    this.parentElement.removeChild(this);
+};
+NodeList.prototype.remove = HTMLCollection.prototype.remove = function () {
+    for (let i = this.length - 1; i >= 0; i--)
+        this[i].parentElement.removeChild(this[i]);
+};
+
+//item class declaration
 let Item = function (id, aliases = [], isItemLinkToWeb = false, folder = "/" + id, title, tileImage, tileContent, createDate, modifyDate, groups = [], arg = {}) {
     return {
-        id, aliases,
+        id,
+        aliases,
         title,
-        tile: { image: tileImage, content: tileContent },
-        date: { create: createDate, modify: modifyDate },
+        tile: {
+            image: tileImage,
+            content: tileContent
+        },
+        date: {
+            create: createDate,
+            modify: modifyDate
+        },
         groups,
-        isItemLinkToWeb, folder, arg,
+        isItemLinkToWeb,
+        folder,
+        arg,
         type: GLOBAL.item
     }
 }
+
+//resource map class declaration
 let ResourceMap = function (resource, hash, firstGroupIndex, lastGroupIndex) {
-    return { resource, hash, firstGroupIndex, lastGroupIndex }
-}
-let ItemDate = function (day, month, year) { return { day, month, year }; };
-let Group = function (id, aliases = [], title, createDate, modifyDate, groups = [], arg = {}, isDefault = false) {
     return {
-        id, aliases, arg, title, groups, isDefault,
-        date: { create: createDate, modify: modifyDate }, type: GLOBAL.group
+        resource,
+        hash,
+        firstGroupIndex,
+        lastGroupIndex
     }
 }
+
+//item date class declaration
+let ItemDate = function (day, month, year) {
+    return {
+        day,
+        month,
+        year
+    };
+};
+
+//group class declaration
+let Group = function (id, aliases = [], title, createDate, modifyDate, groups = [], arg = {}, isDefault = false) {
+    return {
+        id,
+        aliases,
+        arg,
+        title,
+        groups,
+        isDefault,
+        date: {
+            create: createDate,
+            modify: modifyDate
+        },
+        type: GLOBAL.group
+    }
+}
+
+//view class declaration
 let View = function (id, url, data = {}, event = {}, rootNode = null, isRegisterDelayed = false, loadingMode = ViewController.loadingModes.single) {
     return {
         id,
@@ -32,6 +77,8 @@ let View = function (id, url, data = {}, event = {}, rootNode = null, isRegister
         loadingMode
     }
 }
+
+//history item class declaration
 let HistoryItem = function (id, index, arg) {
     return {
         id,
@@ -39,12 +86,22 @@ let HistoryItem = function (id, index, arg) {
         arg
     }
 }
+
+//error class declaration
 let ErrorClass = function (id, title, message, chaninedErrorIDs = [], refreshRequire = true) {
-    return { id, title, message, chaninedErrorIDs, refreshRequire }
+    return {
+        id,
+        title,
+        message,
+        chaninedErrorIDs,
+        refreshRequire
+    }
 }
+
 //hashing algorythm
 const createHash = function (str, seed = 0) {
-    let h1 = 0xdeadbeef ^ seed, h2 = 0x41c6ce57 ^ seed;
+    let h1 = 0xdeadbeef ^ seed;
+    let h2 = 0x41c6ce57 ^ seed;
     for (let i = 0, ch; i < str.length; i++) {
         ch = str.charCodeAt(i);
         h1 = Math.imul(h1 ^ ch, 2654435761);
@@ -55,18 +112,28 @@ const createHash = function (str, seed = 0) {
     let _s = 4294967296 * (2097151 & h2) + (h1 >>> 0);
     return _s;
 };
+
+//view controller declaration
 let ViewController = (function () {
     let _controller = {};
+    let _views = [];
+    let _currentView;
+    let _currentHistoryIndex = -1;
+    let _defaultViewIndex = -1;
+    let _defaultView;
+    let _previousView;
     EventController.call(_controller, {
         "navigateToView": [],
         "navigateFromView": [],
         "navigateDefault": [],
         "historyEdit": [],
     });
+
     //integrated error controller
     let _errors = [];
     let _historicalErrors = [];
     let _currentGlobalError;
+
     _controller.addError = function (error) {
         if (_errors.findIndex((_error) => error.id == _error.id) == -1)
             _errors.push(error);
@@ -74,7 +141,10 @@ let ViewController = (function () {
     _controller.invokeError = function (errorId, globalInvoke = false) {
         let __error = _errors.find((_error) => (errorId == _error.id) || (errorId.id == _error.id));
         let _errorAccepted = true;
-        __error.chaninedErrorIDs.forEach((err) => { if (_historicalErrors.includes(err)) _errorAccepted = false; });
+        __error.chaninedErrorIDs.forEach((err) => {
+            if (_historicalErrors.includes(err))
+                _errorAccepted = false;
+        });
         if (_errorAccepted) {
             if (globalInvoke) {
                 _views.forEach((view) => view.registered ? view.event?.onError.call(view, __error) : "");
@@ -85,13 +155,8 @@ let ViewController = (function () {
             _historicalErrors.push(__error.id);
         }
     }
-    let _views = [];
-    let _currentView;
-    let _currentHistoryIndex = -1;
-    let _defaultViewIndex = -1;
+    //view controller methods
     let _getViewById = (id) => _views.find((view) => view.id == id) || _defaultView;
-    let _defaultView;
-    let _previousView;
     let _registerDelayedView = function (view) {
         if (view.isRegisterDelayed && !view.registered) {
             if (_currentGlobalError)
@@ -123,28 +188,50 @@ let ViewController = (function () {
         }
     }
     _controller.navigate = async function (id, arg = {}) {
+        //getting view
         let _target = _getViewById(id);
+
+        //unloading old view if exist
         if (_currentView) {
+            //finishing loading view if needed, unloading and generating node if needed
             _invokeLoadFinishEvent(_currentView);
+            _unLoadView(_currentView);
             _generateRootNode(_currentView);
+
+            //navigating
             _currentView.event.onNavigateFrom?.call(_currentView, arg);
             _controller.invokeEvent("navigateFromView", [_currentView, arg]);
-            _unLoadView(_currentView);
             _previousView = _currentView;
         }
+
+        //changing url and adding history state
         if (!arg.noHistoryPush) {
             _currentHistoryIndex++;
-            if (_target == _defaultView) _defaultViewIndex = _currentHistoryIndex;
-            _controller.invokeEvent("historyEdit", [Object.assign(new HistoryItem(_target.id, _currentHistoryIndex, { routeArg: arg.routeArg, historyArg: arg.historyArg }), {
-                defaultViewIndex: _defaultViewIndex
-            }), _target]);
+            if (_target == _defaultView)
+                _defaultViewIndex = _currentHistoryIndex;
+
+            //invoking history edit event
+            _controller.invokeEvent("historyEdit", [
+                Object.assign(new HistoryItem(_target.id, _currentHistoryIndex, {
+                    routeArg: arg.routeArg,
+                    historyArg: arg.historyArg
+                }), {
+                    defaultViewIndex: _defaultViewIndex
+                }), _target]
+            );
         }
+
+        //setting current view
         _currentView = _target;
         _currentView.lastNavigationArguments = arg;
         _generateRootNode(_currentView);
+
+        //registering and invoking navigate event
         await _registerDelayedView(_currentView);
         _controller.invokeEvent("navigateToView", [_currentView, _previousView, arg]);
         await _currentView.event.onNavigate?.call(_currentView, arg);
+
+        //loading view if needed
         if (_currentView.loadingMode != _controller.loadingModes.never)
             await _invokeLoadEvent(_currentView, arg).then((view) => _invokeLoadFinishEvent(view))
     }
@@ -190,10 +277,11 @@ let ViewController = (function () {
 }());
 let ItemController = (function () {
     let _routes = [];
-    let _groupRoutes = [];
     let _storage = [];
-    let _groupsLoaded = false;
     let _itemsLoaded = false;
+    let _groupRoutes = [];
+    let _groupsLoaded = false;
+    let _defaultGroup;
     let _controller = {};
     EventController.call(_controller, {
         "fetchGroup": [],
@@ -201,9 +289,78 @@ let ItemController = (function () {
         "fetchItem": [],
         "fetchItemFinish": []
     });
+
+    //adding error types for item and group not errors
+    ViewController.addError(new ErrorClass("item_not_found", "Item don't exist", "We don't have what you're looking for", [
+        "item_outdated",
+        "item_load_error",
+        "group_not_found"
+    ]));
+    ViewController.addError(new ErrorClass("group_not_found", "Group don't exist", "We don't have what you're looking for", [
+        "item_outdated",
+        "item_load_error"
+    ]));
+
     let _getResourceGroupByHash = function (item, hash) {
         let target = item.resources.find((resMap) => resMap.hash == hash);
-        return target ? { resource: target, group: item.resources.slice(target.firstGroupIndex, target.lastGroupIndex + 1) } : null;
+        return target ? {
+            resource: target,
+            group: item.resources.slice(target.firstGroupIndex, target.lastGroupIndex + 1)
+        } : null;
+    }
+    let _downloadViaAJAX = async function (item) {
+        return new Promise((resolve, reject) => {
+            let xmlhttp = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject("Microsoft.XMLHTTP");
+
+            //loading item content
+            xmlhttp.onreadystatechange = function () {
+                if (this.readyState == 4) {
+                    if (this.status == 200)
+                        resolve(JSON.parse(this.responseText));
+                    else
+                        reject("Error in AJAX request");
+                }
+            };
+
+            //sending
+            xmlhttp.open("GET", APP.itemFolder + item.folder + APP.resourceFolder + APP.itemContentFileName, true);
+            xmlhttp.send();
+        });
+    }
+    //loading full item content
+    let _loadFullItem = async function (item) {
+        if (!item) {
+            ViewController.invokeError("item_not_found");
+            return;
+        }
+        //TODO: check is components.js and components.css are downloaded id not -> download
+        if (!item.isItemLinkToWeb && !item.isContentCached) {
+            //getting item content
+            let _content = await _downloadViaAJAX(item, item.folder);
+
+            //merging item with item
+            Object.assign(item, _content, { resources: [] });
+
+            //pushing resources to resourcesList of item
+            item.resources.push(new ResourceMap({
+                src: APP.itemContentFileName
+            }, "", 0, 0));
+            item.content.forEach((component, componentIndex) => {
+                if (component.resource) {
+                    component.resIndex = item.resources.length;
+                    component.resLastIndex = item.resources.length + component.resource.length - 1;
+
+                    component.resource.forEach(res => item.resources.push(new ResourceMap(res, createHash(componentIndex + component.resIndex + item.folder + res.src), component.resIndex, component.resLastIndex)))
+                }
+            });
+
+            //adding method for finding resources by hash code
+            item.findResourceByHash = (hash) => _getResourceGroupByHash(item, hash);
+            if (_content?.version == APP.version)
+                item.isContentCached = true;
+            //TODO: check content component version if newer -> download new version of components.css and js
+        }
+        return item;
     }
     let _generateId = (id) => encodeURIComponent(id.toLowerCase().replaceAll(" ", "-"));
     let _generateGroup = function (group) {
@@ -212,49 +369,6 @@ let ItemController = (function () {
         _groupRoutes.push(new RouteClass(group.id, group));
         return group;
     }
-    let _downloadViaAJAX = async function (item) {
-        return new Promise((resolve, reject) => {
-            let xmlhttp = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject("Microsoft.XMLHTTP");
-            xmlhttp.onreadystatechange = function () {
-                if (this.readyState == 4)
-                    (this.status == 200 ?
-                        resolve(JSON.parse(this.responseText))
-                        :
-                        reject("Error in AJAX request"))
-            };
-            xmlhttp.open("GET", APP.itemFolder + item.folder + APP.resourceFolder + APP.itemContentFileName, true);
-            xmlhttp.send();
-        });
-    }
-    ViewController.addError(new ErrorClass("item_not_found", "Item don't exist", "We don't have what you're looking for", ["item_outdated", "item_load_error", "group_not_found"]));
-    ViewController.addError(new ErrorClass("group_not_found", "Group don't exist", "We don't have what you're looking for", ["item_outdated", "item_load_error"]));
-    let _loadFullItem = async function (item) {
-        if (!item) {
-            ViewController.invokeError("item_not_found");
-            return;
-        }
-        //TODO: check is components.js and components.css are downloaded id not -> download
-        if (!item.isItemLinkToWeb && !item.isContentCached) {
-            let _content = await _downloadViaAJAX(item, item.folder);
-            Object.assign(item, _content, { resources: [] });
-            item.resources.push(new ResourceMap({ src: APP.itemContentFileName }, "", 0, 0));
-            item.content.forEach((component, componentIndex) => {
-                if (component.resource) {
-                    component.resIndex = item.resources.length;
-                    component.resLastIndex = item.resources.length + component.resource.length - 1;
-                    component.resource.forEach(res => {
-                        item.resources.push(new ResourceMap(res, createHash(componentIndex + component.resIndex + item.folder + res.src), component.resIndex, component.resLastIndex));
-                    })
-                }
-            });
-            item.findResourceByHash = (hash) => _getResourceGroupByHash(item, hash);
-            if (_content?.version == APP.version)
-                item.isContentCached = true;
-            //TODO: check content component version if newer -> download new version of components.css and js
-        }
-        return item;
-    }
-    let _defaultGroup;
     let _getGroupByRoute = (id) => _groupRoutes.find((route) => route.source == id)?.target;
     let _getItemByRoute = (id) => _routes.find((route) => route.source == id)?.target;
     _controller.fetchGroups = async function (groups) {
@@ -262,7 +376,8 @@ let ItemController = (function () {
             _generateGroup(group);
             _storage.push(group);
             group.aliases.forEach((source) => _groupRoutes.push(new RouteClass(source, group)));
-            if (group.isDefault) _defaultGroup = group;
+            if (group.isDefault)
+                _defaultGroup = group;
             await _controller.invokeEvent("fetchGroup", [group]);
         }));
         _storage.forEach((group) => group.groups?.forEach((_group) => _getGroupByRoute(_group)?.content.push(group)));
@@ -288,12 +403,24 @@ let ItemController = (function () {
         all: "all"
     }
     Object.defineProperties(_controller, {
-        storage: { get: () => _storage },
-        isItemsLoaded: { get: () => _itemsLoaded },
-        isGroupsLoaded: { get: () => _groupsLoaded },
-        getItemSnapshotById: { value: _getItemByRoute },
-        getGroupById: { value: _getGroupByRoute },
-        getItemById: { value: async (id) => await _loadFullItem(_getItemByRoute(id)) }
+        storage: {
+            get: () => _storage
+        },
+        isItemsLoaded: {
+            get: () => _itemsLoaded
+        },
+        isGroupsLoaded: {
+            get: () => _groupsLoaded
+        },
+        getItemSnapshotById: {
+            value: _getItemByRoute
+        },
+        getGroupById: {
+            value: _getGroupByRoute
+        },
+        getItemById: {
+            value: async (id) => await _loadFullItem(_getItemByRoute(id))
+        }
     });
     return _controller;
 }());
@@ -328,7 +455,8 @@ let ResourceDownloadController = (function () {
                 await _controller.download(_pendingItemsObj[index]);
         }
         ));
-        _pendingItems = _pendingItemsObj = [];
+        _pendingItems = [];
+        _pendingItemsObj = [];
         _controller.invokeEvent("savePending", [{}, _pendingItems]);
     }
     _controller.addToPending = (item) => {
@@ -340,10 +468,7 @@ let ResourceDownloadController = (function () {
         }
     }
     _controller.downloadWhenAvailble = async (item) =>
-        navigator.onLine ?
-            await _controller.download(item)
-            :
-            await _controller.addToPending(item)
+        navigator.onLine ? await _controller.download(item) : await _controller.addToPending(item)
     _controller.removeFromPending = (item) => {
         if (_pendingItems.includes(item.id)) {
             let _index = _pendingItems.findIndex((id) => id == item.id);
@@ -354,13 +479,17 @@ let ResourceDownloadController = (function () {
         }
     }
     _controller.download = async function (item) {
+        //downloading item
         item.isDownloading = true;
         _downloadedItems.push(item.id);
         _controller.invokeEvent("downloadStart", [item]);
         await Promise.all(item.resources.map(async (resourceList, index) => await _controller.invokeEvent("download", [item, resourceList.resource.src, index])));
+
+        //setting item download states
         item.isDownloading = false;
         item.isDownloaded = true;
         item.isPending = false;
+
         _controller.invokeEvent("downloadFinish", [item]);
         _controller.invokeEvent("save", [item, _downloadedItems]);
     }
@@ -408,7 +537,10 @@ const landingView = new View(VIEW.landing, APP.url.landing, { scrollY: -1, items
     }
 }, VIEW.landing, true, ViewController.loadingModes.single);
 const profileView = new View(VIEW.profile, APP.url.profile, {}, {
-    onNavigate: () => { window.scroll(0, 0); document.title = "About me - " + APP.name }
+    onNavigate: () => {
+        window.scroll(0, 0);
+        document.title = "About me - " + APP.name
+    }
 }, VIEW.profile, false, ViewController.loadingModes.never);
 const itemView = new View(VIEW.item, APP.url.item, { currentItem: null }, {
     onNavigate: () => window.scroll(0, 0),
@@ -417,14 +549,22 @@ const itemView = new View(VIEW.item, APP.url.item, { currentItem: null }, {
     },
     onRegister: function () {
         let _data = this.data;
+
+        //getting nodes
         this.data.iTitle = getById("item-title");
         this.data.iContent = getById("item-content");
         this.data.iInfo = getById("item-info");
+        let _iDB = getById("item-download-button");
+
+        //download button changing state method 
         this.data._setIDBState = function (item) {
             if (item.id == _data.currentItem.id) {
+                //removing all classes 
                 _iDB.classList.remove(GLOBAL.toggled);
                 _iDB.classList.remove(GLOBAL.pending);
                 _iDB.classList.remove(GLOBAL.progress);
+
+                //setting class by download state
                 if (_data.currentItem.isDownloaded)
                     _iDB.classList.add(GLOBAL.toggled);
                 else {
@@ -436,14 +576,13 @@ const itemView = new View(VIEW.item, APP.url.item, { currentItem: null }, {
                 }
             }
         }
-        let _iDB = getById("item-download-button");
         _iDB.addEventListener("click", () => {
             if (_data.currentItem.isDownloaded)
                 ResourceDownloadController.remove(_data.currentItem);
             else {
-                _data.currentItem.isPending ?
+                if (_data.currentItem.isPending)
                     ResourceDownloadController.removeFromPending(_data.currentItem)
-                    :
+                else
                     ResourceDownloadController.downloadWhenAvailble(_data.currentItem)
             }
         });
@@ -455,20 +594,25 @@ const itemView = new View(VIEW.item, APP.url.item, { currentItem: null }, {
     onLoad: async function (arg) {
         this.rootNode.classList.add(GLOBAL.loading);
         if (ItemController.isItemsLoaded) {
-            let item = await ItemController.getItemById(arg.routeArg[0]);
+            //getting item
+            let item = this.data.currentItem = await ItemController.getItemById(arg.routeArg[0]);
             if (item.isItemLinkToWeb) {
                 window.open(item.isItemLinkToWeb, '_blank').focus();
                 ViewController.navigateToDefaultView();
                 return;
             }
-            this.data.currentItem = item;
+
+            //preparing item info
             this.data._setIDBState(item);
             document.title = item.title + " - " + APP.name;
-            incrementVisitors(APP.itemFolder + "/" + item.id, true);
             this.data.iTitle.innerHTML = item.title;
             this.data.iInfo.innerHTML = APP.date(item.date.create) + ((item.date.modify) ? " <u class='dotted-separator'></u> Updated " + APP.date(item.date.modify) : "");
+
+            //preparing content
             this.data.iContent.innerHTML = "";
-            item.content.forEach((content) => this.data.iContent.append(new ItemComponentBuilder(content, item.folder, item)));
+            item.content.forEach((content) =>
+                this.data.iContent.append(new ItemComponentBuilder(content, item.folder, item)));
+            incrementVisitors(APP.itemFolder + "/" + item.id, true);
         }
     },
     onLoadFinish: function () {
@@ -489,22 +633,29 @@ const groupView = new View(VIEW.group, APP.url.group, { scrollY: -1 }, {
     },
     onNavigate: () => window.scroll(0, 0),
     onNavigateFrom: function () {
-        Array.prototype.forEach.call(this.data.groupList.getElementsByClassName(GLOBAL.dataNode), (node) => node.classList.add("loading", "no-data"));
+        Array.prototype.forEach.call(this.data.groupList.getElementsByClassName(GLOBAL.dataNode), (node) =>
+            node.classList.add("loading", "no-data"));
         this.rootNode.classList.remove(GLOBAL.error);
     },
     onLoad: async function (arg) {
         this.rootNode.classList.add(GLOBAL.loading);
         this.data.groupData.classList.add(GLOBAL.loading);
+
+        //getting group
         let group = await ItemController.getGroupById(arg.routeArg[0]);
         if (!group) {
             ViewController.invokeError("group_not_found");
             return;
         }
+
+        //preparing group info
         this.data.currentGroup = group;
         this.data.groupTitle.innerHTML = group.title;
         document.title = group.title + " - " + APP.name;
         this.data.groupInfo.innerHTML = APP.date(group.date.create) + " <u class='dotted-separator'></u> " + group.content.length + "&nbsp;" + (group.content.length != 1 ? "items" : "item");
         this.data.groupData.classList.remove(GLOBAL.loading);
+
+        //loading items of group
         await StorageResponseBuilder(group, this.data.groupList, 1, -1);
     },
     onLoadFinish: function () {
@@ -522,22 +673,35 @@ const resourceView = new View(VIEW.resource, APP.url.resource, {},
             document.title = "Gallery - " + APP.name
         },
         onRegister: function () {
-            ViewController.addError(new ErrorClass("image_not_found", "Image not found", "Try refresh page", ["item_not_found", "item_outdated", "item_load_error"], true));
+            //adding image errors
+            ViewController.addError(new ErrorClass("image_not_found", "Image not found", "Try refresh page", [
+                "item_not_found",
+                "item_outdated",
+                "item_load_error"
+            ], true));
             let _sender = this;
+
+            //creating slider
             this.data.resSlider = new ResourceSlider();
+
+            //getting nodes
             let _resList = getById("image-viewer-list");
             let _prevBtn = getById("image-viewer-prev");
             let _nextBtn = getById("image-viewer-next");
-            getById("image-viewer-close").addEventListener("click", ViewController.back);
             _nextBtn.addEventListener("click", this.data.resSlider.next);
             _prevBtn.addEventListener("click", this.data.resSlider.previous);
+
+            //adding close button
+            getById("image-viewer-close").addEventListener("click", ViewController.back);
+
+            //adding event to slider
             this.data.resSlider.addEventListener("render", function (res, index, oldres, old) {
                 _resList.children[index].classList.add(GLOBAL.activeView);
                 _resList.children[old]?.classList.remove(GLOBAL.activeView);
                 history.replaceState(history.state, '', "/" + _sender.url + "/" + _sender.data.currentItem.id + "/" + res.hash);
             });
             this.data.resSlider.addEventListener("load", async function (res) {
-                await new Promise((resolve, reject) => {
+                await new Promise((resolve) => {
                     let _img = document.createElement("IMG");
                     _img.src = APP.itemFolder + _sender.data.currentItem.folder + APP.resourceFolder + res.resource.src;
                     _resList.appendChild(_img);
@@ -555,12 +719,16 @@ const resourceView = new View(VIEW.resource, APP.url.resource, {},
         },
         onLoad: async function (arg) {
             this.rootNode.classList.add(GLOBAL.loading);
+
+            //loading item and resource group
             this.data.currentItem = arg.currentItem || await ItemController.getItemById(arg.routeArg[0]);
             let resourceGroup = this.data.currentItem.findResourceByHash(arg.routeArg[1]);
             if (!resourceGroup) {
                 ViewController.invokeError("image_not_found", false);
                 return;
             }
+
+            //loading resources to slider
             await this.data.resSlider.loadResources(resourceGroup.group, resourceGroup.resource);
         },
         onLoadFinish: function () {
@@ -575,32 +743,59 @@ const resourceView = new View(VIEW.resource, APP.url.resource, {},
             createErrorMsg(err, getById("resources-error-node"));
         }
     }, VIEW.resource, true, ViewController.loadingModes.always);
+
+//registering views
 ViewController.register(landingView, true);
 ViewController.register(profileView);
 ViewController.register(itemView);
 ViewController.register(groupView);
 ViewController.register(resourceView);
-ResourceDownloadController.addEventListener("download", async (item, file) => await cacheResource(APP.itemFolder + item.folder + APP.resourceFolder + file));
-ResourceDownloadController.addEventListener("remove", async (item, file) => await removeResourceFromCache(APP.itemFolder + item.folder + APP.resourceFolder + file));
+
+//view controller events
 ViewController.addEventListener("historyEdit", (historyItem, view) => {
     //url params are getted from navigation controller from navigate() arg
     let _url = "/" + view.url + ((historyItem.arg.routeArg?.length > 0) ? ("/" + (historyItem.arg.routeArg?.join('/') || '')) : "");
-    (historyItem.index == 0) ?
+    if (historyItem.index == 0)
         history.replaceState(historyItem, '', _url)
-        :
+    else
         history.pushState(historyItem, '', _url);
 });
-ViewController.addEventListener("navigateDefault", () => (history.state.defaultViewIndex != -1 && (history.state.defaultViewIndex - history.state.index) != 0) ? history.go(history.state.defaultViewIndex - history.state.index) : "");
-ViewController.addEventListener("navigateToView", (view, lastView) => { view.rootNode.classList.add(GLOBAL.activeView); APPNODE.classList.replace(lastView?.id, view.id) });
+ViewController.addEventListener("navigateDefault", () =>
+    (history.state.defaultViewIndex != -1 && (history.state.defaultViewIndex - history.state.index) != 0) ? history.go(history.state.defaultViewIndex - history.state.index) : "");
+ViewController.addEventListener("navigateToView", (view, lastView) => {
+    view.rootNode.classList.add(GLOBAL.activeView);
+    APPNODE.classList.replace(lastView?.id, view.id)
+});
 ViewController.addEventListener("navigateFromView", (lastView) => lastView.rootNode.classList.remove(GLOBAL.activeView));
+
+//item controller events
 ItemController.addEventListener("fetchItem", (item) => item.isDownloaded = ResourceDownloadController.isDownloaded(item.id));
-ResourceDownloadController.addEventListener("save", (item, items) => window.localStorage[STORAGE.itemDownload] = JSON.stringify(items));
-ResourceDownloadController.addEventListener("savePending", (item, items) => window.localStorage[STORAGE.itemPending] = JSON.stringify(items));
+
+//resource download controller events
+ResourceDownloadController.addEventListener("download", async (item, file) =>
+    await cacheResource(APP.itemFolder + item.folder + APP.resourceFolder + file));
+ResourceDownloadController.addEventListener("remove", async (item, file) =>
+    await removeResourceFromCache(APP.itemFolder + item.folder + APP.resourceFolder + file));
+ResourceDownloadController.addEventListener("save", (item, items) =>
+    window.localStorage[STORAGE.itemDownload] = JSON.stringify(items));
+ResourceDownloadController.addEventListener("savePending", (item, items) =>
+    window.localStorage[STORAGE.itemPending] = JSON.stringify(items));
+
+//DOM events
 window.addEventListener("load", async function () {
-    homeButton.addEventListener("click", () => ViewController.navigateToDefaultView());
-    ResourceDownloadController.load(LocalStorageArrayParser(STORAGE.itemDownload));
+    //adding errors
     ViewController.addError(new ErrorClass("item_load_error", "Items cannot be loaded", "Try refreshing the page"));
     ViewController.addError(new ErrorClass("item_outdated", "Items are outdated", "Try refreshing the page"));
+
+    //adding home button event, removing first-start DOM indicator, setting theme indicator
+    getById("home-button").addEventListener("click", () => ViewController.navigateToDefaultView());
+    setTimeout(() => document.body.classList.remove("first-start"), 300);
+    APPNODE.classList.toggle(GLOBAL.offline, !navigator.onLine);
+
+    //loading downloaded and pending resources list
+    ResourceDownloadController.load(LocalStorageArrayParser(STORAGE.itemDownload));
+
+    //loading items and groups
     try {
         if (APP.version != ITEM_VERSION)
             ViewController.invokeError("item_outdated", true);
@@ -609,12 +804,17 @@ window.addEventListener("load", async function () {
     } catch {
         ViewController.invokeError("item_load_error", true);
     }
-    await ViewController.navigate(START_ROUTE.target, { routeArg: START_URL.slice(1, START_URL.length - 1) });
-    APPNODE.classList.toggle(GLOBAL.offline, !navigator.onLine);
-    await ResourceDownloadController.loadPending(LocalStorageArrayParser(STORAGE.itemPending));
-    if (this.navigator.onLine)
-        ResourceDownloadController.downloadPending();
-    setTimeout(() => document.body.classList.remove("first-start"), 300);
+
+    //navigating to view based by url
+    await ViewController.navigate(START_ROUTE.target, {
+        routeArg: START_URL.slice(1, START_URL.length - 1)
+    });
+    if (ItemController.itemsLoaded) {
+        //loading downloaded items
+        await ResourceDownloadController.loadPending(LocalStorageArrayParser(STORAGE.itemPending));
+        if (this.navigator.onLine)
+            ResourceDownloadController.downloadPending();
+    }
 });
 window.addEventListener("online", () => {
     APPNODE.classList.remove(GLOBAL.offline);
@@ -622,7 +822,10 @@ window.addEventListener("online", () => {
     ResourceDownloadController.downloadPending();
 });
 window.addEventListener("offline", () => APPNODE.classList.add(GLOBAL.offline));
-window.addEventListener("popstate", (event) => ViewController.move((ViewController.currentHistoryIndex - event.state.index <= 0), event.state));
+window.addEventListener("popstate", (event) =>
+    ViewController.move((ViewController.currentHistoryIndex - event.state.index <= 0), event.state));
+
+//item tile creating method
 let createItemTile = async function (node, item) {
     if (node.nodeName != "A") {
         let oldNode = node;
@@ -631,6 +834,8 @@ let createItemTile = async function (node, item) {
     }
     node.className = "item " + GLOBAL.dataNode + " " + GLOBAL.loading;
     node.innerHTML = "<div class='img'><img src='" + APP.itemFolder + item.folder + item.tile.image + "' alt='" + item.title + "'/></div><b class='font-subtitle'>" + item.title + "</b><span class='font-base'>" + item.tile.content + "</span><div class='labels'><div class='button'>" + (item.isItemLinkToWeb ? "Open link <i class='mi mi-OpenInNewWindow'></i>" : "Read more <i class='mi mi-BackMirrored'></i>") + "</div>" + (item.date.modify ? "<div class='label font-caption'><i class='mi mi-Update'></i> &nbsp;&nbsp;" + APP.date(item.date.modify) + "</div>" : "") + "</div>";
+
+    //loading image of tile
     let _iImage = node.children[0].children[0],
         imageLoaded = function () {
             if (!item.isTileImageNotLoaded) {
@@ -647,6 +852,8 @@ let createItemTile = async function (node, item) {
         _iImage.onload = () => resolve(imageLoaded());
         _iImage.onerror = () => resolve(imageIsNotLoaded());
     });
+
+    //settings up events
     node.classList.replace(GLOBAL.loading, GLOBAL.loaded);
     node.onclick = function () {
         event.preventDefault();
@@ -656,13 +863,19 @@ let createItemTile = async function (node, item) {
             ViewController.navigate(VIEW.item, { routeArg: [item.id] });
     };
     node.href = item.isItemLinkToWeb || APP.url.item + item.id;
+
+    //loading item
     setTimeout(() => node.classList.remove(GLOBAL.loaded), 300);
     return node;
 }
+
+//group tile creating method
 let createGroupTile = function (node, group) {
     node.className = "group " + GLOBAL.dataNode;
     node.innerHTML = "<span class='font-title'></span><a class='button'><i class='mi mi-ShowAll'></i> <span>Show all</span></a>";
     node.children[0].innerHTML = group.title;
+
+    //settings up tile events
     node.children[1].onclick = function () {
         event.preventDefault();
         ViewController.navigate(VIEW.group, { routeArg: [group.id] });
@@ -670,6 +883,7 @@ let createGroupTile = function (node, group) {
     node.children[1].href = APP.url.group + group.id;
     return node;
 }
+
 //universal slider class for resourceMap objects
 let ResourceSlider = function () {
     let _res = [];
@@ -694,14 +908,14 @@ let ResourceSlider = function () {
     this.loadResources = async function (resourcesList, current) {
         _res = resourcesList;
         await Promise.all(_res.map(async (res, index) => await _sender.invokeEvent("load", [res, index])));
-        if (current) {
-            _currentIndex = _res.findIndex((res) => res == current);
-            await this.invokeEvent("render", [current, _currentIndex, null, _oldIndex]);
-        } else
-            _renderIndex(0);
+        _renderIndex(current ? _res.findIndex((res) => res == current) : 0);
         await this.invokeEvent("loadFinish", [_res]);
     }
-    this.close = async () => { _oldIndex = -1; _currentIndex = -1; await _sender.invokeEvent("close", [_res[_currentIndex], _currentIndex]) };
+    this.close = async () => {
+        _oldIndex = -1;
+        _currentIndex = -1;
+        await _sender.invokeEvent("close", [_res[_currentIndex], _currentIndex])
+    };
     this.next = async function () {
         let _index = _currentIndex + 1;
         if (_index >= _res.length)
@@ -717,6 +931,8 @@ let ResourceSlider = function () {
         await _sender.invokeEvent("previous", [_res[_currentIndex], _index])
     }
 }
+
+//storage response indexer for group and landing views
 let StorageResponseIndexer = function (response, depth = 1, limit = 3, startIndex = 0, limitOfDepth = 3) {
     let _indexedItems = [];
     response.content?.forEach((entry, index) => {
@@ -738,6 +954,8 @@ let StorageResponseIndexer = function (response, depth = 1, limit = 3, startInde
     });
     return _indexedItems;
 }
+
+//storage response nodes builder for landing and group views
 let StorageResponseBuilder = async function (response, targetNode = document.createElement("DIV"), depth = 1, limit = 3) {
     let _items = [...targetNode.getElementsByClassName(GLOBAL.dataNode)];
     let _indexedItems = StorageResponseIndexer(response, depth, limit, 0);
@@ -749,7 +967,11 @@ let StorageResponseBuilder = async function (response, targetNode = document.cre
             await createItemTile(_items[entry.index] || targetNode.appendChild(document.createElement("a")), entry.entry);
     }));
 }
+
+//local storage array parser for download and theme data
 let LocalStorageArrayParser = (name, _default = []) => window.localStorage[name] ? JSON.parse(window.localStorage[name]) : _default;
+
+//error message node builder
 let createErrorMsg = function (err, node) {
     node.innerHTML = `<i class='mi mi-Error font-header'></i><div class='font-title'>` + err.title + `</div><span class='font-base'>` + err.message + `</span>`;
     if (err.refreshRequire) {
@@ -760,11 +982,14 @@ let createErrorMsg = function (err, node) {
         node.appendChild(_but);
     }
 }
+
 //Item component builder for basic item content controls and sections
 let ItemComponentBuilder = function (component, itemFolder, item) {
     let _type = component.type;
     let _arg = component.arguments || {};
-    let _component
+    let _component;
+
+    //generating nodes
     switch (_type) {
         case "section":
             _component = document.createElement("DIV");
@@ -780,28 +1005,38 @@ let ItemComponentBuilder = function (component, itemFolder, item) {
         case "image":
             _component = document.createElement("DIV");
             _component.classList.add("image");
+
+            //generating img
             let _img = document.createElement("IMG");
             _img.src = APP.itemFolder + itemFolder + APP.resourceFolder + component.resource[0].src;
+            _img.onerror = function () { _img.onload = function () { }; _img.src = "/img/image_error.webp"; _img.classList.add("no-image"); }
+            _img.onload = function () {
+                _img.onclick = function () {
+                    ViewController.navigate(VIEW.resource, { routeArg: [item.id, item.resources[component.resIndex].hash], currentItem: item })
+                }
+            }
+
+            //generating alt text
             let _alt = document.createElement("SPAN");
             _alt.className = "img-alt";
             _alt.innerHTML = component.alt || "";
+
+            //building
             _component.appendChild(_img);
             _component.appendChild(_alt);
-            _img.onerror = function () { _img.onload = function () { }; _img.src = "/img/image_error.webp"; _img.classList.add("no-image"); }
-            _img.onclick = function () {
-                ViewController.navigate(VIEW.resource, { routeArg: [item.id, item.resources[component.resIndex].hash], currentItem: item })
-            }
-            // _img.onload = function () { };
             break;
         case "quote":
             _component = document.createElement("DIV");
-            let _quoteText = document.createElement("DIV");
-            let _quoteAuthor = document.createElement("SPAN");
             _component.className = "quote";
+
+            let _quoteText = document.createElement("DIV");
             _quoteText.className = "font-header";
-            _quoteAuthor.className = "font-base";
             _quoteText.innerHTML = component.content;
+
+            let _quoteAuthor = document.createElement("SPAN");
+            _quoteAuthor.className = "font-base";
             _quoteAuthor.innerHTML = component.author;
+
             _component.appendChild(_quoteText);
             _component.appendChild(_quoteAuthor);
             break;
@@ -824,27 +1059,39 @@ let ItemComponentBuilder = function (component, itemFolder, item) {
             _component = document.createElement("DIV");
             _component.classList.add("gallery");
             _component.innerHTML = "<div><b class='font-subtitle'>" + component.title + "</b></div><div class='list'></div>";
+
+            //show all button
             let _button = document.createElement("A");
             _button.innerHTML = "<i class='mi mi-Picture'></i><span>Show all</span>";
             _button.classList.add("button");
             _button.onclick = function () {
                 ViewController.navigate(VIEW.resource, {
-                    routeArg: [item.id, item.resources[component.resIndex].hash],
+                    routeArg: [
+                        item.id,
+                        item.resources[component.resIndex].hash
+                    ],
                     currentItem: item,
                 })
             }
             _component.children[0].appendChild(_button);
+
+            //generating images
             let _max = component.resource.length > 5 ? 5 : component.resource.length;
             for (let i = 0; i < _max; i++) {
                 let res = component.resource[i];
                 let _img = document.createElement("IMG");
                 _img.src = APP.itemFolder + itemFolder + APP.resourceFolder + res.src;
                 _component.children[1].appendChild(_img);
-                _img.onclick = function () {
-                    ViewController.navigate(VIEW.resource, {
-                        routeArg: [item.id, item.resources[component.resIndex + i].hash],
-                        currentItem: item,
-                    })
+                _img.onload = function () {
+                    _img.onclick = function () {
+                        ViewController.navigate(VIEW.resource, {
+                            routeArg: [
+                                item.id,
+                                item.resources[component.resIndex + i].hash
+                            ],
+                            currentItem: item,
+                        })
+                    }
                 }
             };
             break;
