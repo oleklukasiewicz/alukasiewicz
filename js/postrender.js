@@ -28,9 +28,4 @@ const START_ROUTE = RouteController.resolve(START_URL[0]);
 getById(START_ROUTE.target).classList.add(GLOBAL.activeView);
 APPNODE.classList.add(START_ROUTE.target);
 
-//setting up theme button
-let themeButton = getById("main-theme-toggle-button");
-themeButton.classList.toggle(GLOBAL.toggled, ThemeController.theme.isDark);
-themeButton.addEventListener("click", () => ThemeController.set(!themeButton.classList.contains(GLOBAL.toggled)));
-ThemeController.addEventListener("themeSet", (theme) => themeButton.classList.toggle(GLOBAL.toggled, theme.isDark));
 

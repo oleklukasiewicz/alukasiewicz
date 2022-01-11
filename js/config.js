@@ -685,7 +685,7 @@ const resourceView = new View(VIEW.resource, APP.url.resource, {},
             this.data.resSlider = new ResourceSlider();
 
             //getting nodes
-            let _resList = getById("image-viewer-list");
+            let _resList = this.data.resList = getById("image-viewer-list");
             let _prevBtn = getById("image-viewer-prev");
             let _nextBtn = getById("image-viewer-next");
             _nextBtn.addEventListener("click", this.data.resSlider.next);
@@ -730,6 +730,8 @@ const resourceView = new View(VIEW.resource, APP.url.resource, {},
 
             //loading resources to slider
             await this.data.resSlider.loadResources(resourceGroup.group, resourceGroup.resource);
+            if (arg.connectedAnimation)
+                arg.connectedAnimation.start(this.data.resList.children[this.data.resSlider.currentIndex]);
         },
         onLoadFinish: function () {
             this.rootNode.classList.remove(GLOBAL.loading);
@@ -787,7 +789,7 @@ window.addEventListener("load", async function () {
     ViewController.addError(new ErrorClass("item_load_error", "Items cannot be loaded", "Try refreshing the page"));
     ViewController.addError(new ErrorClass("item_outdated", "Items are outdated", "Try refreshing the page"));
 
-    //adding home button event, removing first-start DOM indicator, setting theme indicator
+    //adding home button event, removing first-start DOM indicator, setting offline indicator
     getById("home-button").addEventListener("click", () => ViewController.navigateToDefaultView());
     setTimeout(() => document.body.classList.remove("first-start"), 300);
     APPNODE.classList.toggle(GLOBAL.offline, !navigator.onLine);
@@ -930,6 +932,14 @@ let ResourceSlider = function () {
         await _renderIndex(_index);
         await _sender.invokeEvent("previous", [_res[_currentIndex], _index])
     }
+    Object.defineProperties(this,
+        {
+            currentIndex:
+            {
+                get: () => _currentIndex
+            }
+        }
+    )
 }
 
 //storage response indexer for group and landing views
@@ -1013,7 +1023,10 @@ let ItemComponentBuilder = function (component, itemFolder, item) {
             _img.onerror = function () { _img.onload = function () { }; _img.src = "/img/image_error.webp"; _img.classList.add("no-image"); }
             _img.onload = function () {
                 _img.onclick = function () {
-                    ViewController.navigate(VIEW.resource, { routeArg: [item.id, item.resources[component.resIndex].hash], currentItem: item })
+                    ViewController.navigate(VIEW.resource, {
+                        routeArg: [item.id, item.resources[component.resIndex].hash],
+                        currentItem: item
+                    })
                 }
             }
 
@@ -1091,7 +1104,7 @@ let ItemComponentBuilder = function (component, itemFolder, item) {
                                 item.id,
                                 item.resources[component.resIndex + i].hash
                             ],
-                            currentItem: item,
+                            currentItem: item
                         })
                     }
                 }
@@ -1101,4 +1114,46 @@ let ItemComponentBuilder = function (component, itemFolder, item) {
             _component = document.createElement("DIV");
     }
     return _component
+}
+
+//shadow class for connected animation
+let ShadowNodeClass = function (sourceNode, props) {
+    let _target = this.target = sourceNode.cloneNode(true);
+    let _computed = window.getComputedStyle(sourceNode);
+    props.forEach((_prop) => _target.style[_prop] = _computed[_prop]);
+    let _props = [];
+    props.forEach((prop) => _props.push(_computed[prop]));
+    this.target.classList.add("shadow");
+}
+let ConnectedAnimation = function (source, prop = []) {
+    let _shadow;
+    let _shadowObj;
+    let _source = source;
+    let _target;
+    this.start = function (target) {
+        _target = target;
+        let _pos = _target.getBoundingClientRect();
+        _shadow.style.top = _target.offsetTop + "px";
+        _shadow.style.left = _target.offsetLeft + "px";
+        _shadow.style.width = _pos.width + "px";
+        _shadow.style.height = _pos.height + "px";
+        _shadow.style.display = "";
+        let _computedTarget = window.getComputedStyle(_target);
+        prop.forEach((_prop) => _shadow.style[_prop] = _computedTarget[_prop]);
+        _target.style.display = "none";
+        setTimeout(function () {
+            _shadow.remove();
+            _target.style.display = "";
+        }, 3000);
+    }
+    this.prepare = function () {
+        _shadowObj = new ShadowNodeClass(_source, prop);
+        _shadow = _shadowObj.target;
+        let _pos = _source.getBoundingClientRect();
+        _shadow.style.top = _pos.top + "px";
+        _shadow.style.width = _pos.width + "px";
+        _shadow.style.height = _pos.height + "px";
+        _shadow.style.left = _source.offsetLeft + "px";
+        document.body.appendChild(_shadow);
+    }
 }
