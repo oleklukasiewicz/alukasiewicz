@@ -41,6 +41,7 @@
     --logo-height: 14px;
     --skew: 23deg;
     --skewR: -23deg;
+    --border-radius:4px;
     --logo-width: 5px;
     --size-font-icon: 12px;
     --size-font-caption: 12px;
@@ -362,6 +363,7 @@ body.first-start{
     display: flex;
     padding: 40px 50px 30px;
     user-select: none;
+    border-radius: var(--border-radius);
 }
 #profile-header > div{
     display: inline-table;
@@ -416,13 +418,16 @@ body.first-start{
     flex-direction: row;
     flex-wrap: wrap;
     width: 100%;
+    gap: 8px;
+    max-width: var(--size-max-width);
+    margin: 0 auto;
 }
 #item-title{
     flex: 1;
-    display: inline-block;
+    display: block;
     width: auto;
     min-width: 50%;
-    margin: 0 20px 10px 0;
+    margin: 0 20px 0px 0;
     line-height: 30px;
 }
 #item-info{
@@ -439,6 +444,7 @@ body.first-start{
     margin-top: 0;
     height: 30px;
     overflow: hidden;
+    float: right;
     display: block;
 }
 #item-download-button > *{
@@ -493,18 +499,18 @@ body.first-start{
     box-sizing: border-box;
     display: table;
     width: 100%;
-    line-height: 1.45;
-    letter-spacing: normal;
+    line-height: 1.6em;
+    letter-spacing: 0.1px;
     max-width: var(--size-max-width);
     margin: 0 auto 40px;
 }
 #item-content > .section{
-    margin-top: 10px;
+    margin-bottom: 16px;
 }
 #item-content > .section > .section-title{
     font-weight: 700;
-    margin-bottom: 20px;
-    margin-top: 20px;
+    margin-bottom: 24px;
+    margin-top: 24px;
 }
 #item-content > .section > *{
     transition: var(--transition-bg-only);
@@ -753,6 +759,9 @@ u.dotted-separator{
     grid-template-rows: auto auto 1fr auto;
     grid-template-columns: 100%;
     z-index: 1;
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    border: 1px solid transparent;
     cursor: default;
     user-select: none;
     transition: box-shadow var(--time-A1) cubic-bezier(.16,1,.29,.99),transform var(--time-A1) cubic-bezier(.16,1,.29,.99),opacity var(--time),border-color var(--time),background-color var(--time);
@@ -760,6 +769,7 @@ u.dotted-separator{
     cursor: pointer;
 }
 .list-view > .item:hover{
+    border-color: var(--color-theme-A2);
     box-shadow: 0 12px 30px 0 rgba(0,0,0,.13);
     transform: translateY(-4px);
     background-color: var(--color-theme-A1);
@@ -902,14 +912,14 @@ u.dotted-separator{
 .button,
 .toggle-button{
     background-color: transparent;
-    border: 0;
+    border: 1px solid transparent;
     min-width: 30px;
     height: 30px;
     padding: 9px 11px;
     box-sizing: border-box;
     cursor: pointer;
     color: var(--color-font);
-    border-radius: 0;
+    border-radius: var(--border-radius);
     outline: 0;
     transition: background-color var(--time),box-shadow var(--time);
     text-decoration: none;
@@ -976,7 +986,7 @@ u.dotted-separator{
     display: inline-block;
     overflow: hidden;
     text-align: center;
-    padding: 12px;
+    padding: 8px;
     width: 37px;
     height: 37px;
     margin-right: 4px;
@@ -984,20 +994,11 @@ u.dotted-separator{
 .button.github > svg,
 .button.instagram > svg,
 .button.twitter > svg{
-    height: 13px;
-    width: 13px;
+    height: 32px;
+    width: 32px;
     fill: var(--color-font);
     display: inline-table;
     margin-bottom: 8px;
-    transform: translateY(0);
-}
-.button.github > span,
-.button.instagram > span,
-.button.twitter > span{
-    vertical-align: top;
-    width: 65px;
-    display: inline-table;
-    text-align: left;
 }
 .button.github:hover > svg,
 .button.instagram:hover > svg,

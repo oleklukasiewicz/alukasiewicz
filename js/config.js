@@ -1004,7 +1004,7 @@ let ItemComponentBuilder = function (component, itemFolder, item) {
         case "section":
             _component = document.createElement("DIV");
             _component.classList.add("section");
-            if (!_arg.noTitle) {
+            if (component.title) {
                 let _title = document.createElement("DIV");
                 _title.className = "section-title font-subtitle";
                 _title.innerText = component.title;
