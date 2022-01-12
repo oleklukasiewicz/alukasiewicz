@@ -802,6 +802,14 @@ window.addEventListener("load", async function () {
 
     //adding home button event, removing first-start DOM indicator, setting offline indicator
     getById("home-button").addEventListener("click", () => ViewController.navigateToDefaultView());
+    getById("main-header-about-button").addEventListener("click", (e) => {
+        e.preventDefault();
+        ViewController.navigate(VIEW.profile);
+    });
+    getById("main-header-work-button").addEventListener("click", (e) => {
+        e.preventDefault();
+        ViewController.navigate(VIEW.group,{routeArg:["all"]});
+    });
     setTimeout(() => document.body.classList.remove("first-start"), 300);
     APP_NODE.classList.toggle(GLOBAL.offline, !navigator.onLine);
 
