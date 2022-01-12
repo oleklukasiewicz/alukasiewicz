@@ -1,4 +1,4 @@
-//global view id
+//global views ids
 const VIEW = {
     landing: "landing",
     item: "item",
@@ -9,7 +9,7 @@ const VIEW = {
 
 //global app variables
 const APP = {
-    name: "Aleksander Łukasiewicz",
+    name: "Olek Łukasiewicz",
     version: "0-0-0-3",
     url: {
         landing: "",
@@ -20,24 +20,10 @@ const APP = {
     },
     itemFolder: "/item",
     resourceFolder: "/resources",
-    itemContentFileName: "/content.json",
-    date: (date, months = [
-        "Jan",
-        "Feb",
-        "Mar",
-        "Apr",
-        "May",
-        "Jun",
-        "Jul",
-        "Aug",
-        "Sep",
-        "Oct",
-        "Nov",
-        "Dec"
-    ]) => (date.day + "&nbsp;" + months[date.month - 1] + ",&nbsp;" + date.year)
+    itemContentFileName: "/content.json"
 };
 
-//gloabl app classes
+//global app classes
 const GLOBAL = {
     toggled: "toggled",
     pending: "pending",
@@ -56,8 +42,8 @@ const GLOBAL = {
 //website start url
 const START_URL = (window.location.pathname + (window.location.pathname.substr(-1) == "/" ? "" : "/")).substring(1).split("/");
 
-//storage folders names
-const STORAGE = {
+//local storage folders names
+const LOCAL_STORAGE = {
     itemDownload: "downloaded_items",
     itemPending: "pending_items",
 };

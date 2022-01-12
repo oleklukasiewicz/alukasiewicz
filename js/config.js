@@ -17,10 +17,8 @@ let Item = function (id, aliases = [], isItemLinkToWeb = false, folder = "/" + i
             image: tileImage,
             content: tileContent
         },
-        date: {
-            create: createDate,
-            modify: modifyDate
-        },
+        createDate,
+        modifyDate,
         groups,
         isItemLinkToWeb,
         folder,
@@ -41,11 +39,26 @@ let ResourceMap = function (resource, hash, firstGroupIndex, lastGroupIndex) {
 
 //item date class declaration
 let ItemDate = function (day, month, year) {
-    return {
-        day,
-        month,
-        year
-    };
+    this.toHTMLString = function (months = [
+        "Jan",
+        "Feb",
+        "Mar",
+        "Apr",
+        "May",
+        "Jun",
+        "Jul",
+        "Aug",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dec"
+    ]) {
+        return (this.day + "&nbsp;" + months[this.month - 1] + ",&nbsp;" + this.year)
+    }
+    let _today = new Date();
+    this.day = day || _today.getDate();
+    this.month = month || _today.getMonth() + 1;
+    this.year = year || _today.getFullYear();
 };
 
 //group class declaration
@@ -57,10 +70,8 @@ let Group = function (id, aliases = [], title, createDate, modifyDate, groups = 
         title,
         groups,
         isDefault,
-        date: {
-            create: createDate,
-            modify: modifyDate
-        },
+        createDate,
+        modifyDate,
         type: GLOBAL.group
     }
 }
@@ -88,12 +99,12 @@ let HistoryItem = function (id, index, arg) {
 }
 
 //error class declaration
-let ErrorClass = function (id, title, message, chaninedErrorIDs = [], refreshRequire = true) {
+let ErrorClass = function (id, title, message, triggerErrorsList = [], refreshRequire = true) {
     return {
         id,
         title,
         message,
-        chaninedErrorIDs,
+        triggerErrorsList,
         refreshRequire
     }
 }
@@ -117,10 +128,10 @@ const createHash = function (str, seed = 0) {
 let ViewController = (function () {
     let _controller = {};
     let _views = [];
-    let _currentView;
     let _currentHistoryIndex = -1;
-    let _defaultViewIndex = -1;
+    let _defaultViewHistoryIndex = -1;
     let _defaultView;
+    let _currentView;
     let _previousView;
     EventController.call(_controller, {
         "navigateToView": [],
@@ -131,7 +142,7 @@ let ViewController = (function () {
 
     //integrated error controller
     let _errors = [];
-    let _historicalErrors = [];
+    let _errorHistory = [];
     let _currentGlobalError;
 
     _controller.addError = function (error) {
@@ -140,19 +151,19 @@ let ViewController = (function () {
     }
     _controller.invokeError = function (errorId, globalInvoke = false) {
         let __error = _errors.find((_error) => (errorId == _error.id) || (errorId.id == _error.id));
-        let _errorAccepted = true;
-        __error.chaninedErrorIDs.forEach((err) => {
-            if (_historicalErrors.includes(err))
-                _errorAccepted = false;
+        let _errorCanBeInvoked = true;
+        __error.triggerErrorsList.forEach((err) => {
+            if (_errorHistory.includes(err))
+                _errorCanBeInvoked = false;
         });
-        if (_errorAccepted) {
+        if (_errorCanBeInvoked) {
             if (globalInvoke) {
                 _views.forEach((view) => view.registered ? view.event?.onError.call(view, __error) : "");
                 _currentGlobalError = __error;
             }
             else
                 _currentView.event?.onError.call(_currentView, __error);
-            _historicalErrors.push(__error.id);
+            _errorHistory.push(__error.id);
         }
     }
     //view controller methods
@@ -208,7 +219,7 @@ let ViewController = (function () {
         if (!arg.noHistoryPush) {
             _currentHistoryIndex++;
             if (_target == _defaultView)
-                _defaultViewIndex = _currentHistoryIndex;
+                _defaultViewHistoryIndex = _currentHistoryIndex;
 
             //invoking history edit event
             _controller.invokeEvent("historyEdit", [
@@ -216,7 +227,7 @@ let ViewController = (function () {
                     routeArg: arg.routeArg,
                     historyArg: arg.historyArg
                 }), {
-                    defaultViewIndex: _defaultViewIndex
+                    defaultViewHistoryIndex: _defaultViewHistoryIndex
                 }), _target]
             );
         }
@@ -606,7 +617,7 @@ const itemView = new View(VIEW.item, APP.url.item, { currentItem: null }, {
             this.data._setIDBState(item);
             document.title = item.title + " - " + APP.name;
             this.data.iTitle.innerHTML = item.title;
-            this.data.iInfo.innerHTML = APP.date(item.date.create) + ((item.date.modify) ? " <u class='dotted-separator'></u> Updated " + APP.date(item.date.modify) : "");
+            this.data.iInfo.innerHTML = item.createDate.toHTMLString() + ((item.modifyDate) ? " <u class='dotted-separator'></u> Updated " + item.modifyDate.toHTMLString() : "");
 
             //preparing content
             this.data.iContent.innerHTML = "";
@@ -652,7 +663,7 @@ const groupView = new View(VIEW.group, APP.url.group, { scrollY: -1 }, {
         this.data.currentGroup = group;
         this.data.groupTitle.innerHTML = group.title;
         document.title = group.title + " - " + APP.name;
-        this.data.groupInfo.innerHTML = APP.date(group.date.create) + " <u class='dotted-separator'></u> " + group.content.length + "&nbsp;" + (group.content.length != 1 ? "items" : "item");
+        this.data.groupInfo.innerHTML = group.createDate.toHTMLString() + " <u class='dotted-separator'></u> " + group.content.length + "&nbsp;" + (group.content.length != 1 ? "items" : "item");
         this.data.groupData.classList.remove(GLOBAL.loading);
 
         //loading items of group
@@ -763,10 +774,10 @@ ViewController.addEventListener("historyEdit", (historyItem, view) => {
         history.pushState(historyItem, '', _url);
 });
 ViewController.addEventListener("navigateDefault", () =>
-    (history.state.defaultViewIndex != -1 && (history.state.defaultViewIndex - history.state.index) != 0) ? history.go(history.state.defaultViewIndex - history.state.index) : "");
+    (history.state.defaultViewHistoryIndex != -1 && (history.state.defaultViewHistoryIndex - history.state.index) != 0) ? history.go(history.state.defaultViewHistoryIndex - history.state.index) : "");
 ViewController.addEventListener("navigateToView", (view, lastView) => {
     view.rootNode.classList.add(GLOBAL.activeView);
-    APPNODE.classList.replace(lastView?.id, view.id)
+    APP_NODE.classList.replace(lastView?.id, view.id)
 });
 ViewController.addEventListener("navigateFromView", (lastView) => lastView.rootNode.classList.remove(GLOBAL.activeView));
 
@@ -779,9 +790,9 @@ ResourceDownloadController.addEventListener("download", async (item, file) =>
 ResourceDownloadController.addEventListener("remove", async (item, file) =>
     await removeResourceFromCache(APP.itemFolder + item.folder + APP.resourceFolder + file));
 ResourceDownloadController.addEventListener("save", (item, items) =>
-    window.localStorage[STORAGE.itemDownload] = JSON.stringify(items));
+    window.localStorage[LOCAL_STORAGE.itemDownload] = JSON.stringify(items));
 ResourceDownloadController.addEventListener("savePending", (item, items) =>
-    window.localStorage[STORAGE.itemPending] = JSON.stringify(items));
+    window.localStorage[LOCAL_STORAGE.itemPending] = JSON.stringify(items));
 
 //DOM events
 window.addEventListener("load", async function () {
@@ -792,10 +803,10 @@ window.addEventListener("load", async function () {
     //adding home button event, removing first-start DOM indicator, setting offline indicator
     getById("home-button").addEventListener("click", () => ViewController.navigateToDefaultView());
     setTimeout(() => document.body.classList.remove("first-start"), 300);
-    APPNODE.classList.toggle(GLOBAL.offline, !navigator.onLine);
+    APP_NODE.classList.toggle(GLOBAL.offline, !navigator.onLine);
 
     //loading downloaded and pending resources list
-    ResourceDownloadController.load(LocalStorageArrayParser(STORAGE.itemDownload));
+    ResourceDownloadController.load(LocalStorageArrayParser(LOCAL_STORAGE.itemDownload));
 
     //loading items and groups
     try {
@@ -813,17 +824,17 @@ window.addEventListener("load", async function () {
     });
     if (ItemController.itemsLoaded) {
         //loading downloaded items
-        await ResourceDownloadController.loadPending(LocalStorageArrayParser(STORAGE.itemPending));
+        await ResourceDownloadController.loadPending(LocalStorageArrayParser(LOCAL_STORAGE.itemPending));
         if (this.navigator.onLine)
             ResourceDownloadController.downloadPending();
     }
 });
 window.addEventListener("online", () => {
-    APPNODE.classList.remove(GLOBAL.offline);
-    ResourceDownloadController.loadPending(LocalStorageArrayParser(STORAGE.itemPending));
+    APP_NODE.classList.remove(GLOBAL.offline);
+    ResourceDownloadController.loadPending(LocalStorageArrayParser(LOCAL_STORAGE.itemPending));
     ResourceDownloadController.downloadPending();
 });
-window.addEventListener("offline", () => APPNODE.classList.add(GLOBAL.offline));
+window.addEventListener("offline", () => APP_NODE.classList.add(GLOBAL.offline));
 window.addEventListener("popstate", (event) =>
     ViewController.move((ViewController.currentHistoryIndex - event.state.index <= 0), event.state));
 
@@ -835,7 +846,7 @@ let createItemTile = async function (node, item) {
         oldNode.parentElement.replaceChild(node, oldNode);
     }
     node.className = "item " + GLOBAL.dataNode + " " + GLOBAL.loading;
-    node.innerHTML = "<div class='img'><img src='" + APP.itemFolder + item.folder + item.tile.image + "' alt='" + item.title + "'/></div><b class='font-subtitle'>" + item.title + "</b><span class='font-base'>" + item.tile.content + "</span><div class='labels'><div class='button'>" + (item.isItemLinkToWeb ? "Open link <i class='mi mi-OpenInNewWindow'></i>" : "Read more <i class='mi mi-BackMirrored'></i>") + "</div>" + (item.date.modify ? "<div class='label font-caption'><i class='mi mi-Update'></i> &nbsp;&nbsp;" + APP.date(item.date.modify) + "</div>" : "") + "</div>";
+    node.innerHTML = "<div class='img'><img src='" + APP.itemFolder + item.folder + item.tile.image + "' alt='" + item.title + "'/></div><b class='font-subtitle'>" + item.title + "</b><span class='font-base'>" + item.tile.content + "</span><div class='labels'><div class='button'>" + (item.isItemLinkToWeb ? "Open link <i class='mi mi-OpenInNewWindow'></i>" : "Read more <i class='mi mi-BackMirrored'></i>") + "</div>" + (item.modifyDate ? "<div class='label font-caption'><i class='mi mi-Update'></i> &nbsp;&nbsp;" + item.modifyDate.toHTMLString() + "</div>" : "") + "</div>";
 
     //loading image of tile
     let _iImage = node.children[0].children[0],
@@ -873,6 +884,11 @@ let createItemTile = async function (node, item) {
 
 //group tile creating method
 let createGroupTile = function (node, group) {
+    if (node.nodeName != "DIV") {
+        let oldNode = node;
+        node = document.createElement("DIV");
+        oldNode.parentElement.replaceChild(node, oldNode);
+    }
     node.className = "group " + GLOBAL.dataNode;
     node.innerHTML = "<span class='font-title'></span><a class='button'><i class='mi mi-ShowAll'></i> <span>Show all</span></a>";
     node.children[0].innerHTML = group.title;

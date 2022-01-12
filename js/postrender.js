@@ -1,5 +1,5 @@
 //main app node declaration
-const APPNODE = document.getElementById("app");
+const APP_NODE = document.getElementById("app");
 
 //route controller declaration
 let RouteController = (function () {
@@ -11,7 +11,6 @@ let RouteController = (function () {
         _routes.push(route);
         _defaultRoute = route.isDefault ? route : _defaultRoute;
     }
-
     _controller.resolve = (arg) => _routes.find((route) => route.source == arg) || _defaultRoute;
     return _controller;
 }());
@@ -26,6 +25,6 @@ RouteController.add(new RouteClass(VIEW.resource));
 //loading start view
 const START_ROUTE = RouteController.resolve(START_URL[0]);
 getById(START_ROUTE.target).classList.add(GLOBAL.activeView);
-APPNODE.classList.add(START_ROUTE.target);
+APP_NODE.classList.add(START_ROUTE.target);
 
 
