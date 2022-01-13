@@ -142,6 +142,9 @@
 .mi-Accept:before{
     content: "\EA01";
 }
+.mi-Refresh:before{
+    content: "\EDB8";
+}
 .mi-Contact:before{
     content: "\EB14";
 }
