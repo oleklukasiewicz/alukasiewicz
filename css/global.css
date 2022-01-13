@@ -148,6 +148,9 @@
 .mi-Contact:before{
     content: "\EB14";
 }
+.mi-Set:before{
+    content: "\EE0E";
+}
 .mi-Navigation::before{
     content: "\EBD8";
 }
@@ -276,6 +279,7 @@ body.first-start{
 }
 #main-header-navigation{
     display: flex;
+    gap: 4px;
 }
 #main-header-nav-button{
     display: none;
@@ -624,12 +628,6 @@ body.first-start{
     margin-right: 4px;
     display: inline-table;
 }
-#image-viewer-prev:active > i{
-    transform: translate(-2px,1px);
-}
-#image-viewer-next:active > i{
-    transform: translate(2px,1px);
-}
 #image-viewer-close{
     float: right;
 }
@@ -880,7 +878,6 @@ u.dotted-separator{
 }
 .button > i,
 .toggle-button > i{
-    transition: var(--time);
     transform: translateY(1px);
     font-size: var(--size-font-icon);
     line-height: var(--size-font-icon);
@@ -1153,19 +1150,14 @@ u.dotted-separator{
     }
     #main-header-nav-button{
         display: block;
-        width: 39px;
-        height: 39px;
-        padding: 11px 12px;
+        width: 34px;
+        height: 34px;
+        padding: 9px 10px;
         position: relative;
         z-index: 20;
     }
-    #main-header-icons-left
-    {
-        margin: 4px 0;
-    }
-    #main-header-work-button,
-    #main-header-about-button
-    {
+    #main-header-about-button,
+    #main-header-work-button{
         padding: 11px 12px;
     }
     #main-header-navigation.hidden{
@@ -1177,7 +1169,6 @@ u.dotted-separator{
         height: 100vh;
         right: 0;
         top: 0;
-        gap: 4px;
         padding-top: 56px;
         box-sizing: border-box;
         flex-direction: column;

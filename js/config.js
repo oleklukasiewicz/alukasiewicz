@@ -710,7 +710,7 @@ window.addEventListener("online", () => {
 window.addEventListener("offline", () => APP_NODE.classList.add(GLOBAL.offline));
 window.addEventListener("popstate", (event) =>
     ViewController.move((ViewController.currentHistoryIndex - event.state.index <= 0), event.state));
-window.addEventListener("click", hideNavigation);
+
 //navigation control
 let navigationNode;
 let navigationInFocus = false;
@@ -718,13 +718,15 @@ function setNavigationState(isOpened) {
     navigationNode.classList.toggle("hidden", isOpened);
 }
 function toggleNavigationState() {
-    navigationInFocus=true;
+    navigationInFocus = true;
     navigationNode.classList.toggle("hidden");
 }
 function hideNavigation() {
     if (!navigationInFocus)
         setNavigationState(1);
 }
+window.addEventListener("click", hideNavigation);
+
 //item tile creating method
 let createItemTile = async function (node, item) {
     if (node.nodeName != "A") {
