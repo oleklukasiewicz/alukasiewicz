@@ -42,12 +42,6 @@ const GLOBAL = {
 //website start url
 const START_URL = (window.location.pathname + (window.location.pathname.substr(-1) == "/" ? "" : "/")).substring(1).split("/");
 
-//local storage folders names
-const LOCAL_STORAGE = {
-    itemDownload: "downloaded_items",
-    itemPending: "pending_items",
-};
-
 //shortcut for getElementById
 const getById = (id) => document.getElementById(id);
 

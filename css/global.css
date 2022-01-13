@@ -136,17 +136,8 @@
 .mi-OpenInNewWindow:before{
     content: "\ED1D";
 }
-.mi-NetworkOffline:before{
-    content: "\ED10";
-}
-.mi-Download:before{
-    content: "\EB68";
-}
 .mi-Update:before{
     content: "\EB31";
-}
-.mi-Refresh:before{
-    content: "\EDB8";
 }
 .mi-Accept:before{
     content: "\EA01";
@@ -424,59 +415,6 @@ body.first-start{
     color: var(--color-font);
     margin-right: 8px;
 }
-#item-download-button{
-    padding: 8px 8px;
-    margin-top: 0;
-    height: 30px;
-    overflow: hidden;
-    float: right;
-    display: block;
-}
-#item-download-button > *{
-    opacity: 0;
-}
-#item-download-button.progress{
-    pointer-events: none;
-    background-color: transparent;
-}
-#item-download-button > div{
-    transition: transform var(--time),opacity var(--time);
-    display: flex;
-    height: 15px;
-    margin: 0;
-}
-#item-download-button > div > i{
-    margin-right: 6px;
-}
-#item-download-button > div > span{
-    text-align: center;
-    flex: 1;
-}
-#item-download-button > :nth-child(1){
-    opacity: 1;
-}
-#item-download-button.toggled > div{
-    transform: translateY(-30px);
-}
-#item-download-button.toggled > :nth-child(3){
-    opacity: 1;
-}
-#item-download-button.pending > :nth-child(1) #item-download-button.toggled > :nth-child(1),
-#item-download-button.progress > :nth-child(1){
-    opacity: 0;
-}
-#item-download-button.progress > div{
-    transform: translateY(-15px);
-}
-#item-download-button.progress > :nth-child(2){
-    opacity: 1;
-}
-#item-download-button.pending > div{
-    transform: translateY(-45px);
-}
-#item-download-button.pending > :nth-child(4){
-    opacity: 1;
-}
 #item-content{
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
@@ -556,9 +494,6 @@ body.first-start{
     width: 20%;
     min-width: 100px;
     background-color: var(--color-theme-A1);
-}
-#item.loading #item-download-button{
-    display: none;
 }
 #item.loading #item-content > b.ghost{
     height: 26px;

@@ -9,7 +9,7 @@ const ITEM_VERSION = "0-0-0-3";
 const TODAY=new Date();
 let getGroups = () => [
     new Group("best-pixelart", ["best", "best-pixel"], "Featured art", new ItemDate(5, 11, 2021),null,["home"]),
-    new Group("all",["other",""],"All projects",new ItemDate(),null,["home"],{},true),
+    new Group("all",["other","","work"],"All projects",new ItemDate(),null,["home"],{},true),
     new Group("blog",[],"Blog",new ItemDate(),null,["home"]),
     new Group("home-group",["home","landing"],"Home Group")
 ];
