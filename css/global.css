@@ -281,6 +281,9 @@ body.first-start{
     display: flex;
     gap: 4px;
 }
+#main-header-navigation-close-space{
+    display: none;
+}
 #main-header-nav-button{
     display: none;
 }
@@ -1178,6 +1181,20 @@ u.dotted-separator{
         transform: translate(8px);
         background-color: var(--color-theme);
         border: 1px solid var(--color-theme-A1);
+        z-index: 18;
+    }
+    #main-header-navigation.hidden ~ #main-header-navigation-close-space{
+        display: none !important;
+    }
+    #main-header-navigation ~ #main-header-navigation-close-space{
+        width: 100vw;
+        display: table;
+        position: absolute;
+        top: 0px;
+        z-index: 16;
+        background-color: rgba(0,0,0,0.3);
+        height: 100vh;
+        left: 0;
     }
 }
 @media only screen and (max-width:320px){

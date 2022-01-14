@@ -662,7 +662,7 @@ ViewController.addEventListener("navigateDefault", () =>
 ViewController.addEventListener("navigateToView", (view, lastView) => {
     view.rootNode.classList.add(GLOBAL.activeView);
     APP_NODE.classList.replace(lastView?.id, view.id);
-    setNavigationState(1);
+    setNavigationState(false);
 });
 ViewController.addEventListener("navigateFromView", (lastView) => lastView.rootNode.classList.remove(GLOBAL.activeView));
 
@@ -683,9 +683,8 @@ window.addEventListener("load", async function () {
         ViewController.navigate(VIEW.group, { routeArg: ["work"] });
     });
     navigationNode = getById("main-header-navigation");
-    navigationNode.addEventListener("mouseenter", () => navigationInFocus = true);
-    navigationNode.addEventListener("mouseleave", () => navigationInFocus = false);
     getById("main-header-nav-button").addEventListener("click", toggleNavigationState);
+    getById("main-header-navigation-close-space").addEventListener("click", hideNavigation);
     setTimeout(() => document.body.classList.remove("first-start"), 300);
     APP_NODE.classList.toggle(GLOBAL.offline, !navigator.onLine);
 
@@ -704,28 +703,22 @@ window.addEventListener("load", async function () {
         routeArg: START_URL.slice(1, START_URL.length - 1)
     });
 });
-window.addEventListener("online", () => {
-    APP_NODE.classList.remove(GLOBAL.offline);
-});
-window.addEventListener("offline", () => APP_NODE.classList.add(GLOBAL.offline));
 window.addEventListener("popstate", (event) =>
     ViewController.move((ViewController.currentHistoryIndex - event.state.index <= 0), event.state));
 
 //navigation control
 let navigationNode;
-let navigationInFocus = false;
-function setNavigationState(isOpened) {
-    navigationNode.classList.toggle("hidden", isOpened);
+let isNavigationOpen = false;
+let setNavigationState = function (isOpened) {
+    navigationNode.classList.toggle("hidden", !isOpened);
+    isNavigationOpen = isOpened;
 }
-function toggleNavigationState() {
-    navigationInFocus = true;
-    navigationNode.classList.toggle("hidden");
+let toggleNavigationState = () =>
+    setNavigationState(!isNavigationOpen)
+let hideNavigation = function () {
+    if (isNavigationOpen)
+        setNavigationState(false);
 }
-function hideNavigation() {
-    if (!navigationInFocus)
-        setNavigationState(1);
-}
-window.addEventListener("click", hideNavigation);
 
 //item tile creating method
 let createItemTile = async function (node, item) {
@@ -770,6 +763,7 @@ let createItemTile = async function (node, item) {
     setTimeout(() => node.classList.remove(GLOBAL.loaded), 300);
     return node;
 }
+
 //group tile creating method
 let createGroupTile = function (node, group) {
     if (node.nodeName != "DIV") {
