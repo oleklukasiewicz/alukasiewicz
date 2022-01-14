@@ -1,5 +1,5 @@
-const cacheName = "v-s-0-0-1-9";
-const serviceWorkerVersion = "03-12-21-v1";
+const cacheName = "v-s-0-0-2-0";
+const serviceWorkerVersion = "14-01-22-v1";
 const networkOnlyResources =
     [
         "/v1/"
@@ -8,13 +8,8 @@ const alwaysFreshResources =
     [
         "/item/"
     ];
-const itemResources =
-    [
-        "/resources/"
-    ];
 const isAlwaysFreshResource = (req) => alwaysFreshResources.find((resource) => req.includes(resource));
 const isNetworkOnlyResource = (req) => networkOnlyResources.find((resource) => req.includes(resource));
-const isItemResource = (req) => itemResources.find((resource) => req.includes(resource));
 const staticResources = [
     "/",
     "/index.html",
@@ -81,9 +76,6 @@ self.addEventListener('fetch', function (event) {
         fetchNetworkOnly(event);
     } else {
         if (isAlwaysFreshResource(event.request.url)) {
-            if (isItemResource(event.request.url))
-                fetchNetworkFailToCacheIfCached(event);
-            else
                 fetchNetworkFailToCache(event);
         } else
             fetchStaleWhenRevalidate(event, true);
