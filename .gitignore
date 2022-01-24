@@ -67,4 +67,3 @@ node_modules/
 #extensions and vscode
 .extensions/
 .vscode/
-.terser/
