@@ -55,6 +55,6 @@ jobs:
         id: deploy-to-webapp
         with:
           app-name: 'alukasiewicz'
-          slot-name: 'Test'
+          slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_F4C1D4F6DF984E37B646AC53F147CF61 }}
           package: .
