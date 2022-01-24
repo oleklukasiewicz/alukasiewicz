@@ -10,9 +10,13 @@ on:
   workflow_dispatch:
 
 jobs:
+  
   deploy:
     runs-on: ubuntu-latest
-    environment: Test
+    environment:
+      name: 'Test'
+      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
+
     steps:
       - name: 'Deploy to Azure Web App'
         uses: azure/webapps-deploy@v2
@@ -22,12 +26,11 @@ jobs:
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_F4C1D4F6DF984E37B646AC53F147CF61 }}
           package: .
-     
-      - name: 'Deploy to Firebase'
-        uses: FirebaseExtended/action-hosting-deploy@v0
-        id: deploy-to-firebase
+      - uses: actions/checkout@v2
+      - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: '${{ secrets.GITHUB_TOKEN }}'
           firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_PORTFOLIO_13301 }}'
           channelId: live
           projectId: portfolio-13301
+ 
