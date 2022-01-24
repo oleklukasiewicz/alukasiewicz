@@ -25,12 +25,30 @@
         {
           "source": "**",
           "headers": [
-            {"key": "Cache-Control","value": "max-age=0, must-revalidate, public"},
-            { "key" : "Access-Control-Allow-Origin", "value" : "*" },
-            { "key" : "X-Frame-Options", "value" : "deny" },
-            {"key":"Content-Security-Policy","value":"script-src 'self'"},
-            { "key" : "X-Content-Type-Options", "value" : "nosniff" },
-            { "key" : "X-XSS-Protection", "value" : "1; mode=block" }
+            {
+              "key": "Cache-Control",
+              "value": "max-age=0, must-revalidate, public"
+            },
+            {
+              "key": "Access-Control-Allow-Origin",
+              "value": "*"
+            },
+            {
+              "key": "X-Frame-Options",
+              "value": "deny"
+            },
+            {
+              "key": "Content-Security-Policy",
+              "value": "script-src 'self'"
+            },
+            {
+              "key": "X-Content-Type-Options",
+              "value": "nosniff"
+            },
+            {
+              "key": "X-XSS-Protection",
+              "value": "1; mode=block"
+            }
           ]
         }
       ]
@@ -55,12 +73,30 @@
         {
           "source": "**",
           "headers": [
-            {"key": "Cache-Control","value": "max-age=0, must-revalidate, public"},
-            { "key" : "Access-Control-Allow-Origin", "value" : "*" },
-            { "key" : "X-Frame-Options", "value" : "deny" },
-            {"key":"Content-Security-Policy","value":"script-src 'self'"},
-            { "key" : "X-Content-Type-Options", "value" : "nosniff" },
-            { "key" : "X-XSS-Protection", "value" : "1; mode=block" }
+            {
+              "key": "Cache-Control",
+              "value": "max-age=0, must-revalidate, public"
+            },
+            {
+              "key": "Access-Control-Allow-Origin",
+              "value": "*"
+            },
+            {
+              "key": "X-Frame-Options",
+              "value": "deny"
+            },
+            {
+              "key": "Content-Security-Policy",
+              "value": "script-src 'self'"
+            },
+            {
+              "key": "X-Content-Type-Options",
+              "value": "nosniff"
+            },
+            {
+              "key": "X-XSS-Protection",
+              "value": "1; mode=block"
+            }
           ]
         }
       ]
