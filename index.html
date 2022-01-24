@@ -18,7 +18,7 @@
     <link rel="preload" href="/img/profile-dark.webp" as="image" type="image/webp" />
     <link rel="preload" href="/img/profile.webp" as="image" type="image/webp" />
     <script src="/js/config.js" async></script>
-    <link rel="preload" href="/font/micon_nb.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
+    <link rel="preload" href="/font/fluent.woff" as="font" type="font/woff" crossOrigin="anonymous" />
     <link rel="preload" href="/img/image_error.webp" as="image" type="image/webp" />
     <link rel="manifest" href="/manifest.webmanifest">
     <script src="/serviceworker.js" async></script>
@@ -41,9 +41,9 @@
             <div id="main-header-icons" style="float: right;">
                 <div id="main-header-nav-button" class="toggle-button"><i class="mi mi-Navigation"></i></div>
                 <div id="main-header-navigation" class="hidden">
-                    <a id="main-header-work-button" class="toggle-button" href="/group/work"><i
+                    <a id="main-header-work-button" class="toggle-button" href="/group/work" title="Work"><i
                             class="mi mi-Set"></i><span>Work</span></a>
-                    <a id="main-header-about-button" class="toggle-button" href="/about"><i
+                    <a id="main-header-about-button" class="toggle-button" href="/about" title="About me"><i
                             class="mi mi-Contact"></i><span>About</span></a>
                 </div>
                 <div id="main-header-navigation-close-space"></div>
@@ -54,15 +54,21 @@
         <div id="landing" class="view">
             <div id="profile-header"> <i id="profile-image"
                     style="background-size:160px 160px;height:160px;width:160px;background-image: var(--profile-image-src);border-radius: 50%;min-width:160px;min-height:160px; margin-top: 10px;margin-bottom: 20px; "></i>
-                <div> <b class="font-subheader">Olek Łukasiewicz</b> <span class="font-subtitle"> C# and Web
-                        developer </br> and pixel art beginner artist. </span> <a class="button"
-                        id="profile-link-button" aria-label="About me"> <span>About me</span><i
-                            class="mi mi-BackMirrored"></i></a> </div>
+                <div>
+                    <b class="font-subheader">Olek Łukasiewicz</b>
+                    <span class="font-subtitle"> C# and Web
+                        developer </br> and pixel art beginner artist.
+                    </span>
+                    <a class="button" href="/about" id="profile-link-button" aria-label="About me">
+                        <span>About me</span>
+                        <i class="mi mi-BackMirrored"></i>
+                    </a>
+                </div>
             </div>
             <div class="error-msg" id="landing-error-node"></div>
             <div id="main-list" class="list-view">
-                <div class="group loading data-node no-data"><span class="font-title"></span><a class="button">Show
-                        more</a>
+                <div class="group loading data-node no-data"><span class="font-title"></span>
+                    <a class="button" href="/group">Show more</a>
                 </div>
                 <a class="item loading data-node no-data" href="/item">
                     <div class="img"></div><b></b><span></span>
@@ -81,8 +87,8 @@
                         <div class="button"></div>
                     </div>
                 </a>
-                <div class="group loading data-node no-data"><span class="font-title"></span><a class="button">Show
-                        more</a>
+                <div class="group loading data-node no-data"><span class="font-title"></span>
+                    <a class="button" href="/group">Show more</a>
                 </div>
                 <a class="item loading data-node no-data" href="/item">
                     <div class="img"></div><b></b><span></span>
@@ -100,8 +106,8 @@
                         <div class="button"></div>
                     </div>
                 </a>
-                <div class="group loading data-node no-data"><span class="font-title"></span><a class="button">Show
-                        more</a>
+                <div class="group loading data-node no-data"><span class="font-title"></span>
+                    <a class="button" href="/group">Show more</a>
                 </div>
                 <a class="item loading data-node no-data" href="/item">
                     <div class="img"></div><b></b><span></span>
@@ -139,7 +145,7 @@
         <div id="about" class="view">
             <div id="about-flex">
                 <div id="about-image">
-                    <img id="about-img" src="/img/about-banner.webp" />
+                    <img id="about-img" src="/img/about-banner.webp" alt="About page banner" />
                 </div>
                 <div id="about-data">
                     <h1 class="font-title">About me</h1>
