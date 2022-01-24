@@ -1,0 +1,69 @@
+{
+  "hosting": [
+    {
+      "site": "alukasiewicz",
+      "public": "/",
+      "ignore": [
+        "firebase.json",
+        "**/.*",
+        "**/node_modules/**",
+        "Portfolio.code-workspace",
+        "**/.vscode/**",
+        "**/.firebase/**",
+        "**/.terser/**",
+        "**/.extensions/**",
+        "**/.git/**",
+        ".gitignore"
+      ],
+      "rewrites": [
+        {
+          "source": "**",
+          "destination": "/index.html"
+        }
+      ],
+      "headers": [
+        {
+          "source": "**",
+          "headers": [
+            {"key": "Cache-Control","value": "max-age=0, must-revalidate, public"},
+            { "key" : "Access-Control-Allow-Origin", "value" : "*" },
+            { "key" : "X-Frame-Options", "value" : "deny" },
+            {"key":"Content-Security-Policy","value":"script-src 'self'"},
+            { "key" : "X-Content-Type-Options", "value" : "nosniff" },
+            { "key" : "X-XSS-Protection", "value" : "1; mode=block" }
+          ]
+        }
+      ]
+    },
+    {
+      "site": "lukasiewicz-aleksander",
+      "public": "/",
+      "ignore": [
+        "firebase.json",
+        "**/.*",
+        "**/node_modules/**",
+        "Portfolio.code-workspace",
+        "**/.vscode/**"
+      ],
+      "rewrites": [
+        {
+          "source": "**",
+          "destination": "/index.html"
+        }
+      ],
+      "headers": [
+        {
+          "source": "**",
+          "headers": [
+            {"key": "Cache-Control","value": "max-age=0, must-revalidate, public"},
+            { "key" : "Access-Control-Allow-Origin", "value" : "*" },
+            { "key" : "X-Frame-Options", "value" : "deny" },
+            {"key":"Content-Security-Policy","value":"script-src 'self'"},
+            { "key" : "X-Content-Type-Options", "value" : "nosniff" },
+            { "key" : "X-XSS-Protection", "value" : "1; mode=block" }
+          ]
+        }
+      ]
+    }
+  ]
+}
