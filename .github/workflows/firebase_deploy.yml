@@ -9,6 +9,7 @@ name: Firebase - Deploy on commit
 jobs:
   build_and_deploy:
     runs-on: ubuntu-latest
+    environment: Test
     steps:
       - uses: actions/checkout@v2
       - uses: FirebaseExtended/action-hosting-deploy@v0
