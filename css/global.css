@@ -1195,9 +1195,9 @@ u.dotted-separator{
         width: 100vw;
         display: table;
         position: absolute;
-        top: 0px;
+        top: 0;
         z-index: 16;
-        background-color: rgba(0,0,0,0.3);
+        background-color: rgba(0,0,0,.3);
         height: 100vh;
         left: 0;
         transition: opacity var(--time);
