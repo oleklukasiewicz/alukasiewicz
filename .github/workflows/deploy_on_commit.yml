@@ -24,6 +24,7 @@ jobs:
           package: .
      
       - name: 'Deploy to Firebase'
+        uses: actions/checkout@v2
         uses: FirebaseExtended/action-hosting-deploy@v0
         id: deploy-to-firebase
         with:
