@@ -31,7 +31,7 @@ jobs:
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v2
         with:
-          name: alukasiewicz
+          name: alukasiewicz-beta
           path: .
   deploy:
     runs-on: ubuntu-latest
