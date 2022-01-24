@@ -41,7 +41,7 @@ jobs:
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
 
     steps:
-     - name: Download artifact from build job
+      - name: Download artifact from build job
         uses: actions/download-artifact@v2
         with:
           name: php-app
