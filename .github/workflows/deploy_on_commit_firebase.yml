@@ -30,8 +30,6 @@ jobs:
     environment: 'Test'
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@master
       - name: Download artifact from build job
         uses: actions/download-artifact@v2
         with:
