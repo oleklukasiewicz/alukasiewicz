@@ -1,4 +1,4 @@
-name: Deploy Firebase Test
+name: Deploy on commit - Firebase
 
 on:
   push:
@@ -7,39 +7,18 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
-    name: Build
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@master
-    - name: Copy production items
-      uses: canastro/copy-file-action@master
-      with:
-        source: "item/production-items.js"
-        target: "item/items.js"
-    - name: Upload artifact
-      uses: actions/upload-artifact@v2
-      with:
-        name: alukasiewicz-artifact
-        path: .
   deploy:
     runs-on: ubuntu-latest
-    name: Deploy
-    needs: build
     environment: 'Test'
 
     steps:
-      - name: Download artifact from build job
-        uses: actions/download-artifact@v2
-        with:
-          name: alukasiewicz-artifact
-      - name: Deploy to Firebase
+      - name: 'Checkout repository' 
+        uses: actions/checkout@v2
+
+      - name: 'Deploy to Firebase'
         uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: '${{ secrets.GITHUB_TOKEN }}'
           firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_PORTFOLIO_13301 }}'
           channelId: live
           projectId: portfolio-13301
- 
-  
