@@ -2,7 +2,7 @@ const ITEM_VERSION = "0-0-0-3";
 //production items
 let getGroups = () =>
     [
-        new Group("all", ["other", "", "landing"], "All projects", new ItemDate(), null, [], {}, !0),
+        new Group("all", ["other", "", "landing","work"], "All projects", new ItemDate(), null, [], {}, !0),
         new Group("best-pixelart", ["best", "best-pixel"], "Best pixel art", new ItemDate(5, 11, 2021), null, ["home"]),
         new Group("pixel-flower", ["pixel-plants"], "Plants and blossom", new ItemDate(5, 11, 2021), null, ["home"]),
         new Group("home-group", ["home", "landing-beta"], "Home Group")
