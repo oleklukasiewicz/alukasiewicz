@@ -1,7 +1,7 @@
 {
   "hosting": [
     {
-      "site": "aleksander-lukasiewicz",
+      "site": "lukasiewicz-aleksander",
       "public": "/",
       "ignore": [
         "firebase.json",
