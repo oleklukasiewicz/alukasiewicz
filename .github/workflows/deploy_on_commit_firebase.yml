@@ -22,7 +22,7 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: alukasiewicz-artifact
-        path: .
+        path: dist
   deploy:
     name: Deploy
     needs: build
@@ -35,6 +35,7 @@ jobs:
         uses: actions/download-artifact@master
         with:
           name: alukasiewicz-artifact
+          path: dist
       - name: Deploy to Firebase
         uses: w9jds/firebase-action@master
         with:
