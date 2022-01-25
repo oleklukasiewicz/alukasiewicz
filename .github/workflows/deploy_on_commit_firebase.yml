@@ -30,12 +30,12 @@ jobs:
     environment: 'Test'
 
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@master
       - name: Download artifact from build job
         uses: actions/download-artifact@v2
         with:
           name: alukasiewicz-artifact
-      - name: Checkout repository
-        uses: actions/checkout@master
       - name: Deploy to Firebase
         uses: FirebaseExtended/action-hosting-deploy@v0
         with:
