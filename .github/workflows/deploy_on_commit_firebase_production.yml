@@ -7,6 +7,16 @@ on:
   workflow_dispatch:
 
 jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    - name: copy file
+      uses: canastro/copy-file-action@master
+      with:
+        source: "item/production-items.js"
+        target: "item/items.js"
   deploy:
     runs-on: ubuntu-latest
     environment: 'Production'

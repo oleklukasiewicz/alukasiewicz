@@ -1,5 +1,5 @@
-const ITEM_VERSION = "0-0-0-3",
-    TODAY = new Date;
+const ITEM_VERSION = "0-0-0-3";
+//production items
 let getGroups = () =>
     [
         new Group("all", ["other", "", "landing"], "All projects", new ItemDate(), null, [], {}, !0),
