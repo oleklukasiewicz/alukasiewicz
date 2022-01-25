@@ -11,13 +11,14 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@master
+    - name: Checkout reporitory
+      uses: actions/checkout@master
     - name: Copy production items
       uses: canastro/copy-file-action@master
       with:
         source: "item/production-items.js"
         target: "item/items.js"
-    - name: Upload artifact for deployment job
+    - name: Upload artifact
       uses: actions/upload-artifact@v2
       with:
         name: alukasiewicz-artifact
@@ -29,6 +30,8 @@ jobs:
     environment: 'Test'
 
     steps:
+      - name: Checkout reporitory
+        uses: actions/checkout@master
       - name: 'Deploy to Firebase'
         uses: FirebaseExtended/action-hosting-deploy@v0
         with:
