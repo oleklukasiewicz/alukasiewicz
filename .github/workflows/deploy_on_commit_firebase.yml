@@ -1,4 +1,4 @@
-name: Deploy on commit - Firebase
+name: Deploy Firebase Test
 
 on:
   push:
