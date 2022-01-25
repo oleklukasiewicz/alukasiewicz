@@ -27,7 +27,11 @@ jobs:
       - name: Run composer install if composer.json exists
         if: steps.check_files.outputs.files_exists == 'true'
         run: composer validate --no-check-publish && composer install --prefer-dist --no-progress
-
+      - name: Copy production items
+        uses: canastro/copy-file-action@master
+        with:
+          source: "item/production-items.js"
+          target: "item/items.js"
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v2
         with:
