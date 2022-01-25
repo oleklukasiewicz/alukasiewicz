@@ -18,8 +18,6 @@ jobs:
       with:
         source: "item/production-items.js"
         target: "item/items.js"
-    - name: Minify-JS Action
-      uses: jossydevers/minify-js@v1.0.0
     - name: Upload artifact
       uses: actions/upload-artifact@v2
       with:
