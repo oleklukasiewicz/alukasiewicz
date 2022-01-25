@@ -24,20 +24,23 @@ jobs:
         name: alukasiewicz-artifact
         path: .
   deploy:
-    runs-on: ubuntu-latest
     name: Deploy
     needs: build
+    runs-on: ubuntu-latest
     environment: 'Test'
-
     steps:
-      - name: Checkout reporitory
+      - name: Checkout Repo
         uses: actions/checkout@master
-      - name: 'Deploy to Firebase'
-        uses: FirebaseExtended/action-hosting-deploy@v0
+      - name: Download Artifact
+        uses: actions/download-artifact@master
         with:
-          repoToken: '${{ secrets.GITHUB_TOKEN }}'
-          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_PORTFOLIO_13301 }}'
-          channelId: live
-          projectId: portfolio-13301
+          name: alukasiewicz-artifact
+          path: .
+      - name: Deploy to Firebase
+        uses: w9jds/firebase-action@master
+        with:
+          args: deploy --only hosting
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_PORTFOLIO_13301 }}
  
   
