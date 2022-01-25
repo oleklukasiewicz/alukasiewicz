@@ -1,4 +1,4 @@
-name: Deploy Firebase Production
+name: Deploy Firebase Test
 
 on:
   push:
@@ -11,21 +11,30 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@master
-    - name: copy file
+    - name: Checkout repository
+      uses: actions/checkout@master
+    - name: Copy production items
       uses: canastro/copy-file-action@master
       with:
         source: "item/production-items.js"
         target: "item/items.js"
+    - name: Upload artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: alukasiewicz-artifact
+        path: .
   deploy:
     runs-on: ubuntu-latest
+    name: Deploy
+    needs: build
     environment: 'Production'
 
     steps:
-      - name: 'Checkout repository' 
-        uses: actions/checkout@v2
-
-      - name: 'Deploy to Firebase'
+      - name: Download artifact from build job
+        uses: actions/download-artifact@v2
+        with:
+          name: alukasiewicz-artifact
+      - name: Deploy to Firebase
         uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: '${{ secrets.GITHUB_TOKEN }}'
