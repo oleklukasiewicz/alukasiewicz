@@ -17,15 +17,18 @@ jobs:
       with:
         source: "item/production-items.js"
         target: "item/items.js"
+    - name: Upload artifact for deployment job
+        uses: actions/upload-artifact@v2
+        with:
+          name: alukasiewicz-artifact
+          path: .
   deploy:
     runs-on: ubuntu-latest
+    name: Deploy
     needs: build
     environment: 'Test'
 
     steps:
-      - name: 'Checkout repository' 
-        uses: actions/checkout@v2
-
       - name: 'Deploy to Firebase'
         uses: FirebaseExtended/action-hosting-deploy@v0
         with:
