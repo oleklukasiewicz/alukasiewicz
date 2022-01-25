@@ -19,6 +19,7 @@ jobs:
         target: "item/items.js"
   deploy:
     runs-on: ubuntu-latest
+    needs: build
     environment: 'Test'
 
     steps:
