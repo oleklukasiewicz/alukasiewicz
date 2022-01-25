@@ -18,10 +18,10 @@ jobs:
         source: "item/production-items.js"
         target: "item/items.js"
     - name: Upload artifact for deployment job
-        uses: actions/upload-artifact@v2
-        with:
-          name: alukasiewicz-artifact
-          path: .
+      uses: actions/upload-artifact@v2
+      with:
+        name: alukasiewicz-artifact
+        path: .
   deploy:
     runs-on: ubuntu-latest
     name: Deploy
