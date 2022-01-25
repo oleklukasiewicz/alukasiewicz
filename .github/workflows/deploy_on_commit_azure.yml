@@ -1,4 +1,4 @@
-name: Deploy on commit - Azure Test
+name: Deploy Azure Test
 
 on:
   push:
