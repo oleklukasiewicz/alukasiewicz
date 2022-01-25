@@ -1,10 +1,3 @@
-/*
-Moving items do deploy
-1. Check ITEM_VERSION
-2. Move "landing" alias from home-group to all
-3. Remove beta item
-4. Check all Items
-*/
 const ITEM_VERSION = "0-0-0-3";
 let getGroups = () => [
     new Group("best-pixelart", ["best", "best-pixel"], "Featured art", new ItemDate(5, 11, 2021),null,["home"]),
