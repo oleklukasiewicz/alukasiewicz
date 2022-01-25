@@ -1,4 +1,4 @@
-name: Deploy on commit - Azure, Firebase
+name: Deploy on commit - Azure
 
 on:
   push:
@@ -53,16 +53,5 @@ jobs:
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_F4C1D4F6DF984E37B646AC53F147CF61 }}
           package: .
-
-      - name: 'Checkout repository' 
-        uses: actions/checkout@v2
-
-      - name: 'Deploy to Firebase'
-        uses: FirebaseExtended/action-hosting-deploy@v0
-        with:
-          repoToken: '${{ secrets.GITHUB_TOKEN }}'
-          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_PORTFOLIO_13301 }}'
-          channelId: live
-          projectId: portfolio-13301
  
   

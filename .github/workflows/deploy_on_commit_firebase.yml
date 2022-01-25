@@ -1,0 +1,52 @@
+name: Deploy on commit - Firebase
+
+on:
+  push:
+    branches:
+      - production
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: 'Production'
+
+    steps:
+      - name: 'Checkout repository' 
+        uses: actions/checkout@v2
+
+      - name: 'Deploy to Firebase'
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: '${{ secrets.GITHUB_TOKEN }}'
+          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_PORTFOLIO_13301 }}'
+          channelId: live
+          projectId: portfolio-13301
+ 
+  
+name: Deploy on commit - Firebase
+
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: 'Test'
+
+    steps:
+      - name: 'Checkout repository' 
+        uses: actions/checkout@v2
+
+      - name: 'Deploy to Firebase'
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: '${{ secrets.GITHUB_TOKEN }}'
+          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_PORTFOLIO_13301 }}'
+          channelId: live
+          projectId: portfolio-13301
+ 
+  
