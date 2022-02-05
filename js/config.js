@@ -199,6 +199,9 @@ let ViewController = (function () {
         }
     }
     _controller.navigate = async function (id, arg = {}) {
+
+        if (id == _currentView?.id)
+            return;
         //getting view
         let _target = _getViewById(id);
 
