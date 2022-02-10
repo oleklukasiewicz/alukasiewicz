@@ -135,6 +135,7 @@ let ViewController = (function () {
     let _previousView;
     EventController.call(_controller, {
         "navigateToView": [],
+        "navigationRequest": [],
         "navigateFromView": [],
         "navigateDefault": [],
         "historyEdit": [],
@@ -200,6 +201,7 @@ let ViewController = (function () {
     }
     _controller.navigate = async function (id, arg = {}) {
 
+        _controller.invokeEvent("navigationRequest", [id, _currentView]);
         if (id == _currentView?.id)
             return;
         //getting view
@@ -256,8 +258,8 @@ let ViewController = (function () {
         if (isDefault) _defaultView = view;
     }
     _controller.navigateToDefaultView = function (arg) {
+        _controller.navigate(_defaultView.id, arg);
         if (_currentView != _defaultView) {
-            _controller.navigate(_defaultView.id, arg);
             _controller.invokeEvent("navigateDefault", [arg]);
         }
     }
@@ -660,13 +662,18 @@ ViewController.addEventListener("historyEdit", (historyItem, view) => {
     else
         history.pushState(historyItem, '', _url);
 });
+
+ViewController.addEventListener("navigationRequest", () => hideNavigation());
+
 ViewController.addEventListener("navigateDefault", () =>
     (history.state.defaultViewHistoryIndex != -1 && (history.state.defaultViewHistoryIndex - history.state.index) != 0) ? history.go(history.state.defaultViewHistoryIndex - history.state.index) : "");
+
 ViewController.addEventListener("navigateToView", (view, lastView) => {
     view.rootNode.classList.add(GLOBAL.activeView);
     APP_NODE.classList.replace(lastView?.id, view.id);
     setNavigationState(false);
 });
+
 ViewController.addEventListener("navigateFromView", (lastView) => lastView.rootNode.classList.remove(GLOBAL.activeView));
 
 //DOM events
@@ -685,7 +692,7 @@ window.addEventListener("load", async function () {
         e.preventDefault();
         ViewController.navigate(VIEW.group, { routeArg: ["work"] });
     });
-    navigationNode = getById("main-header-navigation");
+    navigationNode = getById("main-header-base");
     getById("main-header-nav-button").addEventListener("click", toggleNavigationState);
     getById("main-header-navigation-close-space").addEventListener("click", hideNavigation);
     setTimeout(() => document.body.classList.remove("first-start"), 300);
