@@ -27,4 +27,22 @@ const START_ROUTE = RouteController.resolve(START_URL[0]);
 getById(START_ROUTE.target).classList.add(GLOBAL.activeView);
 APP_NODE.classList.add(START_ROUTE.target);
 
+//getting navigation node
+let navigationNode = getById("main-header-base");
 
+//navigation control
+let isNavigationOpen = false;
+let setNavigationState = function (isOpened) {
+    navigationNode.classList.toggle("hidden", !isOpened);
+    isNavigationOpen = isOpened;
+}
+let toggleNavigationState = () =>
+    setNavigationState(!isNavigationOpen)
+let hideNavigation = function () {
+    if (isNavigationOpen)
+        setNavigationState(false);
+}
+
+//adding navigation buttons methods
+getById("main-header-nav-button").addEventListener("click", toggleNavigationState);
+getById("main-header-navigation-close-space").addEventListener("click", hideNavigation);

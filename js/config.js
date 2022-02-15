@@ -692,9 +692,6 @@ window.addEventListener("load", async function () {
         e.preventDefault();
         ViewController.navigate(VIEW.group, { routeArg: ["work"] });
     });
-    navigationNode = getById("main-header-base");
-    getById("main-header-nav-button").addEventListener("click", toggleNavigationState);
-    getById("main-header-navigation-close-space").addEventListener("click", hideNavigation);
     setTimeout(() => document.body.classList.remove("first-start"), 300);
     APP_NODE.classList.toggle(GLOBAL.offline, !navigator.onLine);
 
@@ -715,20 +712,6 @@ window.addEventListener("load", async function () {
 });
 window.addEventListener("popstate", (event) =>
     ViewController.move((ViewController.currentHistoryIndex - event.state.index <= 0), event.state));
-
-//navigation control
-let navigationNode;
-let isNavigationOpen = false;
-let setNavigationState = function (isOpened) {
-    navigationNode.classList.toggle("hidden", !isOpened);
-    isNavigationOpen = isOpened;
-}
-let toggleNavigationState = () =>
-    setNavigationState(!isNavigationOpen)
-let hideNavigation = function () {
-    if (isNavigationOpen)
-        setNavigationState(false);
-}
 
 //item tile creating method
 let createItemTile = async function (node, item) {
