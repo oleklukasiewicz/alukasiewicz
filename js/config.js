@@ -2,10 +2,35 @@
 Element.prototype.remove = function () {
     this.parentElement.removeChild(this);
 };
+
 NodeList.prototype.remove = HTMLCollection.prototype.remove = function () {
     for (let i = this.length - 1; i >= 0; i--)
         this[i].parentElement.removeChild(this[i]);
 };
+
+Array.prototype.equals = function (array) {
+    // if the other array is a falsy value, return
+    if (!array)
+        return false;
+
+    // compare lengths - can save a lot of time 
+    if (this.length != array.length)
+        return false;
+
+    for (var i = 0, l = this.length; i < l; i++) {
+        // Check if we have nested arrays
+        if (this[i] instanceof Array && array[i] instanceof Array) {
+            // recurse into the nested arrays
+            if (!this[i].equals(array[i]))
+                return false;
+        }
+        else if (this[i] != array[i]) {
+            // Warning - two different object instances will never be equal: {x:20} != {x:20}
+            return false;
+        }
+    }
+    return true;
+}
 
 //item class declaration
 let Item = function (id, aliases = [], isItemLinkToWeb = false, folder = "/" + id, title, tileImage, tileContent, createDate, modifyDate, groups = [], arg = {}) {
@@ -202,8 +227,9 @@ let ViewController = (function () {
     _controller.navigate = async function (id, arg = {}) {
 
         _controller.invokeEvent("navigationRequest", [id, _currentView]);
-        if (id == _currentView?.id)
+        if (id == _currentView?.id && _currentView?.lastNavigationArguments.routeArg?.equals(arg.routeArg))
             return;
+
         //getting view
         let _target = _getViewById(id);
 
@@ -291,6 +317,7 @@ let ViewController = (function () {
     });
     return _controller;
 }());
+
 let ItemController = (function () {
     let _routes = [];
     let _storage = [];
@@ -442,6 +469,7 @@ let ItemController = (function () {
     });
     return _controller;
 }());
+
 const landingView = new View(VIEW.landing, APP.url.landing, { scrollY: -1, itemsLoaded: false }, {
     onNavigate: function () {
         if (this.data.scrollY >= 0)
@@ -475,12 +503,14 @@ const landingView = new View(VIEW.landing, APP.url.landing, { scrollY: -1, items
         createErrorMsg(err, getById("landing-error-node"));
     }
 }, VIEW.landing, true, ViewController.loadingModes.single);
+
 const profileView = new View(VIEW.profile, APP.url.profile, {}, {
     onNavigate: () => {
         window.scroll(0, 0);
         document.title = "About me - " + APP.name
     }
 }, VIEW.profile, false, ViewController.loadingModes.never);
+
 const itemView = new View(VIEW.item, APP.url.item, { currentItem: null }, {
     onNavigate: () => window.scroll(0, 0),
     onNavigateFrom: function () {
@@ -523,6 +553,7 @@ const itemView = new View(VIEW.item, APP.url.item, { currentItem: null }, {
         createErrorMsg(err, getById("item-error-node"));
     }
 }, VIEW.item, true, ViewController.loadingModes.always);
+
 const groupView = new View(VIEW.group, APP.url.group, { scrollY: -1 }, {
     onRegister: function () {
         let _data = this.data;
@@ -567,6 +598,7 @@ const groupView = new View(VIEW.group, APP.url.group, { scrollY: -1 }, {
         createErrorMsg(err, getById("group-error-node"));
     }
 }, VIEW.group, true, ViewController.loadingModes.always);
+
 const resourceView = new View(VIEW.resource, APP.url.resource, {},
     {
         onNavigate: function () {
@@ -615,7 +647,12 @@ const resourceView = new View(VIEW.resource, APP.url.resource, {},
                 _nextBtn.classList.toggle(GLOBAL.disabled, res.length < 2);
                 _prevBtn.classList.toggle(GLOBAL.disabled, res.length < 2);
             })
-            this.data.resSlider.addEventListener("close", () => _resList.innerHTML = "")
+            this.data.resSlider.addEventListener("close", () => _resList.innerHTML = "");
+
+            GestureBuilder(this.rootNode, {
+                right: this.data.resSlider.next,
+                left: this.data.resSlider.previous
+            });
         },
         onLoad: async function (arg) {
             this.rootNode.classList.add(GLOBAL.loading);
@@ -710,6 +747,7 @@ window.addEventListener("load", async function () {
         routeArg: START_URL.slice(1, START_URL.length - 1)
     });
 });
+
 window.addEventListener("popstate", (event) =>
     ViewController.move((ViewController.currentHistoryIndex - event.state.index <= 0), event.state));
 
@@ -813,6 +851,8 @@ let ResourceSlider = function () {
         let _index = _currentIndex + 1;
         if (_index >= _res.length)
             _index = 0;
+        if (_currentIndex == _index)
+            return;
         await _renderIndex(_index);
         await _sender.invokeEvent("next", [_res[_currentIndex], _index])
     }
@@ -820,6 +860,8 @@ let ResourceSlider = function () {
         let _index = _currentIndex - 1;
         if (_index < 0)
             _index = _res.length - 1;
+        if (_currentIndex == _index)
+            return;
         await _renderIndex(_index);
         await _sender.invokeEvent("previous", [_res[_currentIndex], _index])
     }
@@ -833,6 +875,43 @@ let ResourceSlider = function () {
     )
 }
 
+//gesture support for node
+let GestureBuilder = function (node, event = {}) {
+
+    const _directions = {
+        up: "up",
+        down: "down",
+        left: "left",
+        right: "right"
+    };
+
+    let _startPos = {};
+    let _endPos = {};
+
+    let _directionSolver = function (startX, startY, endX, endY) {
+        let _isVertical = (Math.abs(endX - startX) < Math.abs(endY - startY))
+        if (startX < endX && !_isVertical)
+            return _directions.left;
+        if (endX < startX && !_isVertical)
+            return _directions.right;
+        if (startY < endY && _isVertical)
+            return _directions.up;
+        if (endY < startY && _isVertical)
+            return _directions.down;
+    }
+    node.addEventListener("touchstart", (e) => {
+        _startPos.x = e.touches[0].clientX;
+        _startPos.y = e.touches[0].clientY;
+    });
+
+    node.addEventListener("touchend", (e) => {
+        _endPos.x = e.changedTouches[0].clientX;
+        _endPos.y = e.changedTouches[0].clientY;
+        let _direction = _directionSolver(_startPos.x, _startPos.y, _endPos.x, _endPos.y);
+        event[_direction]?.call(node);
+    });
+
+}
 //storage response indexer for group and landing views
 let StorageResponseIndexer = function (response, depth = 1, limit = 3, startIndex = 0, limitOfDepth = 3) {
     let _indexedItems = [];
@@ -1002,46 +1081,4 @@ let ItemComponentBuilder = function (component, itemFolder, item) {
             _component = document.createElement("DIV");
     }
     return _component
-}
-
-//shadow class for connected animation
-let ShadowNodeClass = function (sourceNode, props) {
-    let _target = this.target = sourceNode.cloneNode(true);
-    let _computed = window.getComputedStyle(sourceNode);
-    props.forEach((_prop) => _target.style[_prop] = _computed[_prop]);
-    let _props = [];
-    props.forEach((prop) => _props.push(_computed[prop]));
-    this.target.classList.add("shadow");
-}
-let ConnectedAnimation = function (source, prop = []) {
-    let _shadow;
-    let _shadowObj;
-    let _source = source;
-    let _target;
-    this.start = function (target) {
-        _target = target;
-        let _pos = _target.getBoundingClientRect();
-        _shadow.style.top = _target.offsetTop + "px";
-        _shadow.style.left = _target.offsetLeft + "px";
-        _shadow.style.width = _pos.width + "px";
-        _shadow.style.height = _pos.height + "px";
-        _shadow.style.display = "";
-        let _computedTarget = window.getComputedStyle(_target);
-        prop.forEach((_prop) => _shadow.style[_prop] = _computedTarget[_prop]);
-        _target.style.display = "none";
-        setTimeout(function () {
-            _shadow.remove();
-            _target.style.display = "";
-        }, 3000);
-    }
-    this.prepare = function () {
-        _shadowObj = new ShadowNodeClass(_source, prop);
-        _shadow = _shadowObj.target;
-        let _pos = _source.getBoundingClientRect();
-        _shadow.style.top = _pos.top + "px";
-        _shadow.style.width = _pos.width + "px";
-        _shadow.style.height = _pos.height + "px";
-        _shadow.style.left = _source.offsetLeft + "px";
-        document.body.appendChild(_shadow);
-    }
 }
