@@ -12,10 +12,6 @@
             "content": "The idea of establishing a design system at Microsoft started a decade ago when several product teams merged and a handful of design pioneers started working together. Their work gave rise to our first shared design language — a bold achievement given that design was in its infancy at Microsoft and the company’s success at that time was built on a myriad of siloed products."
         },
         {
-            "type": "text",
-            "content": "These early efforts toward a shared design language built a better creative environment and fostered stronger partnerships between teams."
-        },
-        {
             "type": "image",
             "resource": [
                 {
@@ -30,10 +26,6 @@
         {
             "type": "text",
             "content": "The Fluent Design System continues this work. Fluent is evolving to be more than a set of outcomes and will define the process by which we collectively design and build products. It represents the growth and influence of design thinking within Microsoft."
-        },
-        {
-            "type": "text",
-            "content": "It’s a living thing that continues to evolve. And like any living thing, it has basic needs to grow and flourish."
         },
         {
             "type": "gallery",
