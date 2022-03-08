@@ -9,12 +9,8 @@ NodeList.prototype.remove = HTMLCollection.prototype.remove = function () {
 };
 
 Array.prototype.equals = function (array) {
-    // if the other array is a falsy value, return
-    if (!array)
-        return false;
-
-    // compare lengths - can save a lot of time 
-    if (this.length != array.length)
+    // if the other array is a falsy value, return,  compare lengths - can save a lot of time 
+    if (!array || this.length != array.length)
         return false;
 
     for (var i = 0, l = this.length; i < l; i++) {
@@ -367,10 +363,13 @@ let ItemController = (function () {
             ViewController.invokeError("item_not_found");
             return;
         }
+
         //TODO: check is components.js and components.css are downloaded id not -> download
         if (!item.isItemLinkToWeb && !item.isContentCached) {
             //getting item content
             let _content = await _downloadViaAJAX(item, item.folder);
+
+            //TODO: check content component version if newer -> download new version of components.css and js
 
             //merging item with item
             Object.assign(item, _content, { resources: [] });
@@ -392,7 +391,6 @@ let ItemController = (function () {
             item.findResourceByHash = (hash) => _getResourceGroupByHash(item, hash);
             if (_content?.version == APP.version)
                 item.isContentCached = true;
-            //TODO: check content component version if newer -> download new version of components.css and js
         }
         return item;
     }

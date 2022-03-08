@@ -36,8 +36,7 @@ let setNavigationState = function (isOpened) {
     navigationNode.classList.toggle("hidden", !isOpened);
     isNavigationOpen = isOpened;
 }
-let toggleNavigationState = () =>
-    setNavigationState(!isNavigationOpen)
+let toggleNavigationState = () => setNavigationState(!isNavigationOpen)
 let hideNavigation = function () {
     if (isNavigationOpen)
         setNavigationState(false);
