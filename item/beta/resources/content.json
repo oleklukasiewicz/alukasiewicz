@@ -17,7 +17,7 @@
                 {
                     "src": "/airship.webp",
                     "type": "image",
-                    "alt":"Airship"
+                    "alt": "Airship"
                 }
             ],
             "alt": "Ocean of clouds",
@@ -34,30 +34,33 @@
                 {
                     "src": "/gallery/crocus-base.webp",
                     "type": "image",
-                    "alt":"Crocus"
+                    "alt": "Crocus"
                 },
                 {
                     "src": "/gallery/lily-blank.webp",
                     "type": "image",
-                    "alt":"Lily"
+                    "alt": "Lily"
                 },
                 {
                     "src": "/gallery/rose_plant.webp",
                     "type": "image",
-                    "alt":"Rose"
+                    "alt": "Rose"
                 },
                 {
                     "src": "/gallery/isometric_castle.webp",
                     "type": "image",
-                    "alt":"Castle"
+                    "alt": "Castle"
                 },
                 {
                     "src": "/airship.webp",
                     "type": "image",
-                    "alt":"Airship"
+                    "alt": "Airship"
                 }
             ],
-            "id": "airship-gallery"
+            "id": "airship-gallery",
+            "arguments": {
+                "imagesCount": 3
+            }
         },
         {
             "type": "text",
@@ -72,6 +75,30 @@
             "type": "section",
             "title": "A collective design system",
             "content": "Fluent Design System builds on the momentum of great things already happening at Microsoft, standing on shoulders without stepping on toes. It celebrates those who contribute to what we collectively do, regardless of what team they work on. It borrows from engineering workflows to help us be efficient where we can, saving creative energy for where it’s most needed."
+        },
+        {
+            "dontRender":true,
+            "type":"cover",
+            "title":"Fluent design - acrylic material",
+            "image":"/gallery/lily-blank.webp",
+            "actions":
+            [
+                {
+                    "icon":"\\ED63",
+                    "text":"Action 1",
+                    "action":
+                    {
+
+                    }
+                }
+            ],
+            "resource":[
+                {
+                    "src": "/gallery/lily-blank.webp",
+                    "type": "image",
+                    "alt": "Lily"
+                }
+            ]
         },
         {
             "type": "text",

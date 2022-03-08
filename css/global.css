@@ -435,54 +435,6 @@ body.scroll-fix::-webkit-scrollbar-track{
     max-width: var(--size-max-width);
     margin: 0 auto 40px;
 }
-#item-content > .section{
-    margin-bottom: 16px;
-}
-#item-content > .section > .section-title{
-    font-weight: 700;
-    margin-bottom: 24px;
-    margin-top: 24px;
-}
-#item-content > .section > *{
-    transition: var(--transition-bg-only);
-}
-#item-content .quote{
-    width: 100%;
-    text-align: center;
-    padding: 50px 50px;
-    box-sizing: border-box;
-}
-#item-content .quote > div{
-    font-weight: 200;
-}
-#item-content .quote > span{
-    margin-top: 10px;
-    width: 100%;
-    text-align: right;
-    display: table;
-    font-weight: 400;
-}
-#item-content .no-image{
-    cursor: default;
-}
-#item-content .img-alt{
-    margin: 10px 0;
-    color: var(--color-theme-A5);
-    display: table;
-}
-#item-content .image > img{
-    object-fit: cover;
-    border-radius: var(--border-radius);
-    background-color: var(--color-theme-A1);
-    width: 100%;
-    margin-left: auto;
-    margin-right: auto;
-    display: block;
-    margin: 12px 0;
-    cursor: pointer;
-    min-width: 100%;
-    min-height: 300px;
-}
 #item.loading{
     animation-name: Blink;
     animation-iteration-count: infinite;
@@ -956,75 +908,6 @@ u.dotted-separator{
     box-shadow: 0 2px 12px -1px rgba(45,51,59,.2);
     background-color: rgba(45,51,59,.8);
 }
-.gallery{
-    margin: 20px 0;
-}
-.gallery > div{
-    width: 100%;
-}
-.gallery > div > b{
-    display: inline-block;
-    max-width: 50%;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    white-space: nowrap;
-}
-.gallery > div > .button{
-    display: inline-table;
-    float: right;
-}
-.gallery > .list > img{
-    background-color: var(--color-theme-A1);
-    border-radius: var(--border-radius);
-    transition: box-shadow var(--time-A1) cubic-bezier(.16,1,.29,.99),transform var(--time-A1) cubic-bezier(.16,1,.29,.99),opacity var(--time),border-color var(--time),background-color var(--time);
-    height: 100%;
-    width: 100%;
-    display: block;
-    overflow: hidden;
-    margin: 0;
-    object-fit: cover;
-}
-.gallery > .list > img:hover{
-    box-shadow: 0 12px 30px 0 rgba(0,0,0,.13);
-    transform: translateY(-4px);
-    background-color: var(--color-theme-A1);
-}
-.gallery > .list > img:active{
-    box-shadow: 0 6px 10px 0 rgba(0,0,0,.13);
-    transform: translateY(-2px);
-    background-color: var(--color-theme-A1);
-}
-.gallery > .list{
-    margin-top: 20px;
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    grid-template-rows: 120px 40px 120px;
-    gap: 6px;
-    width: 100%;
-}
-.gallery > .list > img:nth-child(1){
-    grid-column: 1;
-    grid-row-start: 1;
-    grid-row-end: 4;
-}
-.gallery > .list > img:nth-child(2){
-    grid-column: 2;
-    grid-row-start: 1;
-    grid-row-end: 3;
-}
-.gallery > .list > img:nth-child(3){
-    grid-column: 3;
-    grid-row: 1;
-}
-.gallery > .list > img:nth-child(4){
-    grid-column: 2;
-    grid-row: 3;
-}
-.gallery > .list > img:nth-child(5){
-    grid-column: 3;
-    grid-row-start: 2;
-    grid-row-end: 4;
-}
 ::-webkit-scrollbar{
     width: 8px;
 }
@@ -1087,38 +970,6 @@ u.dotted-separator{
     }
 }
 @media only screen and (max-width:430px){
-    .gallery > .list{
-        margin-top: 20px;
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        grid-template-rows: 260px 160px 40px 160px;
-        gap: 6px;
-        width: 100%;
-    }
-    .gallery > .list > img:nth-child(1){
-        grid-column-start: 1;
-        grid-column-end: 3;
-        grid-row: 1;
-    }
-    .gallery > .list > img:nth-child(2){
-        grid-column: 1;
-        grid-row-start: 2;
-        grid-row-end: 4;
-    }
-    .gallery > .list > img:nth-child(3){
-        grid-column: 2;
-        grid-row: 2;
-    }
-    .gallery > .list > img:nth-child(4){
-        grid-column: 1;
-        grid-row-start: 4;
-        grid-row-end: 5;
-    }
-    .gallery > .list > img:nth-child(5){
-        grid-column: 2;
-        grid-row-start: 3;
-        grid-row-end: 5;
-    }
     .list-view{
         grid-template-columns: 100%;
     }
