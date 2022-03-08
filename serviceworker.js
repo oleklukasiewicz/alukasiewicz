@@ -1,5 +1,5 @@
 const cacheName = "v-s-0-0-2-0";
-const serviceWorkerVersion = "24-01-22-v1";
+const serviceWorkerVersion = "08-03-22-v1";
 const networkOnlyResources =
     [
         "/v1/"
@@ -54,7 +54,7 @@ const fetchStaleWhenRevalidate = function (event, putInCache = true) {
         return cachedResponsePromise || networkResponsePromise;
     }())
 }
-const fetchNetworkOnly = (event) => event.respondWith(fetch(event.request));
+const fetchNetworkOnly = (event) => event.respondWith(fetch(event.request).catch(()=>console.log("Can't fetch from network")));
 const fetchNetworkFailToCacheIfCached = function (event) {
     event.respondWith(
         caches.open(cacheName).then((cache) =>

@@ -158,13 +158,7 @@ let ViewController = (function () {
     let _defaultView;
     let _currentView;
     let _previousView;
-    EventController.call(_controller, {
-        "navigateToView": [],
-        "navigationRequest": [],
-        "navigateFromView": [],
-        "navigateDefault": [],
-        "historyEdit": [],
-    });
+    EventController.call(_controller, ["navigateToView", "navigationRequest", "navigateFromView", "navigateDefault", "historyEdit"]);
 
     //integrated error controller
     let _errors = [];
@@ -326,12 +320,7 @@ let ItemController = (function () {
     let _groupsLoaded = false;
     let _defaultGroup;
     let _controller = {};
-    EventController.call(_controller, {
-        "fetchGroup": [],
-        "fetchGroupFinish": [],
-        "fetchItem": [],
-        "fetchItemFinish": []
-    });
+    EventController.call(_controller, ["fetchGroup", "fetchGroupFinish", "fetchItem", "fetchItemFinish"]);
 
     //adding error types for item and group not errors
     ViewController.addError(new ErrorClass("item_not_found", "Item don't exist", "We don't have what you're looking for", [
@@ -655,7 +644,12 @@ const resourceView = new View(VIEW.resource, APP.url.resource, {},
             });
         },
         onLoad: async function (arg) {
-            this.rootNode.classList.add(GLOBAL.loading);
+
+            //setting timeout for loading animation
+            setTimeout(function (_sender) {
+                if (!_sender.isLoaded)
+                    _sender.rootNode.classList.add(GLOBAL.loading);
+            }, 300, this);
 
             //loading item and resource group
             this.data.currentItem = arg.currentItem || await ItemController.getItemById(arg.routeArg[0]);
@@ -667,8 +661,6 @@ const resourceView = new View(VIEW.resource, APP.url.resource, {},
 
             //loading resources to slider
             await this.data.resSlider.loadResources(resourceGroup.group, resourceGroup.resource);
-            if (arg.connectedAnimation)
-                arg.connectedAnimation.start(this.data.resList.children[this.data.resSlider.currentIndex]);
         },
         onLoadFinish: function () {
             this.rootNode.classList.remove(GLOBAL.loading);
@@ -708,6 +700,7 @@ ViewController.addEventListener("navigateDefault", () =>
 ViewController.addEventListener("navigateToView", (view, lastView) => {
     view.rootNode.classList.add(GLOBAL.activeView);
     APP_NODE.classList.replace(lastView?.id, view.id);
+    document.body.classList.toggle("scroll-fix", !isScrollbarVisible());
     setNavigationState(false);
 });
 
@@ -719,7 +712,7 @@ window.addEventListener("load", async function () {
     ViewController.addError(new ErrorClass("item_load_error", "Items cannot be loaded", "Try refreshing the page"));
     ViewController.addError(new ErrorClass("item_outdated", "Items are outdated", "Try refreshing the page"));
 
-    //adding home button event, removing first-start DOM indicator, setting offline indicator
+    //adding home button event, removing first-start DOM indicator
     getById("home-button").addEventListener("click", () => ViewController.navigateToDefaultView());
     getById("main-header-about-button").addEventListener("click", (e) => {
         e.preventDefault();
@@ -729,8 +722,6 @@ window.addEventListener("load", async function () {
         e.preventDefault();
         ViewController.navigate(VIEW.group, { routeArg: ["work"] });
     });
-    setTimeout(() => document.body.classList.remove("first-start"), 300);
-    APP_NODE.classList.toggle(GLOBAL.offline, !navigator.onLine);
 
     //loading items and groups
     try {
@@ -750,6 +741,11 @@ window.addEventListener("load", async function () {
 
 window.addEventListener("popstate", (event) =>
     ViewController.move((ViewController.currentHistoryIndex - event.state.index <= 0), event.state));
+
+window.onresize = () => document.body.classList.toggle("scroll-fix", !isScrollbarVisible());
+
+//check if scrollbar is visible
+let isScrollbarVisible = (element = document.body) => element.scrollHeight > element.clientHeight;
 
 //item tile creating method
 let createItemTile = async function (node, item) {
@@ -820,16 +816,7 @@ let ResourceSlider = function () {
     let _res = [];
     let _currentIndex;
     let _oldIndex;
-    EventController.call(this,
-        {
-            "load": [],
-            "loadFinish": [],
-            "next": [],
-            "previous": [],
-            "render": [],
-            "remove": [],
-            "close": [],
-        });
+    EventController.call(this, ["load", "loadFinish", "next", "previous", "render", "remove", "close"]);
     let _sender = this;
     let _renderIndex = async function (index) {
         _oldIndex = _currentIndex;
@@ -875,7 +862,7 @@ let ResourceSlider = function () {
     )
 }
 
-//gesture support for node
+//gesture support for element
 let GestureBuilder = function (node, event = {}) {
 
     const _directions = {
@@ -912,6 +899,7 @@ let GestureBuilder = function (node, event = {}) {
     });
 
 }
+
 //storage response indexer for group and landing views
 let StorageResponseIndexer = function (response, depth = 1, limit = 3, startIndex = 0, limitOfDepth = 3) {
     let _indexedItems = [];

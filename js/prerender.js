@@ -54,7 +54,9 @@ let RouteClass = function (source, target = source, isDefault = false) {
     }
 }
 //event sub controller declaration
-let EventController = function (events = []) {
-    this.addEventListener = (event, listener = function () { }) => events[event].push(listener);
-    this.invokeEvent = async (event, arg) => await Promise.all(events[event].map((event) => event(...arg)));
+let EventController = function (eventsList = []) {
+    let _events = {}
+    eventsList.forEach((eventName) => _events[eventName] = []);
+    this.addEventListener = (event, listener = function () { }) => _events[event].push(listener);
+    this.invokeEvent = async (event, arg) => await Promise.all(_events[event].map((event) => event(...arg)));
 }

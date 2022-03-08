@@ -27,7 +27,7 @@
     <link rel="apple-touch-icon" href="/icon/apple-touch-icon.png" />
 </head>
 
-<body class="first-start" id="app">
+<body id="app" class="scroll-fix">
     <div id="main-header-base" class="hidden" style="height: 50px;position: fixed;top: 0px;display:table;z-index:11;">
         <div id="main-header" style="width:100%;position: relative;z-index: 12;">
             <div id="main-header-icons-left" style="float: left;">
@@ -39,11 +39,11 @@
                 </span>
             </div>
             <div id="main-header-icons" style="float: right;">
-                <div id="main-header-nav-button" class="toggle-button"><i class="mi mi-Navigation"></i></div>
+                <div id="main-header-nav-button" class="icon-button"><i class="mi mi-Navigation"></i></div>
                 <div id="main-header-navigation">
-                    <a id="main-header-work-button" class="toggle-button" href="/group/work" title="Work"><i
+                    <a id="main-header-work-button" class="icon-button" href="/group/work" title="Work"><i
                             class="mi mi-Set"></i><span>Work</span></a>
-                    <a id="main-header-about-button" class="toggle-button" href="/about" title="About me"><i
+                    <a id="main-header-about-button" class="icon-button" href="/about" title="About me"><i
                             class="mi mi-Contact"></i><span>About</span></a>
                 </div>
             </div>
@@ -142,7 +142,6 @@
             <div class='error-msg font-title' id="item-error-node"></div>
         </div>
         <div id="about" class="view">
-            <div id="about-flex">
                 <div id="about-image">
                     <img id="about-img" src="/img/about-banner.webp" alt="About page banner" />
                 </div>
@@ -182,7 +181,6 @@
                     </div>
                     </br></br>
                 </div>
-            </div>
         </div>
         <div id="group" class="view loading">
             <div id="group-data" class="loading">
@@ -238,7 +236,7 @@
                 </a>
             </div>
         </div>
-        <div id="resource" class="view loading">
+        <div id="resource" class="view">
             <div class='error-msg font-title' id="resources-error-node"></div>
             <div id="image-viewer">
                 <div id="image-viewer-controls">
