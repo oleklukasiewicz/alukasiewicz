@@ -45,5 +45,5 @@ let hideNavigation = function () {
 //adding navigation buttons methods
 getById("main-header-nav-button").addEventListener("click", toggleNavigationState);
 let closeSpace = getById("main-header-navigation-close-space");
-closeSpace.addEventListener("click", hideNavigation);
-closeSpace.addEventListener("touchstart", hideNavigation);
+closeSpace.addEventListener("click", hideNavigation, { "passive": true });
+closeSpace.addEventListener("touchstart", hideNavigation, { "passive": true });

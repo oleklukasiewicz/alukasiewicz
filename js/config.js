@@ -499,7 +499,11 @@ const profileView = new View(VIEW.profile, APP.url.profile, {}, {
 }, VIEW.profile, false, ViewController.loadingModes.never);
 
 const itemView = new View(VIEW.item, APP.url.item, { currentItem: null }, {
-    onNavigate: () => window.scroll(0, 0),
+    onNavigate: function () {
+        if (this.data.scrollY >= 0)
+            window.scroll(0, this.data.scrollY);
+        this.data.scrollY = 0;
+    },
     onNavigateFrom: function () {
         this.rootNode.classList.remove(GLOBAL.error);
     },
