@@ -51,22 +51,6 @@
     box-sizing: border-box;
     background-color: var(--color-theme-A1);
 }
-#item-content .cover > img{
-    aspect-ratio: 1/1;
-    height: 100px;
-    background-color: var(--color-theme-A1);
-}
-#item-content .cover > div>div.font-subtitle{
-    margin-bottom: 12px;
-}
-#item-content .cover > div>.icon-button
-{
-    display: inline-table;
-    margin-right: 9px;
-}
-#item-content .cover > div>.icon-button>i{
-    margin-right: 9px;
-}
 .gallery{
     margin: 20px 0;
 }
@@ -104,6 +88,7 @@
     overflow: hidden;
     cursor:pointer;
     margin: 0;
+    user-select: none;
     object-fit: cover;
 }
 .gallery > .list > img:hover{

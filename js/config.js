@@ -1,13 +1,11 @@
-//adding remove feature for nodes and nodes lists
+//features for nodes, nodes lists and objects
 Element.prototype.remove = function () {
     this.parentElement.removeChild(this);
 };
-
 NodeList.prototype.remove = HTMLCollection.prototype.remove = function () {
     for (let i = this.length - 1; i >= 0; i--)
         this[i].parentElement.removeChild(this[i]);
 };
-
 Array.prototype.equals = function (array) {
     // if the other array is a falsy value, return,  compare lengths - can save a lot of time 
     if (!array || this.length != array.length)
@@ -145,7 +143,7 @@ const createHash = function (str, seed = 0) {
     return _s;
 };
 
-//view controller declaration
+//controllers declarations
 let ViewController = (function () {
     let _controller = {};
     let _views = [];
@@ -217,9 +215,9 @@ let ViewController = (function () {
     _controller.navigate = async function (id, arg = {}) {
 
         _controller.invokeEvent("navigationRequest", [id, _currentView]);
-        if (id == _currentView?.id && _currentView?.lastNavigationArguments.routeArg?.equals(arg.routeArg))
+        let _lastRouteArg = _currentView?.lastNavigationArguments?.routeArg || [];
+        if (id == _currentView?.id && (_lastRouteArg.equals(arg.routeArg || [])))
             return;
-
         //getting view
         let _target = _getViewById(id);
 
@@ -307,7 +305,6 @@ let ViewController = (function () {
     });
     return _controller;
 }());
-
 let ItemController = (function () {
     let _routes = [];
     let _storage = [];
@@ -398,7 +395,7 @@ let ItemController = (function () {
     let _generateGroup = function (group) {
         group.content = [];
         group.id = group.id || _generateId(group.title);
-        _groupRoutes.push(new RouteClass(group.id, group));
+        _groupRoutes.push(new Route(group.id, group));
         return group;
     }
     let _getGroupByRoute = (id) => _groupRoutes.find((route) => route.source == id)?.target;
@@ -407,7 +404,7 @@ let ItemController = (function () {
         await Promise.all(groups.map(async (group) => {
             _generateGroup(group);
             _storage.push(group);
-            group.aliases.forEach((source) => _groupRoutes.push(new RouteClass(source, group)));
+            group.aliases.forEach((source) => _groupRoutes.push(new Route(source, group)));
             if (group.isDefault)
                 _defaultGroup = group;
             await _controller.invokeEvent("fetchGroup", [group]);
@@ -419,9 +416,9 @@ let ItemController = (function () {
     _controller.fetchItems = async function (items) {
         await Promise.all(items.map(async (item) => {
             item.id = item.id || _generateId(item.title);
-            _routes.push(new RouteClass(item.id, item));
+            _routes.push(new Route(item.id, item));
             _defaultGroup.content.push(item);
-            item.aliases.forEach((source) => _routes.push(new RouteClass(source, item)));
+            item.aliases.forEach((source) => _routes.push(new Route(source, item)));
             item.groups?.forEach((group) => _getGroupByRoute(group)?.content.push(item));
             await _controller.invokeEvent("fetchItem", [item]);
         }));
@@ -692,19 +689,15 @@ ViewController.addEventListener("historyEdit", (historyItem, view) => {
     else
         history.pushState(historyItem, '', _url);
 });
-
 ViewController.addEventListener("navigationRequest", hideNavigation);
-
 ViewController.addEventListener("navigateDefault", () =>
     (history.state.defaultViewHistoryIndex != -1 && (history.state.defaultViewHistoryIndex - history.state.index) != 0) ? history.go(history.state.defaultViewHistoryIndex - history.state.index) : "");
-
 ViewController.addEventListener("navigateToView", (view, lastView) => {
     view.rootNode.classList.add(GLOBAL.activeView);
     APP_NODE.classList.replace(lastView?.id, view.id);
     document.body.classList.toggle("scroll-fix", !isScrollbarVisible());
     setNavigationState(false);
 });
-
 ViewController.addEventListener("navigateFromView", (lastView) => lastView.rootNode.classList.remove(GLOBAL.activeView));
 
 //DOM events
@@ -735,15 +728,17 @@ window.addEventListener("load", async function () {
     }
 
     //navigating to view based by url
-    await ViewController.navigate(START_ROUTE.target, {
-        routeArg: START_URL.slice(1, START_URL.length - 1)
-    });
+    if (history.state)
+        ViewController.move((ViewController.currentHistoryIndex - history.state.index <= 0), history.state);
+    else
+        await ViewController.navigate(START_ROUTE.target, {
+            routeArg: START_URL.slice(1, START_URL.length - 1)
+        });
 });
-
 window.addEventListener("popstate", (event) =>
     ViewController.move((ViewController.currentHistoryIndex - event.state.index <= 0), event.state));
-
-window.onresize = () => document.body.classList.toggle("scroll-fix", !isScrollbarVisible());
+window.onresize = () =>
+    document.body.classList.toggle("scroll-fix", !isScrollbarVisible());
 
 //check if scrollbar is visible
 let isScrollbarVisible = (element = document.body) => element.scrollHeight > element.clientHeight;

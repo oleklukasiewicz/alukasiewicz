@@ -46,7 +46,7 @@ const START_URL = (window.location.pathname + (window.location.pathname.substr(-
 const getById = (id) => document.getElementById(id);
 
 //route class declaration
-let RouteClass = function (source, target = source, isDefault = false) {
+let Route = function (source, target = source, isDefault = false) {
     return {
         source,
         target,
