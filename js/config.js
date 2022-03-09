@@ -290,8 +290,8 @@ let ViewController = (function () {
         always: "always",
         never: "never"
     }
-    _controller.move = function (move, historyItem) {
-        _currentHistoryIndex += (move == _controller.moveModes.forward ? 1 : -1);
+    _controller.navigateFromHistory = function (historyItem) {
+        _currentHistoryIndex = historyItem.index;
         _defaultViewHistoryIndex = historyItem.defaultViewHistoryIndex;
         _controller.navigate(historyItem.id, Object.assign({
             noHistoryPush: true
@@ -690,7 +690,7 @@ ViewController.addEventListener("historyEdit", (historyItem, view) => {
 });
 ViewController.addEventListener("navigationRequest", hideNavigation);
 ViewController.addEventListener("navigateDefault", (arg) =>
-    (history.state.defaultViewHistoryIndex != -1 && (history.state.defaultViewHistoryIndex - history.state.index) != 0) ? history.go(history.state.defaultViewHistoryIndex - history.state.index) :  ViewController.navigate(null, arg));
+    (history.state.defaultViewHistoryIndex != -1 && (history.state.defaultViewHistoryIndex - history.state.index) != 0) ? history.go(history.state.defaultViewHistoryIndex - history.state.index) : ViewController.navigate(null, arg));
 ViewController.addEventListener("navigateToView", (view, lastView) => {
     view.rootNode.classList.add(GLOBAL.activeView);
     APP_NODE.classList.replace(lastView?.id, view.id);
@@ -728,14 +728,14 @@ window.addEventListener("load", async function () {
 
     //navigating to view based by url or by history state
     if (history.state)
-        ViewController.move(ViewController.moveModes.forward, history.state);
+        ViewController.navigateFromHistory(history.state);
     else
         await ViewController.navigate(START_ROUTE.target, {
             routeArg: START_URL.slice(1, START_URL.length - 1)
         });
 });
 window.addEventListener("popstate", (event) =>
-    ViewController.move((ViewController.currentHistoryIndex - event.state.index <= 0), event.state));
+    ViewController.navigateFromHistory(event.state));
 window.onresize = () =>
     document.body.classList.toggle("scroll-fix", !isScrollbarVisible());
 
