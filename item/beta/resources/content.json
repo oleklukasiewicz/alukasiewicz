@@ -77,7 +77,6 @@
             "content": "Fluent Design System builds on the momentum of great things already happening at Microsoft, standing on shoulders without stepping on toes. It celebrates those who contribute to what we collectively do, regardless of what team they work on. It borrows from engineering workflows to help us be efficient where we can, saving creative energy for where it’s most needed."
         },
         {
-            "dontRender":true,
             "type":"cover",
             "title":"Fluent design - acrylic material",
             "image":"/gallery/lily-blank.webp",
@@ -86,6 +85,14 @@
                 {
                     "icon":"\\ED63",
                     "text":"Action 1",
+                    "action":
+                    {
+
+                    }
+                },
+                {
+                    "icon":"\\ED65",
+                    "text":"Action 2",
                     "action":
                     {
 

@@ -428,7 +428,9 @@ body.scroll-fix::-webkit-scrollbar-track{
     -webkit-font-smoothing: antialiased;
     text-align: justify;
     box-sizing: border-box;
-    display: table;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
     width: 100%;
     line-height: 1.6em;
     letter-spacing: .1px;

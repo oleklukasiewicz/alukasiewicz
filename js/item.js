@@ -3,7 +3,7 @@ let ItemComponentBuilder = function (component, itemFolder, item) {
     let _type = component.type;
     let _arg = component.arguments || {};
     let _component;
-    if(component.dontRender) _type="none";
+    if (component.dontRender) _type = "none";
     //generating nodes
     switch (_type) {
         case "section":
@@ -121,7 +121,7 @@ let ItemComponentBuilder = function (component, itemFolder, item) {
             _component = document.createElement("DIV");
             _component.classList.add("cover");
             let _coverImg = document.createElement("IMG");
-            _coverImg.src=APP.itemFolder + itemFolder + APP.resourceFolder+component.image;
+            _coverImg.src = APP.itemFolder + itemFolder + APP.resourceFolder + component.image;
             _component.appendChild(_coverImg);
             let _dataNode = document.createElement("DIV");
             _component.appendChild(_dataNode);
@@ -131,13 +131,18 @@ let ItemComponentBuilder = function (component, itemFolder, item) {
                 _title.innerText = component.title;
                 _dataNode.append(_title);
             }
-            component.actions.forEach((action)=>
-            {
-                let _action=document.createElement("A");
-                let _icon=document.createElement("I");
+            component.actions.forEach((action) => {
+                let _action = document.createElement("A");
+                _action.classList.add("icon-button");
+
+                let _icon_code = action.icon.substring(1);
+                let _rule='.mi-' + _icon_code + ':before { content:"' + action.icon + '" }';
+                document.styleSheets[1].insertRule(_rule,0);
+
+                let _icon = document.createElement("I");
                 _icon.classList.add("mi");
-                console.log(action.icon);
-                _icon.style.content="\\D128";
+                _icon.classList.add("mi-" + _icon_code);
+                
                 _action.appendChild(_icon);
                 _action.append(action.text);
                 _dataNode.appendChild(_action);
