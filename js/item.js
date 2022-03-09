@@ -136,13 +136,15 @@ let ItemComponentBuilder = function (component, itemFolder, item) {
                 _action.classList.add("icon-button");
 
                 let _icon_code = action.icon.substring(1);
-                let _rule='.mi-' + _icon_code + ':before { content:"' + action.icon + '" }';
-                document.styleSheets[1].insertRule(_rule,0);
+                let _rule = '.mi-' + _icon_code + ':before { content:"' + action.icon + '" }';
+                document.styleSheets[1].insertRule(_rule, 0);
 
                 let _icon = document.createElement("I");
                 _icon.classList.add("mi");
                 _icon.classList.add("mi-" + _icon_code);
-                
+
+                ActionResolver(action.action, _action);
+
                 _action.appendChild(_icon);
                 _action.append(action.text);
                 _dataNode.appendChild(_action);
@@ -152,4 +154,22 @@ let ItemComponentBuilder = function (component, itemFolder, item) {
             _component = document.createElement("DIV");
     }
     return _component
+}
+let ActionResolver = function (action, node) {
+    switch (action.type) {
+        case "link":
+            node.href = action.arguments[0];
+            node.addEventListener("click", function (e) {
+                e.preventDefault();
+                window.open(action.arguments[0], '_blank').focus()
+            });
+            break;
+        case "navigate":
+            node.ref = action.arguments.join("/");
+            node.addEventListener("click", function (e) {
+                e.preventDefault();
+                ViewController.navigate(action.arguments[0], { routeArg: action.arguments.slice(1) });
+            })
+            break;
+    }
 }

@@ -514,6 +514,8 @@ const itemView = new View(VIEW.item, APP.url.item, { currentItem: null }, {
         if (ItemController.isItemsLoaded) {
             //getting item
             let item = this.data.currentItem = await ItemController.getItemById(arg.routeArg[0]);
+            if (!item)
+                return;
             if (item.isItemLinkToWeb) {
                 window.open(item.isItemLinkToWeb, '_blank').focus();
                 ViewController.navigateToDefaultView();

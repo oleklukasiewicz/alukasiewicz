@@ -87,7 +87,8 @@
                     "text":"Action 1",
                     "action":
                     {
-
+                        "type":"link",
+                        "arguments":["https://google.com"]
                     }
                 },
                 {
@@ -95,7 +96,8 @@
                     "text":"Action 2",
                     "action":
                     {
-
+                        "type":"navigate",
+                        "arguments":["item","lily"]
                     }
                 }
             ],
