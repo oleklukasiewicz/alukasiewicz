@@ -180,7 +180,7 @@ let ActionResolver = function (action, node) {
             });
             break;
         case "navigate":
-            node.ref = action.arguments.join("/");
+            node.href = action.arguments.join("/");
             node.addEventListener("click", function (e) {
                 e.preventDefault();
                 ViewController.navigate(action.arguments[0], { routeArg: action.arguments.slice(1) });
