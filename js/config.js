@@ -281,10 +281,6 @@ let ViewController = (function () {
         else
             history.back();
     }
-    _controller.moveModes = {
-        forward: 1,
-        back: 0
-    }
     _controller.loadingModes = {
         single: "single",
         always: "always",
@@ -705,8 +701,8 @@ window.addEventListener("load", async function () {
     ViewController.addError(new ErrorClass("item_load_error", "Items cannot be loaded", "Try refreshing the page"));
     ViewController.addError(new ErrorClass("item_outdated", "Items are outdated", "Try refreshing the page"));
 
-    //adding home button event, removing first-start DOM indicator
-    getById("home-button").addEventListener("click", () => ViewController.navigateToDefaultView());
+    //adding home button event
+    getById("home-button").addEventListener("click", ViewController.navigateToDefaultView);
     getById("main-header-about-button").addEventListener("click", (e) => {
         e.preventDefault();
         ViewController.navigate(VIEW.profile);
