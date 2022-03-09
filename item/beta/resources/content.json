@@ -79,7 +79,7 @@
         {
             "type":"cover",
             "title":"Fluent design - acrylic material",
-            "image":"/gallery/lily-blank.webp",
+            "image":"/resources/gallery/lily-blank.webp",
             "actions":
             [
                 {
@@ -112,6 +112,10 @@
         {
             "type": "text",
             "content": "Rising to this challenge will take a lot of time and effort, and we all have day jobs in specific products. But it’s going to pay dividends along the way. Over time it can bring our culture, our business, our technology, and our experiences together."
+        },
+        {
+            "type":"item-cover",
+            "id":"fluent-design-system"
         },
         {
             "type": "section",

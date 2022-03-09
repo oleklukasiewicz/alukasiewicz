@@ -25,15 +25,14 @@ let ItemComponentBuilder = function (component, itemFolder, item) {
             let _img = document.createElement("IMG");
             _img.src = APP.itemFolder + itemFolder + APP.resourceFolder + component.resource[0].src;
             _img.alt = component.resource[0].alt || "";
-            _img.onerror = function () { _img.onload = function () { }; _img.src = "/img/image_error.webp"; _img.classList.add("no-image"); }
-            _img.onload = function () {
+            ImageHelper(_img, function () {
                 _img.onclick = function () {
                     ViewController.navigate(VIEW.resource, {
                         routeArg: [item.id, item.resources[component.resIndex].hash],
                         currentItem: item
                     })
                 }
-            }
+            });
 
             //generating alt text
             let _alt = document.createElement("SPAN");
@@ -103,7 +102,7 @@ let ItemComponentBuilder = function (component, itemFolder, item) {
                 _img.alt = res.alt || "";
                 _img.src = APP.itemFolder + itemFolder + APP.resourceFolder + res.src;
                 _component.children[1].appendChild(_img);
-                _img.onload = function () {
+                ImageHelper(_img, function () {
                     _img.onclick = function () {
                         ViewController.navigate(VIEW.resource, {
                             routeArg: [
@@ -113,15 +112,18 @@ let ItemComponentBuilder = function (component, itemFolder, item) {
                             currentItem: item
                         })
                     }
-                }
+                });
             }
             _component.classList.add("items-count-" + _max);
             break;
         case "cover":
             _component = document.createElement("DIV");
             _component.classList.add("cover");
+
             let _coverImg = document.createElement("IMG");
-            _coverImg.src = APP.itemFolder + itemFolder + APP.resourceFolder + component.image;
+            _coverImg.src = APP.itemFolder + itemFolder + component.image;
+            ImageHelper(_coverImg);
+
             _component.appendChild(_coverImg);
             let _dataNode = document.createElement("DIV");
             _component.appendChild(_dataNode);
@@ -150,6 +152,19 @@ let ItemComponentBuilder = function (component, itemFolder, item) {
                 _dataNode.appendChild(_action);
             })
             break;
+        case "item-cover":
+            let _item = ItemController.getItemSnapshotById(component.id);
+            let _isLinkToWeb = _item.isItemLinkToWeb;
+            let _action = _isLinkToWeb ? { text: "Link", icon: "\\ED1D", action: { type: "link", arguments: [_isLinkToWeb] } } : { text: "View item", icon: "\\ED63", action: { type: "navigate", arguments: ["item", _item.id] } };
+            let _coverComponent =
+            {
+                type: "cover",
+                title: _item.title,
+                image: _item.tile.image,
+                actions: [_action]
+            }
+            return ItemComponentBuilder(_coverComponent, _item.folder, item);
+            break;
         default:
             _component = document.createElement("DIV");
     }
@@ -172,4 +187,14 @@ let ActionResolver = function (action, node) {
             })
             break;
     }
+}
+let ImageHelper = async function (image, onload = () => { }) {
+    let imageIsNotLoaded = function () {
+        image.src = "/img/image_error.webp";
+        image.onload = function () { }
+    }
+    await new Promise((resolve) => {
+        image.onload = () => resolve(onload());
+        image.onerror = () => resolve(imageIsNotLoaded());
+    });
 }

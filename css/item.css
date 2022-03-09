@@ -53,6 +53,7 @@
 #item-content .cover > img{
     aspect-ratio: 1/1;
     height: 100px;
+    background-color: var(--color-theme-A1);
 }
 #item-content .cover > div>div.font-subtitle{
     margin-bottom: 12px;
