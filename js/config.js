@@ -272,10 +272,8 @@ let ViewController = (function () {
         if (isDefault) _defaultView = view;
     }
     _controller.navigateToDefaultView = function (arg) {
-        _controller.navigate(_defaultView.id, arg);
-        if (_currentView != _defaultView) {
+        if (_currentView != _defaultView)
             _controller.invokeEvent("navigateDefault", [arg]);
-        }
     }
     _controller.back = function () {
         if (history.state.index == 0)
@@ -294,6 +292,7 @@ let ViewController = (function () {
     }
     _controller.move = function (move, historyItem) {
         _currentHistoryIndex += (move == _controller.moveModes.forward ? 1 : -1);
+        _defaultViewHistoryIndex = historyItem.defaultViewHistoryIndex;
         _controller.navigate(historyItem.id, Object.assign({
             noHistoryPush: true
         }, historyItem.arg));
@@ -690,8 +689,8 @@ ViewController.addEventListener("historyEdit", (historyItem, view) => {
         history.pushState(historyItem, '', _url);
 });
 ViewController.addEventListener("navigationRequest", hideNavigation);
-ViewController.addEventListener("navigateDefault", () =>
-    (history.state.defaultViewHistoryIndex != -1 && (history.state.defaultViewHistoryIndex - history.state.index) != 0) ? history.go(history.state.defaultViewHistoryIndex - history.state.index) : "");
+ViewController.addEventListener("navigateDefault", (arg) =>
+    (history.state.defaultViewHistoryIndex != -1 && (history.state.defaultViewHistoryIndex - history.state.index) != 0) ? history.go(history.state.defaultViewHistoryIndex - history.state.index) :  ViewController.navigate(null, arg));
 ViewController.addEventListener("navigateToView", (view, lastView) => {
     view.rootNode.classList.add(GLOBAL.activeView);
     APP_NODE.classList.replace(lastView?.id, view.id);
@@ -727,9 +726,9 @@ window.addEventListener("load", async function () {
         ViewController.invokeError("item_load_error", true);
     }
 
-    //navigating to view based by url
+    //navigating to view based by url or by history state
     if (history.state)
-        ViewController.move((ViewController.currentHistoryIndex - history.state.index <= 0), history.state);
+        ViewController.move(ViewController.moveModes.forward, history.state);
     else
         await ViewController.navigate(START_ROUTE.target, {
             routeArg: START_URL.slice(1, START_URL.length - 1)
