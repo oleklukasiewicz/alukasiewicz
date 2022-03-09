@@ -499,11 +499,7 @@ const profileView = new View(VIEW.profile, APP.url.profile, {}, {
 }, VIEW.profile, false, ViewController.loadingModes.never);
 
 const itemView = new View(VIEW.item, APP.url.item, { currentItem: null }, {
-    onNavigate: function () {
-        if (this.data.scrollY >= 0)
-            window.scroll(0, this.data.scrollY);
-        this.data.scrollY = 0;
-    },
+    onNavigate: () => window.scroll(0, 0),
     onNavigateFrom: function () {
         this.rootNode.classList.remove(GLOBAL.error);
     },
@@ -517,14 +513,15 @@ const itemView = new View(VIEW.item, APP.url.item, { currentItem: null }, {
         this.rootNode.classList.add(GLOBAL.loading);
         if (ItemController.isItemsLoaded) {
             //getting item
-            let item = this.data.currentItem = await ItemController.getItemById(arg.routeArg[0]);
-            if (!item)
+            let item = await ItemController.getItemById(arg.routeArg[0]);
+            if (!item || this.data.currentItem == item)
                 return;
             if (item.isItemLinkToWeb) {
                 window.open(item.isItemLinkToWeb, '_blank').focus();
                 ViewController.navigateToDefaultView();
                 return;
             }
+            this.data.currentItem = item;
 
             //preparing item info
             document.title = item.title + " - " + APP.name;
@@ -696,7 +693,7 @@ ViewController.addEventListener("historyEdit", (historyItem, view) => {
         history.pushState(historyItem, '', _url);
 });
 
-ViewController.addEventListener("navigationRequest", () => hideNavigation());
+ViewController.addEventListener("navigationRequest", hideNavigation);
 
 ViewController.addEventListener("navigateDefault", () =>
     (history.state.defaultViewHistoryIndex != -1 && (history.state.defaultViewHistoryIndex - history.state.index) != 0) ? history.go(history.state.defaultViewHistoryIndex - history.state.index) : "");

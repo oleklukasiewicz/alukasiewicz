@@ -15,4 +15,5 @@ let getItems = () => [
     new Item(null,[],"https://www.instagram.com/p/CLEOiDiBDey/","/isometric","Procedural world","/isometric_castle.webp","The world is full of patterns. Here it is represented as a set of tiles.",new ItemDate(9, 2, 2021),null,["best"]),
     new Item("let-the-adventure-begin",[],"https://www.instagram.com/p/CCmAJKGBWeb/","/adventure","Let the journey begin!","/adventure.webp","Don't wait for the adventure's start - begin it by yourself.",new ItemDate(13, 07, 2020),null,[],{tileImageStyle: "object-position:0% 100%;"}),
     new Item(null, ["ms-fluent", "fluent","ms"], false, "/beta", "Fluent Design System", false, "Reflections on our design history, the progression, and the potential of how we collectively design for the future.", new ItemDate(27, 10, 2020),new ItemDate(5, 11, 2021),["blog"]),
+    new Item(null, ["mica"], false, "/beta2", "Mica Material", false, "Reflections on our design history, the progression, and the potential of how we collectively design for the future.", new ItemDate(9, 3, 2022),undefined,["blog"]),
 ];

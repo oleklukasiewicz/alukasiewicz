@@ -69,7 +69,6 @@ let ItemComponentBuilder = function (component, itemFolder, item) {
                 _list.appendChild(_img);
                 ImageHelper(_img, function () {
                     _img.onclick = function () {
-                        itemView.data.scrollY = window.scrollY;
                         ViewController.navigate(VIEW.resource, {
                             routeArg: [
                                 item.id,
