@@ -293,11 +293,6 @@ let ViewController = (function () {
             noHistoryPush: true
         }, historyItem.arg));
     }
-    Object.defineProperties(_controller, {
-        currentHistoryIndex: {
-            get: () => _currentHistoryIndex
-        }
-    });
     return _controller;
 }());
 let ItemController = (function () {
