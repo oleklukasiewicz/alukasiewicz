@@ -243,8 +243,7 @@ let ViewController = (function () {
             //invoking history edit event
             _controller.invokeEvent("historyEdit", [
                 Object.assign(new HistoryItem(_target.id, _currentHistoryIndex, {
-                    routeArg: arg.routeArg,
-                    historyArg: arg.historyArg
+                    routeArg: arg.routeArg
                 }), {
                     defaultViewHistoryIndex: _defaultViewHistoryIndex
                 }), _target]
@@ -682,7 +681,7 @@ ViewController.addEventListener("historyEdit", (historyItem, view) => {
     else
         history.pushState(historyItem, '', _url);
 });
-ViewController.addEventListener("navigationRequest", hideNavigation);
+ViewController.addEventListener("navigationRequest", () => hideNavigation());
 ViewController.addEventListener("navigateDefault", (arg) =>
     (history.state.defaultViewHistoryIndex != -1 && (history.state.defaultViewHistoryIndex - history.state.index) != 0) ? history.go(history.state.defaultViewHistoryIndex - history.state.index) : ViewController.navigate(null, arg));
 ViewController.addEventListener("navigateToView", (view, lastView) => {
