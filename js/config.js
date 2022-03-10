@@ -499,8 +499,11 @@ const itemView = new View(VIEW.item, APP.url.item, { currentItem: null }, {
     onLoad: async function (arg) {
         this.rootNode.classList.add(GLOBAL.loading);
         if (ItemController.isItemsLoaded) {
-            //getting item
-            let item = await ItemController.getItemById(arg.routeArg[0]);
+            //getting 
+            let item;
+            try {
+                item = await ItemController.getItemById(arg.routeArg[0]);
+            } catch { return; }
             if (!item || this.data.currentItem == item)
                 return;
             if (item.isItemLinkToWeb) {

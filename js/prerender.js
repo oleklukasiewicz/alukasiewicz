@@ -26,14 +26,11 @@ const APP = {
 //global app classes
 const GLOBAL = {
     toggled: "toggled",
-    pending: "pending",
-    progress: "progress",
     item: "item",
     group: "group",
     loading: "loading",
     loaded: "loaded",
     error: "error",
-    offline: "offline",
     disabled: "disabled",
     activeView: "active-view",
     dataNode: "data-node"
