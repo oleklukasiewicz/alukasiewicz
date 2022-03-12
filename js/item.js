@@ -1,3 +1,5 @@
+const COMPONENTS_VERSION=1;
+
 //Item component builder for basic item content controls and sections
 let ItemComponentBuilder = function (component, itemFolder, item) {
     let _type = component.type;
