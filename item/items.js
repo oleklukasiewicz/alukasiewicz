@@ -6,6 +6,7 @@ let getGroups = () => [
     new Group("home-group",["home","landing"],"Home Group")
 ];
 let getItems = () => [
+    new Item(null,[],"https://www.instagram.com/p/CMZkmJaBhd1/","/lighthouse","Lighthouse","/lighthouse.webp","Alone lighthouse on the night sea with a sky full of stars.",new ItemDate(16,3,2022),null,["featured"]),
     new Item(null,[],"https://www.instagram.com/p/CPSx-X8hdVM/","/lily","Water lily","/lily-blank.webp","Mandatory element in every organic picture of river or lake.",new ItemDate(10,12,2021),null,["best"]),
     new Item(null, [], "https://www.instagram.com/p/CPSx-X8hdVM/", "/tree-on-rock", "Organic pixels", "/tree-on-rock.webp", "One of the most iconic plants on the planet - a tree! Here growing on a giant rock.", new ItemDate(23, 5, 2021), null, ["best"]),
     new Item(null,[],"https://www.reddit.com/r/PixelArt/comments/qi9rq8/the_crocus/","/crocus","Wonderfull spice","/crocus-base.webp","Common plant that grows in every mountain meadow - Crocus! Also the most expensive spice in the world!",new ItemDate(20, 10, 2021),null,["best"]),
