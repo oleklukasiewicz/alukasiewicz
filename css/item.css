@@ -78,6 +78,12 @@
     grid-template-columns: 1fr 1fr 1fr;
     grid-template-rows: 120px 40px 120px;
 }
+.gallery > .list > img.loading{
+    pointer-events: none;
+    animation-name: Blink;
+    animation-iteration-count: infinite;
+    animation-duration: 1.2s;
+}
 .gallery > .list > img{
     background-color: var(--color-theme-A1);
     border-radius: var(--border-radius);
@@ -86,7 +92,7 @@
     width: 100%;
     display: block;
     overflow: hidden;
-    cursor:pointer;
+    cursor: pointer;
     margin: 0;
     user-select: none;
     object-fit: cover;
@@ -100,6 +106,9 @@
     box-shadow: 0 6px 10px 0 rgba(0,0,0,.13);
     transform: translateY(-2px);
     background-color: var(--color-theme-A1);
+}
+.gallery.items-count-1 > .list > img{
+    aspect-ratio: 8/5;
 }
 .gallery.items-count-5 > .list > img:nth-child(1){
     grid-column: 1;

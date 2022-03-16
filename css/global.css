@@ -96,6 +96,10 @@
     pointer-events: none!important;
     opacity: .6;
 }
+.hidden
+{
+    display: none !important;
+}
 @font-face{
     font-family: micon_nb;
     font-style: normal;
@@ -256,7 +260,7 @@ body{
     height: 100vh;
 }
 body.scroll-fix::-webkit-scrollbar-track{
-    background: var(--color-theme) !important;
+    background: var(--color-theme)!important;
 }
 #main-header-base{
     width: 100%;
@@ -423,7 +427,7 @@ body.scroll-fix::-webkit-scrollbar-track{
     color: var(--color-font);
     margin-right: 8px;
 }
-#item-content{
+#item-content, #item-content-loading{
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     text-align: justify;
@@ -437,6 +441,15 @@ body.scroll-fix::-webkit-scrollbar-track{
     max-width: var(--size-max-width);
     margin: 0 auto 40px;
 }
+#item #item-content-loading{
+    display: none;
+}
+#item.loading #item-content{
+    display: none;
+}
+#item.loading #item-content-loading{
+    display: flex;
+}
 #item.loading{
     animation-name: Blink;
     animation-iteration-count: infinite;
@@ -448,16 +461,22 @@ body.scroll-fix::-webkit-scrollbar-track{
 #item.loading #item-title{
     height: 26px;
     width: 30%;
+    font-size: 0px;
     min-width: 200px;
     background-color: var(--color-theme-A1);
 }
 #item.loading #item-info{
     height: 20px;
     width: 20%;
+    font-size: 0px;
     min-width: 100px;
     background-color: var(--color-theme-A1);
 }
-#item.loading #item-content > b.ghost{
+#item.loading #item-info>*
+{
+    background-color: transparent;
+}
+#item.loading #item-content-loading > b.ghost{
     height: 26px;
     display: table;
     width: 20%;
@@ -466,7 +485,7 @@ body.scroll-fix::-webkit-scrollbar-track{
     min-width: 50px;
     background-color: var(--color-theme-A1);
 }
-#item.loading #item-content > div.ghost{
+#item.loading #item-content-loading > div.ghost{
     height: 250px;
     display: table;
     width: 100%;
@@ -474,9 +493,9 @@ body.scroll-fix::-webkit-scrollbar-track{
     margin-top: 30px;
     background-color: var(--color-theme-A1);
 }
-#item.loading #item-content > span.ghost{
+#item.loading #item-content-loading > span.ghost{
     height: 10px;
-    margin-top: 10px;
+    margin-top: 2px;
     display: table;
     width: 100%;
     border-top: 14px solid var(--color-theme-A1);
@@ -991,7 +1010,7 @@ u.dotted-separator{
     #main-header-work-button{
         padding: 14px 16px;
     }
-    #main-header-base.hidden #main-header-navigation{
+    #main-header-base.closed #main-header-navigation{
         max-height: 0;
         padding-bottom: 0;
         border-bottom: 1px solid transparent;
@@ -1012,7 +1031,7 @@ u.dotted-separator{
         border-bottom: 1px solid var(--color-theme-A1);
         z-index: -10;
     }
-    #main-header-base.hidden #main-header-navigation-close-space{
+    #main-header-base.closed #main-header-navigation-close-space{
         opacity: 0;
         visibility: hidden;
         width: 0;

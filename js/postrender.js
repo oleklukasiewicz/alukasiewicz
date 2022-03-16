@@ -33,7 +33,7 @@ let navigationNode = getById("main-header-base");
 //navigation control
 let isNavigationOpen = false;
 let setNavigationState = function (isOpened) {
-    navigationNode.classList.toggle("hidden", !isOpened);
+    navigationNode.classList.toggle("closed", !isOpened);
     isNavigationOpen = isOpened;
 }
 let toggleNavigationState = () => setNavigationState(!isNavigationOpen)

@@ -30,7 +30,7 @@
 </head>
 
 <body id="app" class="scroll-fix">
-    <div id="main-header-base" class="hidden" style="height: 50px;position: fixed;top: 0px;display:table;z-index:11;">
+    <div id="main-header-base" class="closed" style="height: 50px;position: fixed;top: 0px;display:table;z-index:11;">
         <div id="main-header" style="width:100%;position: relative;z-index: 12;">
             <div id="main-header-icons-left" style="float: left;">
                 <span class="al-logo anim" id="home-button" title="Home page">
@@ -134,13 +134,15 @@
                 <div id="item-info" class="font-base"></div>
             </div>
             <article id="item-content" class="font-base">
+            </article>
+            <div id="item-content-loading">
                 <div class="ghost"></div><b class="ghost"></b> <span class="ghost"></span> <span class="ghost"></span>
                 <span class="ghost"></span> <b class="ghost"></b> <span class="ghost"></span> <span
                     class="ghost"></span> <span class="ghost"></span> <span class="ghost"></span> <b class="ghost"></b>
                 <div class="ghost"></div><span class="ghost"></span> <span class="ghost"></span> <span
                     class="ghost"></span> <span class="ghost"></span> <b class="ghost"></b> <span class="ghost"></span>
                 <span class="ghost"></span> <span class="ghost"></span>
-            </article>
+            </div>
             <div class='error-msg font-title' id="item-error-node"></div>
         </div>
         <div id="about" class="view">
@@ -241,8 +243,8 @@
             <div class='error-msg font-title' id="resources-error-node"></div>
             <div id="image-viewer">
                 <div id="image-viewer-controls">
-                    <div id="image-viewer-prev" class="button" title="Previous"><i class="mi mi-Back"></i></div>
-                    <div id="image-viewer-next" class="button" title="Next"><i class="mi mi-BackMirrored"></i></div>
+                    <div id="image-viewer-prev" class="button hidden" title="Previous"><i class="mi mi-Back"></i></div>
+                    <div id="image-viewer-next" class="button hidden" title="Next"><i class="mi mi-BackMirrored"></i></div>
                     <div id="image-viewer-close" class="button" title="Close"><i class="mi mi-Close"></i></div>
                 </div>
                 <div id="image-viewer-list">

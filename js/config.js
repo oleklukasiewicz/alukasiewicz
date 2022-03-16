@@ -519,8 +519,7 @@ const itemView = new View(VIEW.item, APP.url.item, { currentItem: null }, {
 
             //preparing content
             this.data.iContent.innerHTML = "";
-            item.content.forEach((content) =>
-                this.data.iContent.append(new ItemComponentBuilder(content, item.folder, item)));
+            item.content.forEach(async (content) => this.data.iContent.append(await ItemComponentBuilder(content, item.folder, item)));
             incrementVisitors(APP.itemFolder + "/" + item.id, true);
         }
     },
@@ -604,6 +603,10 @@ const resourceView = new View(VIEW.resource, APP.url.resource, {},
 
             //adding close button
             getById("image-viewer-close").addEventListener("click", ViewController.back);
+            let _setButtonsDisplay = function (isHidden) {
+                _nextBtn.classList.toggle(GLOBAL.hidden, isHidden);
+                _prevBtn.classList.toggle(GLOBAL.hidden, isHidden);
+            }
 
             //adding event to slider
             this.data.resSlider.addEventListener("render", function (res, index, oldres, old) {
@@ -622,11 +625,12 @@ const resourceView = new View(VIEW.resource, APP.url.resource, {},
                     };
                 });
             });
-            this.data.resSlider.addEventListener("loadFinish", function (res) {
-                _nextBtn.classList.toggle(GLOBAL.disabled, res.length < 2);
-                _prevBtn.classList.toggle(GLOBAL.disabled, res.length < 2);
-            })
-            this.data.resSlider.addEventListener("close", () => _resList.innerHTML = "");
+            this.data.resSlider.addEventListener("loadFinish", (res) =>
+                _setButtonsDisplay(res.length < 2))
+            this.data.resSlider.addEventListener("close", () => {
+                _resList.innerHTML = "";
+                _setButtonsDisplay(true);
+            });
 
             GestureBuilder(this.rootNode, {
                 right: this.data.resSlider.next,
