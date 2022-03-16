@@ -746,7 +746,7 @@ let createItemTile = async function (node, item) {
         node = document.createElement("A");
         oldNode.parentElement.replaceChild(node, oldNode);
     }
-    node.className = "item " + GLOBAL.dataNode + " " + GLOBAL.loading;
+    node.className = "item " + GLOBAL.dataNode + " " + GLOBAL.loading + " index-" + item.groupItemIndex;
     node.innerHTML = "<div class='img'><img src='" + APP.itemFolder + item.folder + item.tile.image + "' alt='" + item.title + "'/></div><b class='font-subtitle'>" + item.title + "</b><span class='font-base'>" + item.tile.content + "</span><div class='labels'><div class='button'>" + (item.isItemLinkToWeb ? "Open link <i class='mi mi-OpenInNewWindow'></i>" : "Read more <i class='mi mi-BackMirrored'></i>") + "</div>" + (item.modifyDate ? "<div class='label font-caption'><i class='mi mi-Update'></i> &nbsp;&nbsp;" + item.modifyDate.toHTMLString() + "</div>" : "") + "</div>";
 
     //loading image of tile
@@ -895,17 +895,22 @@ let GestureBuilder = function (node, event = {}) {
 //storage response indexer for group and landing views
 let StorageResponseIndexer = function (response, depth = 1, limit = 3, startIndex = 0, limitOfDepth = 3) {
     let _indexedItems = [];
+    let _groupItemIndex = 0;
+    let _groupIndex = 0;
     response.content?.forEach((entry, index) => {
         if (entry.type == GLOBAL.group) {
+            _groupItemIndex = 0;
+            _groupIndex += 1;
             if (depth > 0) {
-                _indexedItems.push({ index: startIndex, entry: entry });
+                _indexedItems.push({ index: startIndex, entry: entry, groupIndex:_groupIndex });
                 _indexedItems = _indexedItems.concat(StorageResponseIndexer(entry, depth - 1, limitOfDepth, startIndex + 1));
                 startIndex = _indexedItems[_indexedItems.length - 1].index + 1;
             }
         } else {
             if (((limit > 0) && (!entry.isIndexed || (response.content.length - index) <= limit)) || limit == -1) {
                 entry.isIndexed = true;
-                _indexedItems.push({ index: startIndex, entry: entry });
+                _indexedItems.push({ index: startIndex, entry: entry, groupItemIndex: _groupItemIndex });
+                _groupItemIndex += 1;
                 if (limit > 0)
                     limit -= 1;
                 startIndex += 1;
@@ -921,6 +926,7 @@ let StorageResponseBuilder = async function (response, targetNode = document.cre
     let _indexedItems = StorageResponseIndexer(response, depth, limit, 0);
     await Promise.all(_indexedItems.map(async (entry) => {
         entry.entry.isIndexed = false;
+        entry.entry.groupItemIndex = entry.groupItemIndex;
         entry.entry.type == GLOBAL.group ?
             await createGroupTile(_items[entry.index] || targetNode.appendChild(document.createElement("div")), entry.entry)
             :

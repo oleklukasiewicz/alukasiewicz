@@ -948,9 +948,13 @@ u.dotted-separator{
     background: var(--color-accent-A2);
     color: var(--color-font-accent);
 }
-@media only screen and (max-width:790px){
+@media only screen and (max-width:700px){
     .list-view{
         grid-template-columns: 1fr 1fr;
+    }
+    #landing .list-view>.index-2
+    {
+        display: none;
     }
     .list-view > .group{
         grid-column-start: 1;
@@ -993,6 +997,10 @@ u.dotted-separator{
 @media only screen and (max-width:430px){
     .list-view{
         grid-template-columns: 100%;
+    }
+    #landing .list-view>.index-2
+    {
+        display: grid;
     }
     .list-view > .group{
         grid-column-start: 1;
