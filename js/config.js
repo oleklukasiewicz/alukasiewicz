@@ -897,23 +897,54 @@ let StorageResponseIndexer = function (response, depth = 1, limit = 3, startInde
     let _indexedItems = [];
     let _groupItemIndex = 0;
     let _groupIndex = 0;
+    let _currentIndex=startIndex;
+    /*
+    RESPONSE EXAMPLE
+
+    group
+        item
+        item
+        group
+            item
+            item
+            item
+            item
+        item
+        item
+    
+    RESULT
+
+    group
+        item 
+        item
+        item
+    group
+        item
+        item
+        item
+    */
     response.content?.forEach((entry, index) => {
         if (entry.type == GLOBAL.group) {
             _groupItemIndex = 0;
             _groupIndex += 1;
             if (depth > 0) {
-                _indexedItems.push({ index: startIndex, entry: entry, groupIndex:_groupIndex });
-                _indexedItems = _indexedItems.concat(StorageResponseIndexer(entry, depth - 1, limitOfDepth, startIndex + 1));
-                startIndex = _indexedItems[_indexedItems.length - 1].index + 1;
+                //adding group into response
+                _indexedItems.push({ index: _currentIndex, obj: entry, groupIndex:_groupIndex });
+                //getting nested groups into response
+                _indexedItems = _indexedItems.concat(StorageResponseIndexer(entry, depth - 1, limitOfDepth, _currentIndex + 1));
+                //setting current index into index of last item from recursion
+                _currentIndex = _indexedItems[_indexedItems.length - 1].index + 1;
             }
         } else {
+            //checking is item count in group display limit, getting only not indexed items or required to fill group
             if (((limit > 0) && (!entry.isIndexed || (response.content.length - index) <= limit)) || limit == -1) {
                 entry.isIndexed = true;
-                _indexedItems.push({ index: startIndex, entry: entry, groupItemIndex: _groupItemIndex });
+                //adding item into response
+                _indexedItems.push({ index: _currentIndex, obj: entry, groupItemIndex: _groupItemIndex });
                 _groupItemIndex += 1;
                 if (limit > 0)
                     limit -= 1;
-                startIndex += 1;
+                _currentIndex += 1;
             }
         }
     });
@@ -925,12 +956,12 @@ let StorageResponseBuilder = async function (response, targetNode = document.cre
     let _items = [...targetNode.getElementsByClassName(GLOBAL.dataNode)];
     let _indexedItems = StorageResponseIndexer(response, depth, limit, 0);
     await Promise.all(_indexedItems.map(async (entry) => {
-        entry.entry.isIndexed = false;
-        entry.entry.groupItemIndex = entry.groupItemIndex;
-        entry.entry.type == GLOBAL.group ?
-            await createGroupTile(_items[entry.index] || targetNode.appendChild(document.createElement("div")), entry.entry)
+        entry.obj.isIndexed = false;
+        entry.obj.groupItemIndex = entry.groupItemIndex;
+        entry.obj.type == GLOBAL.group ?
+            await createGroupTile(_items[entry.index] || targetNode.appendChild(document.createElement("div")), entry.obj)
             :
-            await createItemTile(_items[entry.index] || targetNode.appendChild(document.createElement("a")), entry.entry);
+            await createItemTile(_items[entry.index] || targetNode.appendChild(document.createElement("a")), entry.obj);
     }));
 }
 
