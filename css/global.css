@@ -821,7 +821,6 @@ u.dotted-separator{
     cursor: pointer;
     color: var(--color-font);
     border-radius: var(--border-radius);
-    outline: 0;
     transition: background-color var(--time),box-shadow var(--time);
     text-decoration: none;
     display: table;
