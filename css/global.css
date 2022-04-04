@@ -156,6 +156,7 @@
     content: "\EBD8";
 }
 .al-logo{
+    text-decoration: none;
     display: inline-block;
     max-height: var(--logo-height);
     margin: 8px;

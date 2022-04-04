@@ -703,7 +703,10 @@ window.addEventListener("load", async function () {
     ViewController.addError(new ErrorClass("item_outdated", "Items are outdated", "Try refreshing the page"));
 
     //adding home button event
-    getById("home-button").addEventListener("click", ViewController.navigateToDefaultView);
+    getById("home-button").addEventListener("click", (e) => {
+        e.preventDefault();
+        ViewController.navigateToDefaultView();
+    });
     getById("main-header-about-button").addEventListener("click", (e) => {
         e.preventDefault();
         ViewController.navigate(VIEW.profile);
@@ -897,7 +900,7 @@ let StorageResponseIndexer = function (response, depth = 1, limit = 3, startInde
     let _indexedItems = [];
     let _groupItemIndex = 0;
     let _groupIndex = 0;
-    let _currentIndex=startIndex;
+    let _currentIndex = startIndex;
     /*
     RESPONSE EXAMPLE
 
@@ -929,7 +932,7 @@ let StorageResponseIndexer = function (response, depth = 1, limit = 3, startInde
             _groupIndex += 1;
             if (depth > 0) {
                 //adding group into response
-                _indexedItems.push({ index: _currentIndex, obj: entry, groupIndex:_groupIndex });
+                _indexedItems.push({ index: _currentIndex, obj: entry, groupIndex: _groupIndex });
                 //getting nested groups into response
                 _indexedItems = _indexedItems.concat(StorageResponseIndexer(entry, depth - 1, limitOfDepth, _currentIndex + 1));
                 //setting current index into index of last item from recursion
