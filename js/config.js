@@ -350,7 +350,7 @@ let ItemController = (function () {
             return;
         }
 
-        //TODO: check is components.js and components.css are downloaded id not -> download
+        //TODO: check if components.js and components.css are downloaded id not -> download
         if (!item.isItemLinkToWeb && !item.isContentCached) {
             //getting item content
             let _content = await _downloadViaAJAX(item, item.folder);
@@ -364,13 +364,8 @@ let ItemController = (function () {
             item.resources.push(new ResourceMap({
                 src: APP.itemContentFileName
             }, "", 0, 0));
-            item.content.forEach((component, componentIndex) => {
-                if (component.resource) {
-                    component.resIndex = item.resources.length;
-                    component.resLastIndex = item.resources.length + component.resource.length - 1;
-
-                    component.resource.forEach(res => item.resources.push(new ResourceMap(res, createHash(componentIndex + component.resIndex + item.folder + res.src), component.resIndex, component.resLastIndex)))
-                }
+            item.content.forEach(async (component, componentIndex) => {
+                await ItemConverter(component, componentIndex, item.folder, item);
             });
 
             //adding method for finding resources by hash code
@@ -612,12 +607,13 @@ const resourceView = new View(VIEW.resource, APP.url.resource, {},
             this.data.resSlider.addEventListener("render", function (res, index, oldres, old) {
                 _resList.children[index].classList.add(GLOBAL.activeView);
                 _resList.children[old]?.classList.remove(GLOBAL.activeView);
+                history.state.arg.routeArg = [_sender.data.currentItem.id, res.hash];
                 history.replaceState(history.state, '', "/" + _sender.url + "/" + _sender.data.currentItem.id + "/" + res.hash);
             });
             this.data.resSlider.addEventListener("load", async function (res) {
                 await new Promise((resolve) => {
                     let _img = document.createElement("IMG");
-                    _img.src = APP.itemFolder + _sender.data.currentItem.folder + APP.resourceFolder + res.resource.src;
+                    _img.src = res.resource.src;
                     _resList.appendChild(_img);
                     _img.onload = resolve;
                     _img.onerror = function () {
@@ -652,7 +648,6 @@ const resourceView = new View(VIEW.resource, APP.url.resource, {},
                 ViewController.invokeError("image_not_found", false);
                 return;
             }
-
             //loading resources to slider
             await this.data.resSlider.loadResources(resourceGroup.group, resourceGroup.resource);
         },

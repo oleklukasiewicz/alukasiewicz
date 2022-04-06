@@ -65,11 +65,16 @@ let ItemComponentBuilder = async function (component, itemFolder, item) {
             let _loadingPromises = [];
             let _max = _arg.imagesCount || component.resource.length;
             _max = _max > 5 ? 5 : _max;
-            for (let i = 0; i < _max; i++) {
+            let _order = _arg.resourceOrder||[...Array(5).keys()];
+            if (_order.length < _max)
+                for (let orderIndex = _order.length - 1; orderIndex < _max; orderIndex++)
+                    _order[orderIndex] = orderIndex;
+            for (let index = 0; index < _max; index++) {
+                let i = _order[index];
                 let res = component.resource[i];
                 let _img = document.createElement("IMG");
                 _img.alt = res.alt || "";
-                _img.src = APP.itemFolder + itemFolder + APP.resourceFolder + res.src;
+                _img.src = res.src;
                 _img.classList.add(GLOBAL.loading);
                 _list.appendChild(_img);
                 _loadingPromises.push(ImageHelper(_img,
@@ -117,4 +122,41 @@ let ImageHelper = function (image, onload = () => { }, onerror = () => { }) {
         image.onload = () => resolve(onload(image));
         image.onerror = () => resolve(imageIsNotLoaded());
     });
+}
+
+let ItemConverter = async function (component, index, itemFolder, item) {
+    if (component.resource) {
+
+        //converting into valid resources
+        for (let index = 0; index < component.resource.length; index++) {
+            let resource = component.resource[index];
+            switch (resource.type) {
+                case "group":
+                    let group = ItemController.getGroupById(resource.id);
+                    group.content.forEach((item, itemIndex) => {
+                        component.resource.splice((index + itemIndex), 0,
+                            {
+                                type: "image",
+                                src: APP.itemFolder + item.folder + item.tile.image,
+                                alt: item.title
+                            });
+                    });
+                    index += group.content.length;
+                    component.resource.splice(index, 1);
+                    index--;
+                    break;
+                case "image":
+                    if (!resource.globalPath)
+                        resource.src = APP.itemFolder + itemFolder + APP.resourceFolder + resource.src;
+                    break;
+            }
+        };
+
+        //getting resources data for hash
+        component.resIndex = item.resources.length;
+        component.resLastIndex = item.resources.length + component.resource.length - 1;
+
+        //generating hash and adding into item resources list
+        component.resource.forEach(res => item.resources.push(new ResourceMap(res, createHash(index + component.resIndex + item.folder + res.src), component.resIndex, component.resLastIndex)))
+    }
 }

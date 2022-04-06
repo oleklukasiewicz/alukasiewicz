@@ -27,8 +27,12 @@
         },
         {
             "type": "gallery",
-            "title": "The most beautiful pixel arts",
+            "title": "Featured pixel images",
             "resource": [
+                {
+                    "type":"group",
+                    "id":"featured"
+                },
                 {
                     "src": "/gallery/crocus-base.webp",
                     "type": "image",
@@ -57,7 +61,8 @@
             ],
             "id": "airship-gallery",
             "arguments": {
-                "imagesCount": 3
+                "imagesCount": 3,
+                "resourceOrder":[0,9,2]
             }
         },
         {
