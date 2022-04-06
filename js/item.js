@@ -38,7 +38,7 @@ let ItemComponentBuilder = async function (component, itemFolder, item) {
             _component = document.createElement("DIV");
             _component.classList.add("gallery");
 
-            if (!component.hideControls && component.resource.length > 1) {
+            if (!_arg.hideControls && component.resource.length > 1) {
                 _component.innerHTML = "<div><b class='font-subtitle'>" + component.title + "</b></div>";
 
                 //show all button
@@ -61,7 +61,7 @@ let ItemComponentBuilder = async function (component, itemFolder, item) {
             _list.classList.add("list");
             _component.appendChild(_list);
 
-            //generating images
+            //setting up images order and count
             let _loadingPromises = [];
             let _max = _arg.imagesCount || component.resource.length;
             _max = _max > 5 ? 5 : _max;
@@ -69,6 +69,8 @@ let ItemComponentBuilder = async function (component, itemFolder, item) {
             if (_order.length < _max)
                 for (let orderIndex = _order.length - 1; orderIndex < _max; orderIndex++)
                     _order[orderIndex] = orderIndex;
+            
+            //generating images
             for (let index = 0; index < _max; index++) {
                 let i = _order[index];
                 let res = component.resource[i];

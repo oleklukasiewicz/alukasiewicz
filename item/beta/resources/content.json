@@ -30,8 +30,8 @@
             "title": "Featured pixel images",
             "resource": [
                 {
-                    "type":"group",
-                    "id":"featured"
+                    "type": "group",
+                    "id": "featured"
                 },
                 {
                     "src": "/gallery/crocus-base.webp",
@@ -62,7 +62,11 @@
             "id": "airship-gallery",
             "arguments": {
                 "imagesCount": 3,
-                "resourceOrder":[0,9,2]
+                "resourceOrder": [
+                    0,
+                    9,
+                    2
+                ]
             }
         },
         {

@@ -611,15 +611,10 @@ const resourceView = new View(VIEW.resource, APP.url.resource, {},
                 history.replaceState(history.state, '', "/" + _sender.url + "/" + _sender.data.currentItem.id + "/" + res.hash);
             });
             this.data.resSlider.addEventListener("load", async function (res) {
-                await new Promise((resolve) => {
-                    let _img = document.createElement("IMG");
-                    _img.src = res.resource.src;
-                    _resList.appendChild(_img);
-                    _img.onload = resolve;
-                    _img.onerror = function () {
-                        _img.src = "/img/image_error.webp";
-                    };
-                });
+                let _img = document.createElement("IMG");
+                _img.src = res.resource.src;
+                _resList.appendChild(_img);
+                await ImageHelper(_img);
             });
             this.data.resSlider.addEventListener("loadFinish", (res) =>
                 _setButtonsDisplay(res.length < 2))
@@ -681,8 +676,14 @@ ViewController.addEventListener("historyEdit", (historyItem, view) => {
         history.pushState(historyItem, '', _url);
 });
 ViewController.addEventListener("navigationRequest", () => hideNavigation());
-ViewController.addEventListener("navigateDefault", (arg) =>
-    (history.state.defaultViewHistoryIndex != -1 && (history.state.defaultViewHistoryIndex - history.state.index) != 0) ? history.go(history.state.defaultViewHistoryIndex - history.state.index) : ViewController.navigate(null, arg));
+ViewController.addEventListener("navigateDefault", (arg) => {
+    let _homeIndex = history.state.defaultViewHistoryIndex;
+    let _indexDelta = _homeIndex - history.state.index;
+    if (_homeIndex != -1 && _indexDelta != 0)
+        history.go(_indexDelta);
+    else
+        ViewController.navigate(null, arg);
+});
 ViewController.addEventListener("navigateToView", (view, lastView) => {
     view.rootNode.classList.add(GLOBAL.activeView);
     APP_NODE.classList.replace(lastView?.id, view.id);
@@ -744,17 +745,15 @@ let createItemTile = async function (node, item) {
         node = document.createElement("A");
         oldNode.parentElement.replaceChild(node, oldNode);
     }
+    let imageSrc = APP.itemFolder + item.folder + item.tile.image;
     node.className = "item " + GLOBAL.dataNode + " " + GLOBAL.loading + " index-" + item.groupItemIndex;
-    node.innerHTML = "<div class='img'><img src='" + APP.itemFolder + item.folder + item.tile.image + "' alt='" + item.title + "'/></div><b class='font-subtitle'>" + item.title + "</b><span class='font-base'>" + item.tile.content + "</span><div class='labels'><div class='button'>" + (item.isItemLinkToWeb ? "Open link <i class='mi mi-OpenInNewWindow'></i>" : "Read more <i class='mi mi-BackMirrored'></i>") + "</div>" + (item.modifyDate ? "<div class='label font-caption'><i class='mi mi-Update'></i> &nbsp;&nbsp;" + item.modifyDate.toHTMLString() + "</div>" : "") + "</div>";
+    node.innerHTML = "<div class='img'><img src='" + imageSrc + "' alt='" + item.title + "'/></div><b class='font-subtitle'>" + item.title + "</b><span class='font-base'>" + item.tile.content + "</span><div class='labels'><div class='button'>" + (item.isItemLinkToWeb ? "Open link <i class='mi mi-OpenInNewWindow'></i>" : "Read more <i class='mi mi-BackMirrored'></i>") + "</div>" + (item.modifyDate ? "<div class='label font-caption'><i class='mi mi-Update'></i> &nbsp;&nbsp;" + item.modifyDate.toHTMLString() + "</div>" : "") + "</div>";
 
     //loading image of tile
     let _iImage = node.children[0].children[0];
-    await new ImageHelper(_iImage, function () {
-        if (!item.isTileImageNotLoaded) {
-            if (item.arg.tileImageStyle)
-                _iImage.style = item.arg.tileImageStyle;
-            cacheResource(APP.itemFolder + item.folder + item.tile.image);
-        }
+    await new ImageHelper(_iImage, () => {
+        _iImage.style = item.arg.tileImageStyle || "";
+        cacheResource(imageSrc);
     }, () => item.isTileImageNotLoaded = true);
 
     //settings up events
@@ -834,14 +833,6 @@ let ResourceSlider = function () {
         await _renderIndex(_index);
         await _sender.invokeEvent("previous", [_res[_currentIndex], _index])
     }
-    Object.defineProperties(this,
-        {
-            currentIndex:
-            {
-                get: () => _currentIndex
-            }
-        }
-    )
 }
 
 //gesture support for element
@@ -888,31 +879,7 @@ let StorageResponseIndexer = function (response, depth = 1, limit = 3, startInde
     let _groupItemIndex = 0;
     let _groupIndex = 0;
     let _currentIndex = startIndex;
-    /*
-    RESPONSE EXAMPLE
 
-    group
-        item
-        item
-        group
-            item
-            item
-            item
-            item
-        item
-        item
-    
-    RESULT
-
-    group
-        item 
-        item
-        item
-    group
-        item
-        item
-        item
-    */
     response.content?.forEach((entry, index) => {
         if (entry.type == GLOBAL.group) {
             _groupItemIndex = 0;
