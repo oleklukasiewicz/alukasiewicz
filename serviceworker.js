@@ -17,7 +17,7 @@ const staticResources = [
     "/serviceworker.js",
     "/manifest.webmanifest",
     "/css/global.css",
-    "/css/ite.css",
+    "/css/item.css",
     "/item/items.js",
     "/js/item.js",
     "/js/prerender.js",

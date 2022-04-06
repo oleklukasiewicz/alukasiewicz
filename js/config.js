@@ -748,22 +748,14 @@ let createItemTile = async function (node, item) {
     node.innerHTML = "<div class='img'><img src='" + APP.itemFolder + item.folder + item.tile.image + "' alt='" + item.title + "'/></div><b class='font-subtitle'>" + item.title + "</b><span class='font-base'>" + item.tile.content + "</span><div class='labels'><div class='button'>" + (item.isItemLinkToWeb ? "Open link <i class='mi mi-OpenInNewWindow'></i>" : "Read more <i class='mi mi-BackMirrored'></i>") + "</div>" + (item.modifyDate ? "<div class='label font-caption'><i class='mi mi-Update'></i> &nbsp;&nbsp;" + item.modifyDate.toHTMLString() + "</div>" : "") + "</div>";
 
     //loading image of tile
-    let _iImage = node.children[0].children[0],
-        imageLoaded = function () {
-            if (!item.isTileImageNotLoaded) {
-                if (item.arg.tileImageStyle)
-                    _iImage.style = item.arg.tileImageStyle;
-                cacheResource(APP.itemFolder + item.folder + item.tile.image);
-            }
-        }, imageIsNotLoaded = function () {
-            item.isTileImageNotLoaded = true;
-            _iImage.src = "/img/image_error.webp";
-            _iImage.onload = function () { }
+    let _iImage = node.children[0].children[0];
+    await new ImageHelper(_iImage, function () {
+        if (!item.isTileImageNotLoaded) {
+            if (item.arg.tileImageStyle)
+                _iImage.style = item.arg.tileImageStyle;
+            cacheResource(APP.itemFolder + item.folder + item.tile.image);
         }
-    await new Promise((resolve) => {
-        _iImage.onload = () => resolve(imageLoaded());
-        _iImage.onerror = () => resolve(imageIsNotLoaded());
-    });
+    }, () => item.isTileImageNotLoaded = true);
 
     //settings up events
     node.classList.replace(GLOBAL.loading, GLOBAL.loaded);
@@ -973,4 +965,17 @@ let createErrorMsg = function (err, node) {
         _but.addEventListener("click", () => window.location.reload(true));
         node.appendChild(_but);
     }
+}
+
+//Image helper for images
+let ImageHelper = function (image, onload = () => { }, onerror = () => { }) {
+    let imageIsNotLoaded = function () {
+        image.src = "/img/image_error.webp";
+        image.onload = function () { }
+        onerror(image);
+    }
+    return new Promise((resolve) => {
+        image.onload = () => resolve(onload(image));
+        image.onerror = () => resolve(imageIsNotLoaded());
+    });
 }

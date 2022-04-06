@@ -65,7 +65,7 @@ let ItemComponentBuilder = async function (component, itemFolder, item) {
             let _loadingPromises = [];
             let _max = _arg.imagesCount || component.resource.length;
             _max = _max > 5 ? 5 : _max;
-            let _order = _arg.resourceOrder||[...Array(5).keys()];
+            let _order = _arg.resourceOrder || [...Array(5).keys()];
             if (_order.length < _max)
                 for (let orderIndex = _order.length - 1; orderIndex < _max; orderIndex++)
                     _order[orderIndex] = orderIndex;
@@ -111,19 +111,7 @@ let ItemComponentBuilder = async function (component, itemFolder, item) {
     return _component;
 }
 
-//Image helper for images
-let ImageHelper = function (image, onload = () => { }, onerror = () => { }) {
-    let imageIsNotLoaded = function () {
-        image.src = "/img/image_error.webp";
-        image.onload = function () { }
-        onerror(image);
-    }
-    return new Promise((resolve) => {
-        image.onload = () => resolve(onload(image));
-        image.onerror = () => resolve(imageIsNotLoaded());
-    });
-}
-
+// Item component converter and parser
 let ItemConverter = async function (component, index, itemFolder, item) {
     if (component.resource) {
 
@@ -141,9 +129,8 @@ let ItemConverter = async function (component, index, itemFolder, item) {
                                 alt: item.title
                             });
                     });
-                    index += group.content.length;
-                    component.resource.splice(index, 1);
-                    index--;
+                    index += (group.content.length - 1);
+                    component.resource.splice(index + 1, 1);
                     break;
                 case "image":
                     if (!resource.globalPath)
