@@ -1,0 +1,25 @@
+{
+    "version": "0-0-0-3",
+    "component_version": 1,
+    "content": [
+        {
+            "type": "quote",
+            "content": "Natural on every device",
+            "author": "Microsoft"
+        },
+        {
+            "content": "The idea of establishing a design system at Microsoft started a decade ago when several product teams merged and a handful of design pioneers started working together. Their work gave rise to our first shared design language — a bold achievement given that design was in its infancy at Microsoft and the company’s success at that time was built on a myriad of siloed products."
+        },
+        {
+            "title": "A collective design system",
+            "content": "Fluent Design System builds on the momentum of great things already happening at Microsoft, standing on shoulders without stepping on toes. It celebrates those who contribute to what we collectively do, regardless of what team they work on. It borrows from engineering workflows to help us be efficient where we can, saving creative energy for where it’s most needed."
+        },
+        {
+            "content": "Rising to this challenge will take a lot of time and effort, and we all have day jobs in specific products. But it’s going to pay dividends along the way. Over time it can bring our culture, our business, our technology, and our experiences together."
+        },
+        {
+            "title": "Partner with Microsoft Design",
+            "content": "The Fluent Design System improves with your input. We learn and improve the system based on feedback we receive from our customers, partners, and community of developers and designers. If you have something to share about Fluent design, get in touch with us here."
+        }
+    ]
+}
