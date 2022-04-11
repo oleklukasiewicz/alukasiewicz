@@ -5,15 +5,16 @@
       "public": "/",
       "ignore": [
         "firebase.json",
-        "**/.*",
-        "**/node_modules/**",
-        "Portfolio.code-workspace",
+        ".*",
+        "**/.git/**",
         "**/.vscode/**",
         "**/.firebase/**",
-        "**/.terser/**",
-        "**/.extensions/**",
-        "**/.git/**",
-        ".gitignore"
+        "**/.github/**",
+        "**/.edit/**",
+        "**/node_modules/**",
+        "*.code-workspace",
+        ".gitignore",
+        "README.md"
       ],
       "rewrites": [
         {

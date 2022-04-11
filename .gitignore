@@ -5,12 +5,12 @@ yarn-debug.log*
 yarn-error.log*
 firebase-debug.log*
 firebase-debug.*.log*
-.firebase/
 pids
 *.pid
 *.seed
 *.pid.lock
 node_modules/
 .npm
-.extensions/
-.vscode/
+.*
+!.gitignore
+*.code-workspace
