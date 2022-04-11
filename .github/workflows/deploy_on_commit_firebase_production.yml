@@ -16,8 +16,8 @@ jobs:
     - name: Copy production items
       uses: canastro/copy-file-action@master
       with:
-        source: "item/production-items.js"
-        target: "item/items.js"
+        source: "app/item/production-items.js"
+        target: "app/item/items.js"
     - name: Upload artifact
       uses: actions/upload-artifact@v2
       with:
