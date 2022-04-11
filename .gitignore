@@ -2,4 +2,3 @@
 !.gitignore
 firebase-debug.log*
 firebase-debug.*.log*
-*.code-workspace
