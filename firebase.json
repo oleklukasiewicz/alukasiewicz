@@ -2,7 +2,7 @@
   "hosting": [
     {
       "site": "portfolio-13301",
-      "public": "/",
+      "public": "app/",
       "ignore": [
         "firebase.json",
         ".*",
