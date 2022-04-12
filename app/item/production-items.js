@@ -1,4 +1,5 @@
 const ITEM_VERSION = "0-0-0-3";
+const ITEM_ENVIROMENT="production";
 //production items
 let getGroups = () =>
     [

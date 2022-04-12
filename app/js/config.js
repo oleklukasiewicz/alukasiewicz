@@ -716,8 +716,10 @@ window.addEventListener("load", async function () {
     try {
         if (APP.version != ITEM_VERSION)
             ViewController.invokeError("item_outdated", true);
-        else
+        else {
             await ItemController.fetchGroups(getGroups()).then(() => ItemController.fetchItems(getItems()));
+            incrementVisitors(ITEM_ENVIROMENT == "beta" ? config.beta : config.analitycs);
+        }
     } catch {
         ViewController.invokeError("item_load_error", true);
     }
