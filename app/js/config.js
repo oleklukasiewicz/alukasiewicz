@@ -749,10 +749,57 @@ let createItemTile = async function (node, item) {
     }
     let imageSrc = APP.itemFolder + item.folder + item.tile.image;
     node.className = "item " + GLOBAL.dataNode + " " + GLOBAL.loading + " index-" + item.responseIndex;
-    node.innerHTML = "<div class='img'><img src='" + imageSrc + "' alt='" + item.title + "'/></div><b class='font-subtitle'>" + item.title + "</b><span class='font-base'>" + item.tile.content + "</span><div class='labels'><div class='button'>" + (item.isItemLinkToWeb ? "Open link <i class='mi mi-OpenInNewWindow'></i>" : "Read more <i class='mi mi-BackMirrored'></i>") + "</div>" + (item.modifyDate ? "<div class='label font-caption'><i class='mi mi-Update'></i> &nbsp;&nbsp;" + item.modifyDate.toHTMLString() + "</div>" : "") + "</div>";
+
+    node.innerHTML = "";
+
+    let nodeImgContainer = document.createElement("DIV");
+    nodeImgContainer.classList.add("img");
+    let _iImage = document.createElement("IMG");
+    _iImage.src = imageSrc;
+    _iImage.alt = item.title;
+    nodeImgContainer.appendChild(_iImage);
+
+    let nodeTitle = document.createElement("B");
+    nodeTitle.classList.add("font-subtitle");
+    nodeTitle.innerHTML = item.title;
+
+    let nodeContent = document.createElement("SPAN");
+    nodeContent.classList.add("font-base");
+    nodeContent.innerHTML = item.tile.content;
+
+    let nodeLabels = document.createElement("DIV");
+    nodeLabels.classList.add("labels");
+
+    let nodeButton = document.createElement("DIV");
+    nodeButton.classList.add("button");
+    let nodeButtonIcon = document.createElement("I");
+    nodeButtonIcon.classList.add("mi");
+
+    if (item.isItemLinkToWeb) {
+        nodeButton.append("Open Link");
+        nodeButtonIcon.classList.add("mi-OpenInNewWindow");
+    } else {
+        nodeButton.append("Read More");
+        nodeButtonIcon.classList.add("mi-BackMirrored");
+    }
+    nodeButton.appendChild(nodeButtonIcon);
+    nodeLabels.appendChild(nodeButton);
+
+    if (item.modifyDate) {
+        let nodeUpdateLabel = document.createElement("DIV");
+        nodeUpdateLabel.classList.add("label", "font-caption");
+        let nodeUpdateLabelIcon = document.createElement("I");
+        nodeUpdateLabelIcon.classList.add("mi", "mi-Update");
+        nodeUpdateLabel.innerHTML = " &nbsp;&nbsp;" + item.modifyDate.toHTMLString();
+        nodeUpdateLabel.insertBefore(nodeUpdateLabelIcon, nodeUpdateLabel.firstChild);
+        nodeLabels.appendChild(nodeUpdateLabel);
+    }
+    node.appendChild(nodeImgContainer);
+    node.appendChild(nodeTitle);
+    node.appendChild(nodeContent);
+    node.appendChild(nodeLabels);
 
     //loading image of tile
-    let _iImage = node.children[0].children[0];
     await new ImageHelper(_iImage, () => {
         _iImage.style = item.arg.tileImageStyle || "";
     }, () => {
@@ -783,9 +830,27 @@ let createGroupTile = function (node, group) {
         node = document.createElement("DIV");
         oldNode.parentElement.replaceChild(node, oldNode);
     }
+    node.innerHTML="";
     node.className = "group " + GLOBAL.dataNode;
-    node.innerHTML = "<span class='font-title'></span><a class='button'><i class='mi mi-ShowAll'></i> <span>Show all</span></a>";
-    node.children[0].innerHTML = group.title;
+
+    let nodeTitle = document.createElement("SPAN");
+    nodeTitle.classList.add("font-title");
+    nodeTitle.innerHTML = group.title;
+
+    let nodeButton = document.createElement("A");
+    nodeButton.classList.add("button");
+
+    let nodeButtonIcon = document.createElement("I");
+    nodeButtonIcon.classList.add("mi", "mi-ShowAll");
+    nodeButton.appendChild(nodeButtonIcon);
+
+    let nodeButtonLabel = document.createElement("span");
+    nodeButtonLabel.innerHTML = "Show all";
+    nodeButton.appendChild(nodeButtonLabel);
+
+    node.appendChild(nodeTitle);
+    node.appendChild(nodeButton);
+    
 
     //settings up tile events
     node.children[1].onclick = function () {
