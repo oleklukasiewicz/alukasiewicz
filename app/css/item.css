@@ -3,9 +3,6 @@
     margin-bottom: 24px;
     margin-top: 24px;
 }
-#item-content > .section > *{
-    transition: var(--transition-bg-only);
-}
 #item-content .quote{
     width: 100%;
     text-align: center;
@@ -43,16 +40,18 @@
     min-width: 100%;
     min-height: 300px;
 }
-#item-content .cover{
-    display: flex;
-    flex-direction: row;
-    padding: 20px;
-    gap: 12px;
-    box-sizing: border-box;
-    background-color: var(--color-theme-A1);
+a.link
+{
+    text-decoration: none;
+    color:var(--color-accent-A2);
+    transition: color var(--time);
 }
-.gallery{
-    margin: 20px 0;
+a.link:hover
+{
+    color:var(--color-accent);
+}
+.gallery.show-controls{
+    margin: 20px 0 0;
 }
 .gallery > div{
     width: 100%;

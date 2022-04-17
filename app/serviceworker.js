@@ -31,7 +31,7 @@ const staticResources = [
     "/img/about-banner.webp",
     "/icon/favicon-32x32.png"
 ];
-const cacheResource = (resource) => caches.open(cacheName).then((cache) => caches.match(resource, { ignoreVary: true }).then((res) => !res ? cache.add(resource) : null));
+const cacheResource = (resource) =>caches.open(cacheName).then((cache) => caches.match(resource, { ignoreVary: true }).then((res) => !res ? cache.add(resource) : null));
 const removeResourceFromCache = (resource) => caches.open(cacheName).then((cache) => cache.delete(resource, { ignoreVary: true, ignoreSearch: true, ignoreMethod: true }));
 const fetchNetworkFailToCache = function (event) {
     event.respondWith(

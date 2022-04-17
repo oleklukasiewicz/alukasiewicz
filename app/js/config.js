@@ -755,8 +755,10 @@ let createItemTile = async function (node, item) {
     let _iImage = node.children[0].children[0];
     await new ImageHelper(_iImage, () => {
         _iImage.style = item.arg.tileImageStyle || "";
-        cacheResource(imageSrc);
-    }, () => item.isTileImageNotLoaded = true);
+    }, () => {
+        item.isTileImageNotLoaded = true;
+        removeResourceFromCache(imageSrc);
+    });
 
     //settings up events
     node.classList.replace(GLOBAL.loading, GLOBAL.loaded);

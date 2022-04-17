@@ -23,7 +23,21 @@
             "id": "airship-image"
         },
         {
-            "content": "The Fluent Design System continues this work. Fluent is evolving to be more than a set of outcomes and will define the process by which we collectively design and build products. It represents the growth and influence of design thinking within Microsoft."
+            "title": "Designing how we design",
+            "content": [
+                "The ",
+                {
+                    "type": "link",
+                    "content": "Fluent Design System",
+                    "href": "https://www.microsoft.com/design/fluent/",
+                    "target":"_blank"
+                },
+                " continues this work. Fluent is evolving to be more than a set of outcomes and will define the process by which we collectively design and build products. It represents the growth and influence of design thinking within Microsoft."
+            ]
+        },
+        {
+            "type": "section",
+            "content": "Fluent becomes the best version of itself when there is clarity around what it is, what it could be, and why that’s important. Today, we aspire to make Fluent a collective, open design system that connects us, inspiring and influencing everything we create.."
         },
         {
             "type": "gallery",
@@ -68,15 +82,6 @@
                     2
                 ]
             }
-        },
-        {
-            "type": "section",
-            "content": "Fluent becomes the best version of itself when there is clarity around what it is, what it could be, and why that’s important. Today, we aspire to make Fluent a collective, open design system that connects us, inspiring and influencing everything we create.."
-        },
-        {
-            "type": "section",
-            "title": "Designing how we design",
-            "content": "The value of Fluent’s collective approach is becoming more evident as we build coherence across products and platforms. A rich unified search experience, people experience across products, our recent brand iconography efforts, and alignment around the universal language of illustration are just the beginning of Fluent’s impact."
         },
         {
             "title": "A collective design system",
