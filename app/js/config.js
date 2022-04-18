@@ -153,7 +153,6 @@ let ViewController = (function () {
     let _currentView;
     let _previousView;
     EventController.call(_controller, ["navigateToView", "navigationRequest", "navigateFromView", "navigateDefault", "historyEdit"]);
-
     //integrated error controller
     let _errors = [];
     let _errorHistory = [];
@@ -180,6 +179,7 @@ let ViewController = (function () {
             _errorHistory.push(__error.id);
         }
     }
+
     //view controller methods
     let _getViewById = (id) => _views.find((view) => view.id == id) || _defaultView;
     let _registerDelayedView = function (view) {
@@ -443,6 +443,8 @@ const landingView = new View(VIEW.landing, APP.url.landing, { scrollY: -1, items
         if (this.data.scrollY >= 0)
             window.scroll(0, this.data.scrollY)
         document.title = APP.name;
+        if (!ItemController.isItemsLoaded)
+            ViewController.invokeError("item_load_error");
     },
     onRegister: function () {
         let _pButton = getById("profile-link-button");
@@ -516,7 +518,8 @@ const itemView = new View(VIEW.item, APP.url.item, { currentItem: null }, {
             this.data.iContent.innerHTML = "";
             item.content.forEach(async (content) => this.data.iContent.append(await ItemComponentBuilder(content, item.folder, item)));
             incrementVisitors(APP.itemFolder + "/" + item.id, true);
-        }
+        } else
+            ViewController.invokeError("item_load_error");
     },
     onLoadFinish: function () {
         this.rootNode.classList.remove(GLOBAL.loading);
@@ -544,7 +547,8 @@ const groupView = new View(VIEW.group, APP.url.group, { scrollY: -1 }, {
     onLoad: async function (arg) {
         this.rootNode.classList.add(GLOBAL.loading);
         this.data.groupData.classList.add(GLOBAL.loading);
-
+        if (!ItemController.isItemsLoaded)
+            ViewController.invokeError("item_load_error");
         //getting group
         let group = await ItemController.getGroupById(arg.routeArg[0]);
         if (!group) {
@@ -770,19 +774,8 @@ let createItemTile = async function (node, item) {
     let nodeLabels = document.createElement("DIV");
     nodeLabels.classList.add("labels");
 
-    let nodeButton = document.createElement("DIV");
-    nodeButton.classList.add("button");
-    let nodeButtonIcon = document.createElement("I");
-    nodeButtonIcon.classList.add("mi");
+    let nodeButton = createButton(item.isItemLinkToWeb ? "mi-OpenInNewWindow" : "mi-BackMirrored", item.isItemLinkToWeb ? "Open link" : "Read more", "DIV", true);
 
-    if (item.isItemLinkToWeb) {
-        nodeButton.append("Open Link");
-        nodeButtonIcon.classList.add("mi-OpenInNewWindow");
-    } else {
-        nodeButton.append("Read More");
-        nodeButtonIcon.classList.add("mi-BackMirrored");
-    }
-    nodeButton.appendChild(nodeButtonIcon);
     nodeLabels.appendChild(nodeButton);
 
     if (item.modifyDate) {
@@ -830,27 +823,18 @@ let createGroupTile = function (node, group) {
         node = document.createElement("DIV");
         oldNode.parentElement.replaceChild(node, oldNode);
     }
-    node.innerHTML="";
+    node.innerHTML = "";
     node.className = "group " + GLOBAL.dataNode;
 
     let nodeTitle = document.createElement("SPAN");
     nodeTitle.classList.add("font-title");
     nodeTitle.innerHTML = group.title;
 
-    let nodeButton = document.createElement("A");
-    nodeButton.classList.add("button");
-
-    let nodeButtonIcon = document.createElement("I");
-    nodeButtonIcon.classList.add("mi", "mi-ShowAll");
-    nodeButton.appendChild(nodeButtonIcon);
-
-    let nodeButtonLabel = document.createElement("span");
-    nodeButtonLabel.innerHTML = "Show all";
-    nodeButton.appendChild(nodeButtonLabel);
+    let nodeButton = createButton("mi-ShowAll", "Show all");
 
     node.appendChild(nodeTitle);
     node.appendChild(nodeButton);
-    
+
 
     //settings up tile events
     node.children[1].onclick = function () {
@@ -995,17 +979,50 @@ let StorageResponseBuilder = async function (response, targetNode = document.cre
 }
 
 //error message node builder
-let createErrorMsg = function (err, node) {
-    node.innerHTML = `<i class='mi mi-Error font-header'></i><div class='font-title'>` + err.title + `</div><span class='font-base'>` + err.message + `</span>`;
+let createErrorMsg = function (err, node, customImage) {
+    node.innerHTML = "";
+    let errorImg;
+    if (!customImage) {
+        errorImg = document.createElement("i");
+        errorImg.classList.add("mi", "mi-Error", "font-header");
+    } else {
+        errorImg = document.createElement("IMG");
+        errorImg.src = customImage;
+    }
+
+    let errorTitle = document.createElement("DIV");
+    errorTitle.classList.add("font-title");
+    errorTitle.innerHTML = err.title;
+
+    let errorMessage = document.createElement("SPAN");
+    errorMessage.classList.add("font-base");
+    errorMessage.innerHTML = err.message;
+
+    node.appendChild(errorImg);
+    node.appendChild(errorTitle);
+    node.appendChild(errorMessage);
+
     if (err.refreshRequire) {
-        let _but = document.createElement("A");
-        _but.classList.add("button")
-        _but.innerHTML = "<i class='mi mi-Refresh'></i><span>Refresh page</span>";
+        let _but = createButton("mi-Refresh", "Refresh page");
         _but.addEventListener("click", () => window.location.reload(true));
         node.appendChild(_but);
     }
 }
+let createButton = function (icon, label, tagName = "A", rightLabel = false) {
+    let _button = document.createElement(tagName);
+    _button.classList.add("button");
 
+    let _buttonIcon = document.createElement("I");
+    _buttonIcon.classList.add("mi", icon);
+
+    let _buttonContent = document.createElement("SPAN");
+    _buttonContent.innerHTML = label;
+
+    if (!rightLabel) _button.appendChild(_buttonIcon);
+    _button.appendChild(_buttonContent);
+    if (rightLabel) _button.appendChild(_buttonIcon);
+    return _button;
+}
 //Image helper for images
 let ImageHelper = function (image, onload = () => { }, onerror = () => { }) {
     let imageIsNotLoaded = function () {

@@ -29,7 +29,7 @@ const GLOBAL = {
     item: "item",
     group: "group",
     loading: "loading",
-    hidden:"hidden",
+    hidden: "hidden",
     loaded: "loaded",
     error: "error",
     disabled: "disabled",

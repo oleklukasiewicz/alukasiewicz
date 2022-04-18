@@ -714,7 +714,7 @@ u.dotted-separator{
 }
 .list-view > .item > .labels > .button{
     transition: var(--transition-bg-only);
-    width: 112px;
+    width: 114px;
 }
 .list-view > .item > .labels > .button > i{
     float: right;
