@@ -364,9 +364,8 @@ let ItemController = (function () {
             item.resources.push(new ResourceMap({
                 src: APP.itemContentFileName
             }, "", 0, 0));
-            item.content.forEach(async (component, componentIndex) => {
-                await ItemConverter(component, componentIndex, item.folder, item);
-            });
+            await Promise.all(item.content.map(async (component, componentIndex) =>
+                await ItemConverter(component, componentIndex, item.folder, item)));
 
             //adding method for finding resources by hash code
             item.findResourceByHash = (hash) => _getResourceGroupByHash(item, hash);
@@ -424,9 +423,6 @@ let ItemController = (function () {
         },
         isGroupsLoaded: {
             get: () => _groupsLoaded
-        },
-        getItemSnapshotById: {
-            value: _getItemByRoute
         },
         getGroupById: {
             value: _getGroupByRoute

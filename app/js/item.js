@@ -41,7 +41,6 @@ let ItemComponentBuilder = async function (component, itemFolder, item) {
         case "gallery":
             _component = document.createElement("DIV");
             _component.classList.add("gallery");
-
             if (!_arg.hideControls && component.resource.length > 1) {
                 _component.innerHTML = "<div><b class='font-subtitle'>" + component.title + "</b></div>";
                 _component.classList.add("show-controls");
@@ -125,38 +124,57 @@ let ItemComponentBuilder = async function (component, itemFolder, item) {
 }
 
 // Item component converter and parser
-let ItemConverter = async function (component, index, itemFolder, item) {
+let ItemConverter = async function (component, componentIndex, itemFolder, item) {
     if (component.resource) {
 
         //converting into valid resources
-        for (let index = 0; index < component.resource.length; index++) {
+        let index = 0;
+        while (index < component.resource.length) {
             let resource = component.resource[index];
-            switch (resource.type) {
-                case "group":
-                    let group = ItemController.getGroupById(resource.id);
-                    group.content.forEach((item, itemIndex) => {
-                        component.resource.splice((index + itemIndex), 0,
-                            {
-                                type: "image",
-                                src: APP.itemFolder + item.folder + item.tile.image,
-                                alt: item.title
-                            });
-                    });
-                    index += (group.content.length - 1);
-                    component.resource.splice(index + 1, 1);
-                    break;
-                case "image":
-                    if (!resource.globalPath)
-                        resource.src = APP.itemFolder + itemFolder + APP.resourceFolder + resource.src;
-                    break;
-            }
-        };
+            //converting into valid resources
+            let _validResource = await ResourceConveter(resource, APP.itemFolder + itemFolder + APP.resourceFolder);
+            component.resource.splice(index, 1, ..._validResource);
+            index += _validResource.length;
+        }
 
         //getting resources data for hash
         component.resIndex = item.resources.length;
         component.resLastIndex = item.resources.length + component.resource.length - 1;
 
         //generating hash and adding into item resources list
-        component.resource.forEach(res => item.resources.push(new ResourceMap(res, createHash(index + component.resIndex + item.folder + res.src), component.resIndex, component.resLastIndex)))
+        component.resource.forEach(res => item.resources.push(new ResourceMap(res, createHash(index + component.resIndex + item.folder + res.src), component.resIndex, component.resLastIndex)));
     }
+    return component;
+}
+//converting compoenents into resourcesMaps
+let ResourceConveter = async function (component, targetFolder) {
+    let resources = [];
+
+    switch (component.type) {
+        case "group":
+            let group = ItemController.getGroupById(component.id);
+            group.content.forEach((item) => {
+
+                //ignoring images if are just placeholders
+                if (!item.arg.ignoreTileImageInGallery) {
+                    resources.push({
+                        type: "image",
+                        src: APP.itemFolder + item.folder + item.tile.image,
+                        alt: item.title
+                    });
+                }
+            });
+            break;
+        case "image":
+            resources.push({
+                type: "image",
+                src:targetFolder + component.src,
+                alt: component.alt
+            });
+            break;
+        default:
+            resources.push(component);
+            break;
+    }
+    return resources;
 }
