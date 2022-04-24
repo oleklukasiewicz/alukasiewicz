@@ -132,7 +132,7 @@ let ItemConverter = async function (component, componentIndex, itemFolder, item)
         while (index < component.resource.length) {
             let resource = component.resource[index];
             //converting into valid resources
-            let _validResource = await ResourceConveter(resource, APP.itemFolder + itemFolder + APP.resourceFolder);
+            let _validResource = await ResourceConverter(resource, APP.itemFolder + itemFolder + APP.resourceFolder);
             component.resource.splice(index, 1, ..._validResource);
             index += _validResource.length;
         }
@@ -147,7 +147,7 @@ let ItemConverter = async function (component, componentIndex, itemFolder, item)
     return component;
 }
 //converting compoenents into resourcesMaps
-let ResourceConveter = async function (component, targetFolder) {
+let ResourceConverter = async function (component, targetFolder) {
     let resources = [];
 
     switch (component.type) {
