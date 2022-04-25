@@ -88,7 +88,7 @@ let ItemComponentBuilder = async function (component, itemFolder, item) {
                             ViewController.navigate(VIEW.resource, {
                                 routeArg: [
                                     item.id,
-                                    item.resources[component.resIndex + i].hash
+                                    item.resources[component.resourceGroupIndex].resources[i].hash
                                 ],
                                 currentItem: item
                             })
@@ -123,31 +123,30 @@ let ItemComponentBuilder = async function (component, itemFolder, item) {
     return _component;
 }
 
-// Item component converter and parser
+// Item complex data converter into simple components
 let ItemConverter = async function (component, componentIndex, itemFolder, item) {
     if (component.resource) {
 
         //converting into valid resources
         let index = 0;
         while (index < component.resource.length) {
-            let resource = component.resource[index];
+            
             //converting into valid resources
-            let _validResource = await ResourceConverter(resource, APP.itemFolder + itemFolder + APP.resourceFolder);
+            let _validResource = await ResourceConverter(component.resource[index], APP.itemFolder + itemFolder + APP.resourceFolder, componentIndex);
             component.resource.splice(index, 1, ..._validResource);
             index += _validResource.length;
         }
 
-        //getting resources data for hash
-        component.resIndex = item.resources.length;
-        component.resLastIndex = item.resources.length + component.resource.length - 1;
+        //adding link into resource group
+        component.resourceGroupIndex = item.resources.length;
 
-        //generating hash and adding into item resources list
-        component.resource.forEach(res => item.resources.push(new ResourceMap(res, createHash(index + component.resIndex + item.folder + res.src), component.resIndex, component.resLastIndex)));
+        //adding into item resources list
+        item.resources.push(new ResourceGroup(component.resource));
     }
     return component;
 }
-//converting compoenents into resourcesMaps
-let ResourceConverter = async function (component, targetFolder) {
+//Converting components into valid resources for searching, indexing and more
+let ResourceConverter = async function (component, targetFolder, componentId) {
     let resources = [];
 
     switch (component.type) {
@@ -156,21 +155,12 @@ let ResourceConverter = async function (component, targetFolder) {
             group.content.forEach((item) => {
 
                 //ignoring images if are just placeholders
-                if (!item.arg.ignoreTileImageInGallery) {
-                    resources.push({
-                        type: "image",
-                        src: APP.itemFolder + item.folder + item.tile.image,
-                        alt: item.title
-                    });
-                }
+                if (!item.arg.ignoreTileImageInGallery)
+                    resources.push(new Resource(APP.itemFolder + item.folder + item.tile.image, "image", createHash(APP.itemFolder + item.folder + item.tile.image + componentId), { alt: item.title }))
             });
             break;
         case "image":
-            resources.push({
-                type: "image",
-                src:targetFolder + component.src,
-                alt: component.alt
-            });
+            resources.push(new Resource(targetFolder + component.src, "image", createHash(targetFolder + component.src + componentId), { alt: component.alt }))
             break;
         default:
             resources.push(component);
