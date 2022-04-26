@@ -46,16 +46,13 @@ let Item = function (id, aliases = [], isItemLinkToWeb = false, folder = "/" + i
     }
 }
 
-//resource map class declaration
-let ResourceMap = function (resource, hash, firstGroupIndex, lastGroupIndex) {
-    return {
-        resource,
-        hash,
-        firstGroupIndex,
-        lastGroupIndex
-    }
+//resource and resource group class declaration
+let Resource = function (src, type, hash = createHash(src), props = {}) {
+    return { src, type, hash, props }
 }
-
+let ResourceGroup = function (resourcesList = [], selectedResourceHash) {
+    return { resources: resourcesList, selected: selectedResourceHash }
+}
 //item date class declaration
 let ItemDate = function (day, month, year) {
     this.toHTMLString = function (months = [
@@ -316,11 +313,13 @@ let ItemController = (function () {
     ]));
     ViewController.addError(new ErrorClass("item_not_fetched", "Item cannot be loaded", "Check your internet connection"));
     let _getResourceGroupByHash = function (item, hash) {
-        let target = item.resources.find((resMap) => resMap.hash == hash);
-        return target ? {
-            resource: target,
-            group: item.resources.slice(target.firstGroupIndex, target.lastGroupIndex + 1)
-        } : null;
+        let targetResource;
+        let target = item.resources.find((resGroup) => {
+            targetResource = resGroup.resources.find((res => res.hash === hash))
+            return targetResource ? true : false;
+        });
+        target.selected = targetResource;
+        return target;
     }
     let _downloadViaAJAX = async function (item) {
         return new Promise((resolve, reject) => {
@@ -361,14 +360,11 @@ let ItemController = (function () {
             Object.assign(item, _content, { resources: [] });
 
             //pushing resources to resourcesList of item
-            item.resources.push(new ResourceMap({
-                src: APP.itemContentFileName
-            }, "", 0, 0));
-            await Promise.all(item.content.map(async (component, componentIndex) =>
-                await ItemConverter(component, componentIndex, item.folder, item)));
+            item.resources.push(new ResourceGroup([new Resource(APP.itemContentFileName, "item", null)]));
 
-            //adding method for finding resources by hash code
-            item.findResourceByHash = (hash) => _getResourceGroupByHash(item, hash);
+            //building item structure
+            ItemBuilder(item);
+
             if (_content?.version == APP.version)
                 item.isContentCached = true;
         }
@@ -429,6 +425,10 @@ let ItemController = (function () {
         },
         getItemById: {
             value: async (id) => await _loadFullItem(_getItemByRoute(id))
+        },
+        findResourceByHash:
+        {
+            value: (item, hash) => _getResourceGroupByHash(item, hash)
         }
     });
     return _controller;
@@ -612,7 +612,7 @@ const resourceView = new View(VIEW.resource, APP.url.resource, {},
             });
             this.data.resSlider.addEventListener("load", async function (res) {
                 let _img = document.createElement("IMG");
-                _img.src = res.resource.src;
+                _img.src = res.src;
                 _resList.appendChild(_img);
                 await ImageHelper(_img);
             });
@@ -638,13 +638,13 @@ const resourceView = new View(VIEW.resource, APP.url.resource, {},
 
             //loading item and resource group
             this.data.currentItem = arg.currentItem || await ItemController.getItemById(arg.routeArg[0]);
-            let resourceGroup = this.data.currentItem.findResourceByHash(arg.routeArg[1]);
+            let resourceGroup = ItemController.findResourceByHash(this.data.currentItem, arg.routeArg[1]);
             if (!resourceGroup) {
                 ViewController.invokeError("image_not_found", false);
                 return;
             }
             //loading resources to slider
-            await this.data.resSlider.loadResources(resourceGroup.group, resourceGroup.resource);
+            await this.data.resSlider.loadResources(resourceGroup.resources, resourceGroup.selected);
         },
         onLoadFinish: function () {
             this.rootNode.classList.remove(GLOBAL.loading);
@@ -856,7 +856,7 @@ let ResourceSlider = function () {
     this.loadResources = async function (resourcesList, current) {
         _res = resourcesList;
         await Promise.all(_res.map(async (res, index) => await _sender.invokeEvent("load", [res, index])));
-        _renderIndex(current ? _res.findIndex((res) => res == current) : 0);
+        _renderIndex(current ? _res.findIndex((res) => res.hash == current.hash) : 0);
         await this.invokeEvent("loadFinish", [_res]);
     }
     this.close = async () => {
