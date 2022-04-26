@@ -16,10 +16,15 @@
                 {
                     "src": "/airship.webp",
                     "type": "image",
-                    "alt": "Airship"
+                    "props": {
+                        "alt": "Airship"
+                    }
                 }
             ],
-            "alt": "Ocean of clouds",
+            "arguments":
+            {
+                "alt": "Ocean of clouds"
+            },
             "id": "airship-image"
         },
         {
@@ -30,7 +35,7 @@
                     "type": "link",
                     "content": "Fluent Design System",
                     "href": "https://www.microsoft.com/design/fluent/",
-                    "target":"_blank"
+                    "target": "_blank"
                 },
                 " continues this work. Fluent is evolving to be more than a set of outcomes and will define the process by which we collectively design and build products. It represents the growth and influence of design thinking within Microsoft."
             ]
@@ -48,29 +53,25 @@
                     "id": "featured"
                 },
                 {
-                    "src": "/gallery/crocus-base.webp",
-                    "type": "image",
-                    "alt": "Crocus"
-                },
-                {
                     "src": "/gallery/lily-blank.webp",
                     "type": "image",
-                    "alt": "Lily"
+                    "props": {
+                        "alt": "Lily"
+                    }
                 },
                 {
                     "src": "/gallery/rose_plant.webp",
                     "type": "image",
-                    "alt": "Rose"
-                },
-                {
-                    "src": "/gallery/isometric_castle.webp",
-                    "type": "image",
-                    "alt": "Castle"
+                    "props": {
+                        "alt": "Rose"
+                    }
                 },
                 {
                     "src": "/airship.webp",
                     "type": "image",
-                    "alt": "Airship"
+                    "props": {
+                        "alt": "Airship"
+                    }
                 }
             ],
             "id": "airship-gallery",
@@ -78,7 +79,7 @@
                 "imagesCount": 3,
                 "resourceOrder": [
                     0,
-                    9,
+                    8,
                     2
                 ]
             }

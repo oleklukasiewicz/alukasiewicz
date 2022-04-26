@@ -79,7 +79,7 @@ let ItemComponentBuilder = async function (component, itemFolder, item) {
                 let i = _order[index];
                 let res = component.resource[i];
                 let _img = document.createElement("IMG");
-                _img.alt = res.alt || "";
+                _img.alt = res?.props?.alt || "";
                 _img.src = res.src;
                 _img.classList.add(GLOBAL.loading);
                 _list.appendChild(_img);
@@ -106,9 +106,10 @@ let ItemComponentBuilder = async function (component, itemFolder, item) {
 
             _component.classList.add("items-count-" + _max);
 
-            if (component.alt) {
+            if (component.arguments?.alt) {
                 let _alt = document.createElement("span");
-                _alt.innerHTML = component.alt;
+                let _altText = typeof (component.arguments.alt) === "boolean" ? component.resource[0].props.alt : component.arguments.alt;
+                _alt.innerHTML = _altText;
                 _alt.classList.add("img-alt");
                 _component.appendChild(_alt);
             }
@@ -135,7 +136,7 @@ let ItemBuilder = function (item) {
             while (index < component.resource.length) {
 
                 //converting into valid resources
-                let _validResource = ResourceConverter(component.resource[index], APP.itemFolder + itemFolder + APP.resourceFolder, componentIndex);
+                let _validResource = ResourceConverter(component.resource[index], APP.itemFolder + itemFolder + APP.resourceFolder, component.id||componentIndex);
                 component.resource.splice(index, 1, ..._validResource);
                 index += _validResource.length;
             }
@@ -147,11 +148,12 @@ let ItemBuilder = function (item) {
             item.resources.push(new ResourceGroup(component.resource));
         }
     });
+    if (item.debug)
+        console.log(item);
 }
 //Converting components into valid resources for searching, indexing and more
 let ResourceConverter = function (component, targetFolder, componentId) {
     let resources = [];
-
     switch (component.type) {
         case "group":
             let group = ItemController.getGroupById(component.id);
@@ -159,11 +161,15 @@ let ResourceConverter = function (component, targetFolder, componentId) {
 
                 //ignoring images if are just placeholders
                 if (!item.arg.ignoreTileImageInGallery)
-                    resources.push(new Resource(APP.itemFolder + item.folder + item.tile.image, "image", createHash(APP.itemFolder + item.folder + item.tile.image + componentId), { alt: item.title }))
+                    resources.push(new Resource(APP.itemFolder + item.folder + item.tile.image, "image", createHash(APP.itemFolder + item.folder + item.tile.image + componentId), component.props))
             });
             break;
         case "image":
-            resources.push(new Resource(targetFolder + component.src, "image", createHash(targetFolder + component.src + componentId), { alt: component.alt }))
+            resources.push(new Resource(targetFolder + component.src, "image", createHash(targetFolder + component.src + componentId), component.props))
+            break;
+        case "item":
+            let item = ItemController.getItemSnapshotById(component.id);
+            resources.push(new Resource(APP.itemFolder + item.folder + item.tile.image, "image", createHash(APP.itemFolder + item.folder + item.tile.image + componentId), component.props))
             break;
         default:
             resources.push(component);
