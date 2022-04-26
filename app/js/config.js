@@ -318,7 +318,7 @@ let ItemController = (function () {
             targetResource = resGroup.resources.find((res => res.hash === hash))
             return targetResource ? true : false;
         });
-        target.selected=targetResource;
+        target.selected = targetResource;
         return target;
     }
     let _downloadViaAJAX = async function (item) {
@@ -360,10 +360,10 @@ let ItemController = (function () {
             Object.assign(item, _content, { resources: [] });
 
             //pushing resources to resourcesList of item
-            item.resources.push(new ResourceGroup([new Resource(APP.itemContentFileName,"item",null)]));
-            
-            await Promise.all(item.content.map(async (component, componentIndex) =>
-                await ItemConverter(component, componentIndex, item.folder, item)));
+            item.resources.push(new ResourceGroup([new Resource(APP.itemContentFileName, "item", null)]));
+
+            //building item structure
+            ItemBuilder(item);
 
             if (_content?.version == APP.version)
                 item.isContentCached = true;

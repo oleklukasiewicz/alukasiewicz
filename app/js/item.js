@@ -123,30 +123,32 @@ let ItemComponentBuilder = async function (component, itemFolder, item) {
     return _component;
 }
 
-// Item complex data converter into simple components
-let ItemConverter = async function (component, componentIndex, itemFolder, item) {
-    if (component.resource) {
+// Item structure builder
+let ItemBuilder = function (item) {
+    let itemFolder = item.folder;
+    item.content.map(async function (component, componentIndex) {
+        if (component.resource) {
 
-        //converting into valid resources
-        let index = 0;
-        while (index < component.resource.length) {
-            
             //converting into valid resources
-            let _validResource = await ResourceConverter(component.resource[index], APP.itemFolder + itemFolder + APP.resourceFolder, componentIndex);
-            component.resource.splice(index, 1, ..._validResource);
-            index += _validResource.length;
+            let index = 0;
+            while (index < component.resource.length) {
+
+                //converting into valid resources
+                let _validResource = ResourceConverter(component.resource[index], APP.itemFolder + itemFolder + APP.resourceFolder, componentIndex);
+                component.resource.splice(index, 1, ..._validResource);
+                index += _validResource.length;
+            }
+
+            //adding link into resource group
+            component.resourceGroupIndex = item.resources.length;
+
+            //adding into item resources list
+            item.resources.push(new ResourceGroup(component.resource));
         }
-
-        //adding link into resource group
-        component.resourceGroupIndex = item.resources.length;
-
-        //adding into item resources list
-        item.resources.push(new ResourceGroup(component.resource));
-    }
-    return component;
+    });
 }
 //Converting components into valid resources for searching, indexing and more
-let ResourceConverter = async function (component, targetFolder, componentId) {
+let ResourceConverter = function (component, targetFolder, componentId) {
     let resources = [];
 
     switch (component.type) {
