@@ -41,6 +41,16 @@ let ItemComponentBuilder = async function (component, itemFolder, item) {
         case "gallery":
             _component = document.createElement("DIV");
             _component.classList.add("gallery");
+
+            //setting up images order and count
+            let _loadingPromises = [];
+            let _max = _arg.imagesCount || component.resource.length;
+            _max = _max > 5 ? 5 : _max;
+            let _order = _arg.resourceOrder || [...Array(5).keys()];
+            if (_order.length < _max)
+                for (let orderIndex = _order.length - 1; orderIndex < _max; orderIndex++)
+                    _order[orderIndex] = orderIndex;
+
             if (!_arg.hideControls && component.resource.length > 1) {
                 _component.innerHTML = "<div><b class='font-subtitle'>" + component.title + "</b></div>";
                 _component.classList.add("show-controls");
@@ -52,7 +62,7 @@ let ItemComponentBuilder = async function (component, itemFolder, item) {
                     ViewController.navigate(VIEW.resource, {
                         routeArg: [
                             item.id,
-                            item.resources[component.resourceGroupIndex].resources[0].hash
+                            item.resources[component.resourceGroupIndex].resources[_order[0]].hash
                         ],
                         currentItem: item,
                     })
@@ -63,15 +73,6 @@ let ItemComponentBuilder = async function (component, itemFolder, item) {
             let _list = document.createElement("DIV");
             _list.classList.add("list");
             _component.appendChild(_list);
-
-            //setting up images order and count
-            let _loadingPromises = [];
-            let _max = _arg.imagesCount || component.resource.length;
-            _max = _max > 5 ? 5 : _max;
-            let _order = _arg.resourceOrder || [...Array(5).keys()];
-            if (_order.length < _max)
-                for (let orderIndex = _order.length - 1; orderIndex < _max; orderIndex++)
-                    _order[orderIndex] = orderIndex;
 
             //generating images
             for (let index = 0; index < _max; index++) {

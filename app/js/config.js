@@ -46,12 +46,15 @@ let Item = function (id, aliases = [], isItemLinkToWeb = false, folder = "/" + i
     }
 }
 
-//resource and resource group class declaration
+//resource classes declaration
 let Resource = function (src, type, hash = createHash(src), props = {}) {
     return { src, type, hash, props }
 }
 let ResourceGroup = function (resourcesList = [], selectedResourceHash) {
     return { resources: resourcesList, selected: selectedResourceHash }
+}
+let ResourceDictionary = function (resourcesGroups = []) {
+    return resourcesGroups;
 }
 //item date class declaration
 let ItemDate = function (day, month, year) {
@@ -291,6 +294,7 @@ let ViewController = (function () {
     }
     return _controller;
 }());
+
 let ItemController = (function () {
     let _routes = [];
     let _storage = [];
@@ -312,9 +316,9 @@ let ItemController = (function () {
         "item_load_error"
     ]));
     ViewController.addError(new ErrorClass("item_not_fetched", "Item cannot be loaded", "Check your internet connection"));
-    let _getResourceGroupByHash = function (item, hash) {
+    let _getResourceGroupByHash = function (dictionary, hash) {
         let targetResource;
-        let target = item.resources.find((resGroup) => {
+        let target = dictionary.find((resGroup) => {
             targetResource = resGroup.resources.find((res => res.hash === hash))
             return targetResource ? true : false;
         });
@@ -356,11 +360,12 @@ let ItemController = (function () {
 
             //TODO: check content component version if newer -> download new version of components.css and js
 
-            //merging item with item
-            Object.assign(item, _content, { resources: [] });
-
-            //pushing resources to resourcesList of item
-            item.resources.push(new ResourceGroup([new Resource(APP.itemContentFileName, "item", null)]));
+            //creating resource dictionary and adding content.json file into it
+            Object.assign(item, _content, {
+                resources: new ResourceDictionary([
+                    new ResourceGroup([
+                        new Resource(APP.itemContentFileName, "item", null)])])
+            });
 
             //building item structure
             ItemBuilder(item);
@@ -423,12 +428,15 @@ let ItemController = (function () {
         getGroupById: {
             value: _getGroupByRoute
         },
+        getItemSnapshotById: {
+            value: (id) => _getItemByRoute(id)
+        },
         getItemById: {
             value: async (id) => await _loadFullItem(_getItemByRoute(id))
         },
         findResourceByHash:
         {
-            value: (item, hash) => _getResourceGroupByHash(item, hash)
+            value: (resourceDictionary, hash) => _getResourceGroupByHash(resourceDictionary, hash)
         }
     });
     return _controller;
@@ -638,7 +646,7 @@ const resourceView = new View(VIEW.resource, APP.url.resource, {},
 
             //loading item and resource group
             this.data.currentItem = arg.currentItem || await ItemController.getItemById(arg.routeArg[0]);
-            let resourceGroup = ItemController.findResourceByHash(this.data.currentItem, arg.routeArg[1]);
+            let resourceGroup = ItemController.findResourceByHash(this.data.currentItem.resources, arg.routeArg[1]);
             if (!resourceGroup) {
                 ViewController.invokeError("image_not_found", false);
                 return;
