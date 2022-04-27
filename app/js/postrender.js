@@ -1,5 +1,5 @@
 //main app node declaration
-const APP_NODE = document.getElementById("app");
+const APP_NODE = getById("app");
 
 //route controller declaration
 let RouteController = (function () {

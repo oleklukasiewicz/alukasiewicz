@@ -1074,27 +1074,35 @@ let ImageHelper = function (image, onload = () => { }, onerror = () => { }) {
 }
 let ImageConnectedAnimation = function (source, prep = false) {
     let _shadow = source.cloneNode(true);
+    let _target;
     this.prepare = function () {
         let _bounds = source.getBoundingClientRect();
         _shadow.classList.add("shadow-ca");
-        document.body.appendChild(_shadow);
         _shadow.style.top = _bounds.top + "px";
         _shadow.style.left = _bounds.left + "px";
         _shadow.style.width = _bounds.width + "px";
         _shadow.style.height = _bounds.height + "px";
+        document.body.append(_shadow);
     }
-    this.cancel = function () {
+    let _cancel = function () {
+        document.removeEventListener("scroll", _followScroll);
         _shadow.remove();
     }
+    let _followScroll = function () {
+        let _tBounds = _target.getBoundingClientRect();
+        _shadow.style.top = _tBounds.top + "px";
+        _shadow.style.left = _tBounds.left + "px";
+        _shadow.style.width = _tBounds.width + "px";
+        _shadow.style.height = _tBounds.height + "px";
+    }
+    this.cancel = _cancel;
     this.start = async function (target) {
+        _target = target;
         return new Promise((resolve, reject) => {
-            let _tBounds = target.getBoundingClientRect();
-            _shadow.style.top = _tBounds.top + "px";
-            _shadow.style.left = _tBounds.left + "px";
-            _shadow.style.width = _tBounds.width + "px";
-            _shadow.style.height = _tBounds.height + "px";
+            _followScroll();
+            document.addEventListener("scroll", _followScroll);
             setTimeout(function () {
-                _shadow.remove();
+                _cancel();
                 resolve();
             }, 300);
         });
