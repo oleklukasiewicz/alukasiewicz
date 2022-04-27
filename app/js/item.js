@@ -60,9 +60,10 @@ let ItemComponentBuilder = async function (component, itemFolder, item) {
                 _button.classList.add("button");
                 _button.onclick = function () {
                     ViewController.navigate(VIEW.resource, {
+                        connectedAnimation: new ImageConnectedAnimation(_firstImg, true),
                         routeArg: [
                             item.id,
-                            item.resources[component.resourceGroupIndex].resources[_order[0]].hash
+                            item.resources[component.resourceGroupIndex].resources[_order[0]].hash,
                         ],
                         currentItem: item,
                     })
@@ -74,11 +75,18 @@ let ItemComponentBuilder = async function (component, itemFolder, item) {
             _list.classList.add("list");
             _component.appendChild(_list);
 
+            let _firstImg;
             //generating images
             for (let index = 0; index < _max; index++) {
                 let i = _order[index];
                 let res = component.resource[i];
                 let _img = document.createElement("IMG");
+
+                //binding resource to node for connected animation
+                res.props.node = _img;
+                if (index == 0)
+                    _firstImg = _img;
+
                 _img.alt = res?.props?.alt || "";
                 _img.src = res.src;
                 _img.classList.add(GLOBAL.loading);
@@ -87,6 +95,7 @@ let ItemComponentBuilder = async function (component, itemFolder, item) {
                     function (img) {
                         img.onclick = function () {
                             ViewController.navigate(VIEW.resource, {
+                                connectedAnimation: new ImageConnectedAnimation(_img, true),
                                 routeArg: [
                                     item.id,
                                     item.resources[component.resourceGroupIndex].resources[i].hash
@@ -136,7 +145,7 @@ let ItemBuilder = function (item) {
             while (index < component.resource.length) {
 
                 //converting into valid resources
-                let _validResource = ResourceConverter(component.resource[index], APP.itemFolder + itemFolder + APP.resourceFolder, component.id||componentIndex);
+                let _validResource = ResourceConverter(component.resource[index], APP.itemFolder + itemFolder + APP.resourceFolder, component.id || componentIndex);
                 component.resource.splice(index, 1, ..._validResource);
                 index += _validResource.length;
             }

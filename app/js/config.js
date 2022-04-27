@@ -157,6 +157,7 @@ let ViewController = (function () {
     let _errors = [];
     let _errorHistory = [];
     let _currentGlobalError;
+    let _historyBackArg;
 
     _controller.addError = function (error) {
         if (_errors.findIndex((_error) => error.id == _error.id) == -1)
@@ -205,11 +206,11 @@ let ViewController = (function () {
         }
         return view;
     }
-    let _invokeLoadFinishEvent = async function (view) {
+    let _invokeLoadFinishEvent = async function (view, arg) {
         if (view.isLoading && !view.isLoaded) {
             view.isLoading = false;
             view.isLoaded = true;
-            await view.event.onLoadFinish?.call(view);
+            await view.event.onLoadFinish?.call(view, arg);
         }
     }
     _controller.navigate = async function (id, arg = {}) {
@@ -224,7 +225,7 @@ let ViewController = (function () {
         //unloading old view if exist
         if (_currentView) {
             //finishing loading view if needed, unloading and generating node if needed
-            _invokeLoadFinishEvent(_currentView);
+            _invokeLoadFinishEvent(_currentView, arg);
             _unLoadView(_currentView);
             _generateRootNode(_currentView);
 
@@ -262,7 +263,7 @@ let ViewController = (function () {
 
         //loading view if needed
         if (_currentView.loadingMode != _controller.loadingModes.never)
-            await _invokeLoadEvent(_currentView, arg).then((view) => _invokeLoadFinishEvent(view))
+            await _invokeLoadEvent(_currentView, arg).then((view) => _invokeLoadFinishEvent(view, arg))
     }
     _controller.register = async function (view, isDefault = false) {
         _views.push(view);
@@ -274,7 +275,8 @@ let ViewController = (function () {
         if (_currentView != _defaultView)
             _controller.invokeEvent("navigateDefault", [arg]);
     }
-    _controller.back = function () {
+    _controller.back = function (arg = {}) {
+        _historyBackArg = arg;
         if (history.state.index == 0)
             _controller.navigateToDefaultView();
         else
@@ -290,7 +292,7 @@ let ViewController = (function () {
         _defaultViewHistoryIndex = historyItem.defaultViewHistoryIndex;
         _controller.navigate(historyItem.id, Object.assign({
             noHistoryPush: true
-        }, historyItem.arg));
+        }, historyItem.arg, _historyBackArg));
     }
     return _controller;
 }());
@@ -525,8 +527,22 @@ const itemView = new View(VIEW.item, APP.url.item, { currentItem: null }, {
         } else
             ViewController.invokeError("item_load_error");
     },
-    onLoadFinish: function () {
+    onLoadFinish: async function (arg) {
+        let item = this.data.currentItem;
         this.rootNode.classList.remove(GLOBAL.loading);
+        if (arg.connectedAnimation) {
+            let targetRes = ItemController.findResourceByHash(item.resources, arg.connectedAnimationHash).selected;
+            if (targetRes.props?.node) {
+                let _node = targetRes.props.node;
+                _node.classList.add("hidden-opacity");
+                setTimeout(async function () {
+                    await arg.connectedAnimation.start(_node);
+                    _node.classList.remove("hidden-opacity");
+                }, 0);
+            } else {
+                arg.connectedAnimation.cancel()
+            }
+        }
     },
     onError: function (err) {
         this.rootNode.classList.add(GLOBAL.error);
@@ -605,7 +621,12 @@ const resourceView = new View(VIEW.resource, APP.url.resource, {},
             _prevBtn.addEventListener("click", this.data.resSlider.previous);
 
             //adding close button
-            getById("image-viewer-close").addEventListener("click", ViewController.back);
+            getById("image-viewer-close").addEventListener("click", () => {
+                ViewController.back({
+                    connectedAnimation: new ImageConnectedAnimation(this.data.resList.children[this.data.resSlider.currentIndex], true),
+                    connectedAnimationHash: history.state.arg.routeArg[1]
+                })
+            });
             let _setButtonsDisplay = function (isHidden) {
                 _nextBtn.classList.toggle(GLOBAL.hidden, isHidden);
                 _prevBtn.classList.toggle(GLOBAL.hidden, isHidden);
@@ -642,7 +663,7 @@ const resourceView = new View(VIEW.resource, APP.url.resource, {},
             setTimeout(function (_sender) {
                 if (!_sender.isLoaded)
                     _sender.rootNode.classList.add(GLOBAL.loading);
-            }, 300, this);
+            }, 500, this);
 
             //loading item and resource group
             this.data.currentItem = arg.currentItem || await ItemController.getItemById(arg.routeArg[0]);
@@ -653,6 +674,11 @@ const resourceView = new View(VIEW.resource, APP.url.resource, {},
             }
             //loading resources to slider
             await this.data.resSlider.loadResources(resourceGroup.resources, resourceGroup.selected);
+            if (arg.connectedAnimation) {
+                this.data.resList.children[this.data.resSlider.currentIndex].classList.add("hidden-opacity");
+                await arg.connectedAnimation.start(this.data.resList.children[this.data.resSlider.currentIndex]);
+                this.data.resList.children[this.data.resSlider.currentIndex].classList.remove("hidden-opacity");
+            }
         },
         onLoadFinish: function () {
             this.rootNode.classList.remove(GLOBAL.loading);
@@ -890,6 +916,13 @@ let ResourceSlider = function () {
         await _renderIndex(_index);
         await _sender.invokeEvent("previous", [_res[_currentIndex], _index])
     }
+    Object.defineProperties(this,
+        {
+            currentIndex:
+            {
+                get: () => _currentIndex
+            }
+        });
 }
 
 //gesture support for element
@@ -1038,4 +1071,33 @@ let ImageHelper = function (image, onload = () => { }, onerror = () => { }) {
         image.onload = () => resolve(onload(image));
         image.onerror = () => resolve(imageIsNotLoaded());
     });
+}
+let ImageConnectedAnimation = function (source, prep = false) {
+    let _shadow = source.cloneNode(true);
+    this.prepare = function () {
+        let _bounds = source.getBoundingClientRect();
+        _shadow.classList.add("shadow-ca");
+        document.body.appendChild(_shadow);
+        _shadow.style.top = _bounds.top + "px";
+        _shadow.style.left = _bounds.left + "px";
+        _shadow.style.width = _bounds.width + "px";
+        _shadow.style.height = _bounds.height + "px";
+    }
+    this.cancel = function () {
+        _shadow.remove();
+    }
+    this.start = async function (target) {
+        return new Promise((resolve, reject) => {
+            let _tBounds = target.getBoundingClientRect();
+            _shadow.style.top = _tBounds.top + "px";
+            _shadow.style.left = _tBounds.left + "px";
+            _shadow.style.width = _tBounds.width + "px";
+            _shadow.style.height = _tBounds.height + "px";
+            setTimeout(function () {
+                _shadow.remove();
+                resolve();
+            }, 300);
+        });
+    }
+    if (prep) this.prepare();
 }
