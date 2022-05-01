@@ -56,29 +56,6 @@ let ResourceGroup = function (resourcesList = [], selectedResourceHash) {
 let ResourceDictionary = function (resourcesGroups = []) {
     return resourcesGroups;
 }
-//item date class declaration
-let ItemDate = function (day, month, year) {
-    this.toHTMLString = function (months = [
-        "Jan",
-        "Feb",
-        "Mar",
-        "Apr",
-        "May",
-        "Jun",
-        "Jul",
-        "Aug",
-        "Sep",
-        "Oct",
-        "Nov",
-        "Dec"
-    ]) {
-        return (this.day + "&nbsp;" + months[this.month - 1] + ",&nbsp;" + this.year)
-    }
-    let _today = new Date();
-    this.day = day || _today.getDate();
-    this.month = month || _today.getMonth() + 1;
-    this.year = year || _today.getFullYear();
-};
 
 //group class declaration
 let Group = function (id, aliases = [], title, createDate, modifyDate, groups = [], arg = {}, isDefault = false) {
@@ -1039,3 +1016,27 @@ let ImageHelper = function (image, onload = () => { }, onerror = () => { }) {
         image.onerror = () => resolve(imageIsNotLoaded());
     });
 }
+
+//item date class declaration
+let ItemDate = function (day, month, year) {
+    this.toHTMLString = function (months = [
+        "Jan",
+        "Feb",
+        "Mar",
+        "Apr",
+        "May",
+        "Jun",
+        "Jul",
+        "Aug",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dec"
+    ]) {
+        return (this.day + "&nbsp;" + months[this.month - 1] + ",&nbsp;" + this.year)
+    }
+    let _today = new Date();
+    this.day = day || _today.getDate();
+    this.month = month || _today.getMonth() + 1;
+    this.year = year || _today.getFullYear();
+};
