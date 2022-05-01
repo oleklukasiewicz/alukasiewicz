@@ -1,8 +1,9 @@
 const cacheName = "v-s-0-0-2-0";
-const serviceWorkerVersion = "08-03-22-v1";
+const serviceWorkerVersion = "01-05-22-v1";
 const networkOnlyResources =
     [
-        "/v1/"
+        "/v1/",
+        "/resources/"
     ];
 const alwaysFreshResources =
     [
