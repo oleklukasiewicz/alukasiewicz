@@ -528,9 +528,11 @@ const itemView = new View(VIEW.item, APP.url.item, { currentItem: null }, {
             ViewController.invokeError("item_load_error");
     },
     onLoadFinish: async function (arg) {
-        let item = this.data.currentItem;
         this.rootNode.classList.remove(GLOBAL.loading);
+
+        //setting up animation
         if (arg.connectedAnimation) {
+            let item = this.data.currentItem;
             let targetRes = ItemController.findResourceByHash(item.resources, arg.connectedAnimationHash).selected;
             if (targetRes.props?.node) {
                 let _node = targetRes.props.node;
@@ -539,9 +541,8 @@ const itemView = new View(VIEW.item, APP.url.item, { currentItem: null }, {
                     await arg.connectedAnimation.start(_node);
                     _node.classList.remove("hidden-opacity");
                 }, 0);
-            } else {
+            } else
                 arg.connectedAnimation.cancel()
-            }
         }
     },
     onError: function (err) {
@@ -623,7 +624,7 @@ const resourceView = new View(VIEW.resource, APP.url.resource, {},
             //adding close button
             getById("image-viewer-close").addEventListener("click", () => {
                 ViewController.back({
-                    connectedAnimation: new ImageConnectedAnimation(this.data.resList.children[this.data.resSlider.currentIndex], true),
+                    connectedAnimation: new ImageConnectedAnimation(_sender.data.currentNode, true),
                     connectedAnimationHash: history.state.arg.routeArg[1]
                 })
             });
@@ -634,6 +635,7 @@ const resourceView = new View(VIEW.resource, APP.url.resource, {},
 
             //adding event to slider
             this.data.resSlider.addEventListener("render", function (res, index, oldres, old) {
+                _sender.data.currentNode = _resList.children[index];
                 _resList.children[index].classList.add(GLOBAL.activeView);
                 _resList.children[old]?.classList.remove(GLOBAL.activeView);
                 history.state.arg.routeArg = [_sender.data.currentItem.id, res.hash];
@@ -673,11 +675,14 @@ const resourceView = new View(VIEW.resource, APP.url.resource, {},
                 return;
             }
             //loading resources to slider
-            await this.data.resSlider.loadResources(resourceGroup.resources, resourceGroup.selected);
+            let _selectedIndex = await this.data.resSlider.loadResources(resourceGroup.resources, resourceGroup.selected);
+
+            //setting up animation
             if (arg.connectedAnimation) {
-                this.data.resList.children[this.data.resSlider.currentIndex].classList.add("hidden-opacity");
-                await arg.connectedAnimation.start(this.data.resList.children[this.data.resSlider.currentIndex]);
-                this.data.resList.children[this.data.resSlider.currentIndex].classList.remove("hidden-opacity");
+                let _selectedNode = this.data.resList.children[_selectedIndex];
+                _selectedNode.classList.add("hidden-opacity");
+                await arg.connectedAnimation.start(_selectedNode);
+                _selectedNode.classList.remove("hidden-opacity");
             }
         },
         onLoadFinish: function () {
@@ -892,6 +897,7 @@ let ResourceSlider = function () {
         await Promise.all(_res.map(async (res, index) => await _sender.invokeEvent("load", [res, index])));
         _renderIndex(current ? _res.findIndex((res) => res.hash == current.hash) : 0);
         await this.invokeEvent("loadFinish", [_res]);
+        return _currentIndex;
     }
     this.close = async () => {
         _oldIndex = -1;
@@ -916,13 +922,6 @@ let ResourceSlider = function () {
         await _renderIndex(_index);
         await _sender.invokeEvent("previous", [_res[_currentIndex], _index])
     }
-    Object.defineProperties(this,
-        {
-            currentIndex:
-            {
-                get: () => _currentIndex
-            }
-        });
 }
 
 //gesture support for element
@@ -1060,6 +1059,7 @@ let createButton = function (icon, label, tagName = "A", rightLabel = false) {
     if (rightLabel) _button.appendChild(_buttonIcon);
     return _button;
 }
+
 //Image helper for images
 let ImageHelper = function (image, onload = () => { }, onerror = () => { }) {
     let imageIsNotLoaded = function () {
@@ -1072,16 +1072,21 @@ let ImageHelper = function (image, onload = () => { }, onerror = () => { }) {
         image.onerror = () => resolve(imageIsNotLoaded());
     });
 }
+
+//Connected Animation class fro Images
 let ImageConnectedAnimation = function (source, prep = false) {
     let _shadow = source.cloneNode(true);
     let _target;
+    let _setProps = function (__source, __target = _shadow) {
+        let _bounds = __source.getBoundingClientRect();
+        __target.style.top = _bounds.top + "px";
+        __target.style.left = _bounds.left + "px";
+        __target.style.width = _bounds.width + "px";
+        __target.style.height = _bounds.height + "px";
+    }
     this.prepare = function () {
-        let _bounds = source.getBoundingClientRect();
         _shadow.classList.add("shadow-ca");
-        _shadow.style.top = _bounds.top + "px";
-        _shadow.style.left = _bounds.left + "px";
-        _shadow.style.width = _bounds.width + "px";
-        _shadow.style.height = _bounds.height + "px";
+        _setProps(source);
         document.body.append(_shadow);
     }
     let _cancel = function () {
@@ -1089,16 +1094,12 @@ let ImageConnectedAnimation = function (source, prep = false) {
         _shadow.remove();
     }
     let _followScroll = function () {
-        let _tBounds = _target.getBoundingClientRect();
-        _shadow.style.top = _tBounds.top + "px";
-        _shadow.style.left = _tBounds.left + "px";
-        _shadow.style.width = _tBounds.width + "px";
-        _shadow.style.height = _tBounds.height + "px";
+        _setProps(_target);
     }
     this.cancel = _cancel;
     this.start = async function (target) {
         _target = target;
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
             _followScroll();
             document.addEventListener("scroll", _followScroll);
             setTimeout(function () {
