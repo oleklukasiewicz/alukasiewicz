@@ -714,11 +714,10 @@ u.dotted-separator{
 }
 .list-view > .item > .labels > .button{
     transition: var(--transition-bg-only);
-    width: 114px;
+    width: 118px;
 }
 .list-view > .item > .labels > .button > i{
     float: right;
-    margin-left: 4;
 }
 .list-view > .item > .labels > .label > i{
     transform: translateY(1px);
