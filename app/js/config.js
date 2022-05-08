@@ -6,25 +6,6 @@ NodeList.prototype.remove = HTMLCollection.prototype.remove = function () {
     for (let i = this.length - 1; i >= 0; i--)
         this[i].parentElement.removeChild(this[i]);
 };
-Array.prototype.equals = function (array) {
-    // if the other array is a falsy value, return,  compare lengths - can save a lot of time 
-    if (!array || this.length != array.length)
-        return false;
-
-    for (var i = 0, l = this.length; i < l; i++) {
-        // Check if we have nested arrays
-        if (this[i] instanceof Array && array[i] instanceof Array) {
-            // recurse into the nested arrays
-            if (!this[i].equals(array[i]))
-                return false;
-        }
-        else if (this[i] != array[i]) {
-            // Warning - two different object instances will never be equal: {x:20} != {x:20}
-            return false;
-        }
-    }
-    return true;
-}
 
 //item class declaration
 let Item = function (id, aliases = [], isItemLinkToWeb = false, folder = "/" + id, title, tileImage, tileContent, createDate, modifyDate, groups = [], arg = {}) {
@@ -193,8 +174,11 @@ let ViewController = (function () {
 
         _controller.invokeEvent("navigationRequest", [id, _currentView]);
         let _lastRouteArg = _currentView?.lastNavigationArguments?.routeArg || [];
-        if (id == _currentView?.id && (_lastRouteArg.equals(arg.routeArg || [])))
+
+        //canceling navigation when is navigating to the same view with the same routeArg
+        if (id == _currentView?.id && (arg.routeArg?.join("/") == _lastRouteArg.join("/")))
             return;
+            
         //getting view
         let _target = _getViewById(id);
 
