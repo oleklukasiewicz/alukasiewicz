@@ -40,15 +40,6 @@
     min-width: 100%;
     min-height: 300px;
 }
-a.link
-{
-    color:var(--color-accent-link);
-    transition: color var(--time);
-}
-a.link:hover
-{
-    color:var(--color-accent);
-}
 .gallery.show-controls{
     margin: 20px 0 0;
 }
