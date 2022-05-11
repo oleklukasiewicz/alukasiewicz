@@ -409,10 +409,9 @@ body.scroll-fix::-webkit-scrollbar-track{
     margin: 0 auto;
     max-width: var(--size-max-width);
 }
-#about-content
-{
+#about-content{
     text-align: justify;
-    word-spacing:-1px;
+    word-spacing: -1px;
 }
 #item-data{
     display: flex;
@@ -979,8 +978,7 @@ u.dotted-separator{
     #about{
         flex-direction: column;
     }
-    #about-img
-    {
+    #about-img{
         aspect-ratio: 3/2;
     }
 }

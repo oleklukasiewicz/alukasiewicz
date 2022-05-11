@@ -178,7 +178,7 @@ let ViewController = (function () {
         //canceling navigation when is navigating to the same view with the same routeArg
         if (id == _currentView?.id && (arg.routeArg?.join("/") == _lastRouteArg.join("/")))
             return;
-            
+
         //getting view
         let _target = _getViewById(id);
 
@@ -686,11 +686,12 @@ window.addEventListener("load", async function () {
         if (APP.version != ITEM_VERSION)
             ViewController.invokeError("item_outdated", true);
         else {
-            await ItemController.fetchGroups(getGroups()).then(() => ItemController.fetchItems(getItems()));
+            await ItemController.fetchGroups(getGroups()).then(() => ItemController.fetchItems(getItems().sort(itemsDefaultSort)));
             incrementVisitors(ITEM_ENVIROMENT == "beta" ? config.beta : config.analitycs);
         }
-    } catch {
+    } catch(e){
         ViewController.invokeError("item_load_error", true);
+        console.error(e);
     }
 
     //navigating to view based by url or by history state
@@ -708,6 +709,13 @@ window.onresize = () =>
 
 //check if scrollbar is visible
 let isScrollbarVisible = (element = document.body) => element.scrollHeight > element.clientHeight;
+
+//default sort method for items
+let itemsDefaultSort=function (a, b) {
+    let aDate = a.modifyDate || a.createDate;
+    let bDate = b.modifyDate || b.createDate;
+    return bDate.compare(aDate);
+}
 
 //item tile creating method
 let createItemTile = async function (node, item) {
@@ -743,15 +751,15 @@ let createItemTile = async function (node, item) {
 
     nodeLabels.appendChild(nodeButton);
 
-    if (item.modifyDate) {
-        let nodeUpdateLabel = document.createElement("DIV");
-        nodeUpdateLabel.classList.add("label", "font-caption");
-        let nodeUpdateLabelIcon = document.createElement("I");
+    let date = item.modifyDate || item.createDate;
+    let nodeUpdateLabel = document.createElement("DIV");
+    nodeUpdateLabel.classList.add("label", "font-caption");
+    let nodeUpdateLabelIcon = document.createElement("I");
+    if (item.modifyDate)
         nodeUpdateLabelIcon.classList.add("mi", "mi-Update");
-        nodeUpdateLabel.innerHTML = " &nbsp;&nbsp;" + item.modifyDate.toHTMLString();
-        nodeUpdateLabel.insertBefore(nodeUpdateLabelIcon, nodeUpdateLabel.firstChild);
-        nodeLabels.appendChild(nodeUpdateLabel);
-    }
+    nodeUpdateLabel.innerHTML = " &nbsp;&nbsp;" + date.toHTMLString();
+    nodeUpdateLabel.insertBefore(nodeUpdateLabelIcon, nodeUpdateLabel.firstChild);
+    nodeLabels.appendChild(nodeUpdateLabel);
     node.appendChild(nodeImgContainer);
     node.appendChild(nodeTitle);
     node.appendChild(nodeContent);
@@ -1018,6 +1026,19 @@ let ItemDate = function (day, month, year) {
         "Dec"
     ]) {
         return (this.day + "&nbsp;" + months[this.month - 1] + ",&nbsp;" + this.year)
+    }
+    this.toString = function () {
+        return this.year.toString() + (this.month < 10 ? '0' + this.month.toString() : this.month.toString()) + (this.day < 10 ? '0' + this.day.toString() : this.day.toString());
+    }
+    this.compare = function (date) {
+        let intDate = parseInt(date);
+        if (intDate > parseInt(this.toString()))
+            return -1;
+        else
+            if (intDate < parseInt(this.toString()))
+                return 1;
+            else
+                return 0;
     }
     let _today = new Date();
     this.day = day || _today.getDate();
