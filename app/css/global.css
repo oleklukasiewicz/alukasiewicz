@@ -735,6 +735,9 @@ u.dotted-separator{
 }
 .list-view > .item > .labels > .label > i{
     transform: translateY(1px);
+    min-width: 13px;
+    min-height: 13px;
+    display: inline-table;
 }
 .list-view > .item > .labels > .label{
     color: var(--color-font);
