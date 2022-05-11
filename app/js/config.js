@@ -943,7 +943,7 @@ let StorageResponseBuilder = async function (response, targetNode = document.cre
     let _indexedItems = StorageResponseIndexer(response, depth, limit, 0);
     await Promise.all(_indexedItems.map(async (entry) => {
         entry.obj.isIndexed = false;
-        entry.obj.responseIndex = entry.groupItemIndex || entry.groupIndex;
+        entry.obj.responseIndex = (entry.groupItemIndex==undefined)?entry.groupIndex:entry.groupItemIndex;
         entry.obj.type == GLOBAL.group ?
             await createGroupTile(_items[entry.index] || targetNode.appendChild(document.createElement("div")), entry.obj)
             :

@@ -738,7 +738,7 @@ u.dotted-separator{
 }
 .list-view > .item > .labels > .label{
     color: var(--color-font);
-    padding-left: 20px;
+    margin-left: 20px;
     text-align: right;
     overflow: hidden;
     max-height: 32px;
@@ -772,9 +772,15 @@ u.dotted-separator{
 }
 .list-view > .item.loading > .labels > .button{
     background-color: var(--color-theme-A1);
+    height: 34px;
 }
 .list-view > .item.loading *{
     font-size: 0;
+}
+.list-view > .item.loading > .labels > .label{
+    background-color: var(--color-theme-A1);
+    max-width: 90px;
+    margin: 4px 0px 4px auto;
 }
 .list-view > .item.loaded > .img > img{
     opacity: 1;
