@@ -36,13 +36,13 @@
     --transition-bg-only: background-color var(--time);
     --view-max-width: 1024px;
     --color-font-accent: #FFFFFF;
-    --color-accent: hsl(199, 100%, 69%);
-    --color-accent-A1: hsl(199, 100%, 74%);
-    --color-accent-A2: hsl(199, 100%, 78%);
-    --color-accent-A3: hsl(199, 100%, 82%);
-    --color-accent-shadow: rgba(97, 205, 255,0.7);
-    --color-accent-shadow-A1: rgba(97, 205, 255,0.8);
-    --color-accent-shadow-A2: rgba(97, 205, 255,0.9);
+    --color-accent: #456789;
+    --color-accent-A1: rgba(83, 124, 164, 1);
+    --color-accent-A2: rgba(100, 149, 197, 1);
+    --color-accent-A3: rgba(120, 179, 236, 1);
+    --color-accent-shadow: rgba(69, 103, 137, 0.7);
+    --color-accent-shadow-A1: rgba(69, 103, 137, 0.8);
+    --color-accent-shadow-A2: rgba(69, 103, 137, 0.9);
 }
 @media(prefers-color-scheme:dark){
     :root{
@@ -61,6 +61,14 @@
         --color-logo: #d0d0d0;
         --color-logo-A1: #a0a0a0;
         --profile-image-src: url(\/img\/profile-dark\.webp);
+        --color-font-accent: #222222;
+        --color-accent: hsl(199, 100%, 69%);
+        --color-accent-A1: hsl(199, 100%, 74%);
+        --color-accent-A2: hsl(199, 100%, 78%);
+        --color-accent-A3: hsl(199, 100%, 82%);
+        --color-accent-shadow: rgba(97, 205, 255,0.7);
+        --color-accent-shadow-A1: rgba(97, 205, 255,0.8);
+        --color-accent-shadow-A2: rgba(97, 205, 255,0.9);
     }
 }
 .font-base{

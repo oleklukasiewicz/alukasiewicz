@@ -42,7 +42,6 @@
 }
 a.link
 {
-    text-decoration: none;
     color:var(--color-accent-A2);
     transition: color var(--time);
 }

@@ -16,11 +16,11 @@ let RouteController = (function () {
 }());
 
 //adding views routes
-RouteController.add(new Route(VIEW.landing, VIEW.landing, true));
-RouteController.add(new Route(VIEW.item));
-RouteController.add(new Route(VIEW.profile));
-RouteController.add(new Route(VIEW.group));
-RouteController.add(new Route(VIEW.resource));
+RouteController.add(new Route(APP.url.landing, VIEW.landing, true));
+RouteController.add(new Route(APP.url.item,VIEW.item));
+RouteController.add(new Route(APP.url.profile, VIEW.profile));
+RouteController.add(new Route(APP.url.group,VIEW.group));
+RouteController.add(new Route(APP.url.resource,VIEW.resource));
 
 //loading start view
 const START_ROUTE = RouteController.resolve(START_URL[0]);
