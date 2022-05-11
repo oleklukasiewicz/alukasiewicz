@@ -42,7 +42,7 @@
 }
 a.link
 {
-    color:var(--color-accent-A2);
+    color:var(--color-accent-link);
     transition: color var(--time);
 }
 a.link:hover
