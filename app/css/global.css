@@ -776,6 +776,7 @@ u.dotted-separator{
 .list-view > .item.loading > .labels > .button{
     background-color: var(--color-theme-A1);
     height: 34px;
+    margin-right: 10px;
 }
 .list-view > .item.loading *{
     font-size: 0;
