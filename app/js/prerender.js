@@ -13,10 +13,10 @@ const APP = {
     version: "0-0-0-3",
     url: {
         landing: "",
-        item: VIEW.item,
-        profile: VIEW.profile,
-        group: VIEW.group,
-        resource: VIEW.resource
+        item: "posts",
+        profile: "about",
+        group: "group",
+        resource: "image"
     },
     itemFolder: "/item",
     resourceFolder: "/resources",
