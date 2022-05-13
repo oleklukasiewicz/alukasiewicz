@@ -21,8 +21,7 @@
                     }
                 }
             ],
-            "arguments":
-            {
+            "arguments": {
                 "alt": "Ocean of clouds"
             },
             "id": "airship-image"
@@ -49,10 +48,6 @@
             "title": "Featured pixel images",
             "resource": [
                 {
-                    "type": "group",
-                    "id": "featured"
-                },
-                {
                     "src": "/gallery/lily-blank.webp",
                     "type": "image",
                     "props": {
@@ -72,15 +67,19 @@
                     "props": {
                         "alt": "Airship"
                     }
+                },
+                {
+                    "type": "group",
+                    "id": "featured"
                 }
             ],
             "id": "airship-gallery",
             "arguments": {
                 "imagesCount": 3,
                 "resourceOrder": [
-                    0,
-                    8,
-                    2
+                    4549064871509105,
+                    1360955329257682,
+                    7619274538449237
                 ]
             }
         },

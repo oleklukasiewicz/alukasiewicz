@@ -46,10 +46,23 @@ let ItemComponentBuilder = async function (component, itemFolder, item) {
             let _loadingPromises = [];
             let _max = _arg.imagesCount || component.resource.length;
             _max = _max > 5 ? 5 : _max;
-            let _order = _arg.resourceOrder || [...Array(5).keys()];
-            if (_order.length < _max)
-                for (let orderIndex = _order.length - 1; orderIndex < _max; orderIndex++)
-                    _order[orderIndex] = orderIndex;
+            let _mappedOrderFromArg;
+
+            //getting indexes from resurceOrder argument
+            if (_arg.resourceOrder) {
+                _mappedOrderFromArg = new Array(_arg.resourceOrder.length);
+                let _mapTotalIndex = 0;
+                let _resIndex = 0;
+                while (_mapTotalIndex < _arg.resourceOrder.length && _resIndex < component.resource.length) {
+                    let hashIndex = _arg.resourceOrder.findIndex((item) => component.resource[_resIndex]?.hash == item);
+                    if (hashIndex != -1) {
+                        _mappedOrderFromArg[hashIndex] = _resIndex;
+                        _mapTotalIndex++;
+                    }
+                    _resIndex++;
+                }
+            }
+            let _order = _mappedOrderFromArg || [...Array(_max).keys()];
 
             if (!_arg.hideControls && component.resource.length > 1) {
                 _component.innerHTML = "<div><b class='font-subtitle'>" + component.title + "</b></div>";
@@ -136,7 +149,7 @@ let ItemBuilder = function (item) {
             while (index < component.resource.length) {
 
                 //converting into valid resources
-                let _validResource = ResourceConverter(component.resource[index], APP.itemFolder + itemFolder + APP.resourceFolder, component.id||componentIndex);
+                let _validResource = ResourceConverter(component.resource[index], APP.itemFolder + itemFolder + APP.resourceFolder, component.id || componentIndex);
                 component.resource.splice(index, 1, ..._validResource);
                 index += _validResource.length;
             }

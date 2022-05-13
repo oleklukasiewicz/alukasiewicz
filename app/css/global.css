@@ -95,10 +95,11 @@
 a.link{
     color: var(--color-accent-A2);
     transition: color var(--time);
+    text-decoration: none;
 }
 a.link:hover{
     color: var(--color-accent);
-    text-decoration: none;
+    text-decoration: underline;
 }
 .disabled{
     pointer-events: none!important;
