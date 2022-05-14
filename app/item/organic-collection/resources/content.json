@@ -5,7 +5,7 @@
         {
             "type": "gallery",
             "id":"header-image",
-            "resource": [
+            "resources": [
                 {
                     "type": "item",
                     "id": "lily",
@@ -27,7 +27,7 @@
             "type": "gallery",
             "title": "Organic collection",
             "id": "organic-gallery",
-            "resource": [
+            "resources": [
                 {
                     "type": "group",
                     "id": "organic-group"

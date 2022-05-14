@@ -12,7 +12,7 @@
         },
         {
             "type": "gallery",
-            "resource": [
+            "resources": [
                 {
                     "src": "/airship.webp",
                     "type": "image",
@@ -46,7 +46,7 @@
         {
             "type": "gallery",
             "title": "Featured pixel images",
-            "resource": [
+            "resources": [
                 {
                     "src": "/gallery/lily-blank.webp",
                     "type": "image",

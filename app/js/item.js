@@ -44,27 +44,30 @@ let ItemComponentBuilder = async function (component, itemFolder, item) {
 
             //setting up images order and count
             let _loadingPromises = [];
-            let _max = _arg.imagesCount || component.resource.length;
-            _max = _max > 5 ? 5 : _max;
-            let _mappedOrderFromArg;
+            let _maxImagesCount = 5;
+            let _displayImagesCount = (_arg.imagesCount && _arg.imagesCount <= _maxImagesCount) ? _arg.imagesCount : (component.resources.length < _maxImagesCount ? component.resources.length : _maxImagesCount);
+            let _displayImages = new Array(_displayImagesCount);
 
-            //getting indexes from resurceOrder argument
+            //getting indexes from resourceOrder argument
             if (_arg.resourceOrder) {
-                _mappedOrderFromArg = new Array(_arg.resourceOrder.length);
-                let _mapTotalIndex = 0;
-                let _resIndex = 0;
-                while (_mapTotalIndex < _arg.resourceOrder.length && _resIndex < component.resource.length) {
-                    let hashIndex = _arg.resourceOrder.findIndex((item) => component.resource[_resIndex]?.hash == item);
-                    if (hashIndex != -1) {
-                        _mappedOrderFromArg[hashIndex] = _resIndex;
-                        _mapTotalIndex++;
-                    }
-                    _resIndex++;
-                }
-            }
-            let _order = _mappedOrderFromArg || [...Array(_max).keys()];
+                let _insertedImages = 0;
+                for (let _resIndex = 0; _resIndex < component.resources.length; _resIndex++) {
+                    let resource = component.resources[_resIndex];
+                    let _resourceOrderIndex = _arg.resourceOrder.findIndex((hash) => hash == resource.hash);
 
-            if (!_arg.hideControls && component.resource.length > 1) {
+                    if (_resourceOrderIndex != -1) {
+                        _displayImages[_resourceOrderIndex] = resource;
+                        _insertedImages++;
+                    }
+                    if (_insertedImages == _arg.resourceOrder.length)
+                        break;
+                };
+            } else {
+                for (let _resIndex = 0; _resIndex < _displayImagesCount; _resIndex++)
+                    _displayImages[_resIndex] = component.resources[_resIndex];
+            }
+
+            if (!_arg.hideControls && component.resources.length > 1) {
                 _component.innerHTML = "<div><b class='font-subtitle'>" + component.title + "</b></div>";
                 _component.classList.add("show-controls");
                 //show all button
@@ -88,9 +91,8 @@ let ItemComponentBuilder = async function (component, itemFolder, item) {
             _component.appendChild(_list);
 
             //generating images
-            for (let index = 0; index < _max; index++) {
-                let i = _order[index];
-                let res = component.resource[i];
+            for (let index = 0; index < _displayImagesCount; index++) {
+                let res = _displayImages[index];
                 let _img = document.createElement("IMG");
                 _img.alt = res?.props?.alt || "";
                 _img.src = res.src;
@@ -102,7 +104,7 @@ let ItemComponentBuilder = async function (component, itemFolder, item) {
                             ViewController.navigate(VIEW.resource, {
                                 routeArg: [
                                     item.id,
-                                    item.resources[component.resourceGroupIndex].resources[i].hash
+                                    res.hash
                                 ],
                                 currentItem: item
                             })
@@ -117,11 +119,11 @@ let ItemComponentBuilder = async function (component, itemFolder, item) {
 
             Promise.all(_loadingPromises.map(async _promise => await _promise));
 
-            _component.classList.add("items-count-" + _max);
+            _component.classList.add("items-count-" + _displayImagesCount);
 
             if (component.arguments?.alt) {
                 let _alt = document.createElement("span");
-                let _altText = typeof (component.arguments.alt) === "boolean" ? component.resource[0].props.alt : component.arguments.alt;
+                let _altText = typeof (component.arguments.alt) === "boolean" ? component.resources[0].props.alt : component.arguments.alt;
                 _alt.innerHTML = _altText;
                 _alt.classList.add("img-alt");
                 _component.appendChild(_alt);
@@ -142,15 +144,15 @@ let ItemComponentBuilder = async function (component, itemFolder, item) {
 let ItemBuilder = function (item) {
     let itemFolder = item.folder;
     item.content.map(async function (component, componentIndex) {
-        if (component.resource) {
+        if (component.resources) {
 
             //converting into valid resources
             let index = 0;
-            while (index < component.resource.length) {
+            while (index < component.resources.length) {
 
                 //converting into valid resources
-                let _validResource = ResourceConverter(component.resource[index], APP.itemFolder + itemFolder + APP.resourceFolder, component.id || componentIndex);
-                component.resource.splice(index, 1, ..._validResource);
+                let _validResource = ResourceConverter(component.resources[index], APP.itemFolder + itemFolder + APP.resourceFolder, component.id || componentIndex);
+                component.resources.splice(index, 1, ..._validResource);
                 index += _validResource.length;
             }
 
@@ -158,7 +160,7 @@ let ItemBuilder = function (item) {
             component.resourceGroupIndex = item.resources.length;
 
             //adding into item resources list
-            item.resources.push(new ResourceGroup(component.resource));
+            item.resources.push(new ResourceGroup(component.resources));
         }
     });
     if (item.debug)
