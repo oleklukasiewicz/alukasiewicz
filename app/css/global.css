@@ -8,7 +8,7 @@
     --color-theme-A6: #606060;
     --color-theme-hover: rgba(60,60,60,0.1);
     --color-theme-active: rgba(60,60,60,0.2);
-    --color-theme-acrylic: rgba(251,251,251,0.6);
+    --color-theme-acrylic: rgba(251,251,251,0.3);
     --color-font: #4f4f4f;
     --color-font-disabled: #aaaaaa;
     --color-logo: #5f5f5f;
@@ -92,13 +92,21 @@
     font-size: var(--size-font-caption);
     line-height: 14px;
 }
+a.link{
+    color: var(--color-accent-A2);
+    transition: color var(--time);
+    text-decoration: none;
+}
+a.link:hover{
+    color: var(--color-accent);
+    text-decoration: underline;
+}
 .disabled{
     pointer-events: none!important;
     opacity: .6;
 }
-.hidden
-{
-    display: none !important;
+.hidden{
+    display: none!important;
 }
 @font-face{
     font-family: micon_nb;
@@ -280,7 +288,7 @@ body.scroll-fix::-webkit-scrollbar-track{
 }
 #main-header-navigation{
     display: flex;
-    gap: 4px;
+    gap: 8px;
 }
 #main-header-nav-button,
 #main-header-navigation-close-space{
@@ -402,6 +410,10 @@ body.scroll-fix::-webkit-scrollbar-track{
     margin: 0 auto;
     max-width: var(--size-max-width);
 }
+#about-content{
+    text-align: justify;
+    word-spacing: -1px;
+}
 #item-data{
     display: flex;
     flex-direction: row;
@@ -428,7 +440,8 @@ body.scroll-fix::-webkit-scrollbar-track{
     color: var(--color-font);
     margin-right: 8px;
 }
-#item-content, #item-content-loading{
+#item-content,
+#item-content-loading{
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     text-align: justify;
@@ -462,19 +475,18 @@ body.scroll-fix::-webkit-scrollbar-track{
 #item.loading #item-title{
     height: 26px;
     width: 30%;
-    font-size: 0px;
+    font-size: 0;
     min-width: 200px;
     background-color: var(--color-theme-A1);
 }
 #item.loading #item-info{
     height: 20px;
     width: 20%;
-    font-size: 0px;
+    font-size: 0;
     min-width: 100px;
     background-color: var(--color-theme-A1);
 }
-#item.loading #item-info>*
-{
+#item.loading #item-info > *{
     background-color: transparent;
 }
 #item.loading #item-content-loading > b.ghost{
@@ -576,6 +588,7 @@ body.scroll-fix::-webkit-scrollbar-track{
     max-height: 100%;
     object-fit: contain;
     display: none;
+    border-radius: var(--border-radius);
 }
 #image-viewer-list > img.active-view{
     display: table;
@@ -698,6 +711,8 @@ u.dotted-separator{
     position: absolute;
     will-change: opacity;
     object-fit: cover;
+    border-top-left-radius: var(--border-radius);
+    border-top-right-radius: var(--border-radius);
 }
 .list-view > .item > span{
     margin: 12px 20px 0;
@@ -721,10 +736,13 @@ u.dotted-separator{
 }
 .list-view > .item > .labels > .label > i{
     transform: translateY(1px);
+    min-width: 13px;
+    min-height: 13px;
+    display: inline-table;
 }
 .list-view > .item > .labels > .label{
     color: var(--color-font);
-    padding-left: 20px;
+    margin-left: 20px;
     text-align: right;
     overflow: hidden;
     max-height: 32px;
@@ -758,9 +776,16 @@ u.dotted-separator{
 }
 .list-view > .item.loading > .labels > .button{
     background-color: var(--color-theme-A1);
+    height: 34px;
+    margin-right: 10px;
 }
 .list-view > .item.loading *{
     font-size: 0;
+}
+.list-view > .item.loading > .labels > .label{
+    background-color: var(--color-theme-A1);
+    max-width: 90px;
+    margin: 4px 0px 4px auto;
 }
 .list-view > .item.loaded > .img > img{
     opacity: 1;
@@ -951,8 +976,7 @@ u.dotted-separator{
     .list-view{
         grid-template-columns: 1fr 1fr;
     }
-    #landing .list-view>.index-2
-    {
+    #landing .list-view > .index-2{
         display: none;
     }
     .list-view > .group{
@@ -964,6 +988,9 @@ u.dotted-separator{
     }
     #about{
         flex-direction: column;
+    }
+    #about-img{
+        aspect-ratio: 3/2;
     }
 }
 @media only screen and (max-width:540px){
@@ -997,8 +1024,7 @@ u.dotted-separator{
     .list-view{
         grid-template-columns: 100%;
     }
-    #landing .list-view>.index-2
-    {
+    #landing .list-view > .index-2{
         display: grid;
     }
     .list-view > .group{
