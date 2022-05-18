@@ -78,7 +78,7 @@ let ItemComponentBuilder = async function (component, itemFolder, item) {
                     ViewController.navigate(VIEW.resource, {
                         routeArg: [
                             item.id,
-                            item.resources[component.resourceGroupIndex].resources[_order[0]].hash
+                            _displayImages[0].hash
                         ],
                         currentItem: item,
                     })
