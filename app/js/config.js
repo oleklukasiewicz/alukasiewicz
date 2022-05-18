@@ -689,7 +689,7 @@ window.addEventListener("load", async function () {
             await ItemController.fetchGroups(getGroups()).then(() => ItemController.fetchItems(getItems().sort(itemsDefaultSort)));
             incrementVisitors(ITEM_ENVIROMENT == "beta" ? config.beta : config.analitycs);
         }
-    } catch(e){
+    } catch (e) {
         ViewController.invokeError("item_load_error", true);
         console.error(e);
     }
@@ -711,7 +711,7 @@ window.onresize = () =>
 let isScrollbarVisible = (element = document.body) => element.scrollHeight > element.clientHeight;
 
 //default sort method for items
-let itemsDefaultSort=function (a, b) {
+let itemsDefaultSort = function (a, b) {
     let aDate = a.modifyDate || a.createDate;
     let bDate = b.modifyDate || b.createDate;
     return bDate.compare(aDate);
@@ -825,6 +825,19 @@ let ResourceSlider = function () {
     let _oldIndex;
     EventController.call(this, ["load", "loadFinish", "next", "previous", "render", "remove", "close"]);
     let _sender = this;
+
+    window.addEventListener("keyup", function (event) {
+        switch (event.keyCode) {
+            case 39:
+                _sender.next();
+                break;
+            case 37:
+                _sender.previous();
+                break;
+        }
+
+    });
+
     let _renderIndex = async function (index) {
         _oldIndex = _currentIndex;
         _currentIndex = index;
@@ -874,15 +887,21 @@ let GestureBuilder = function (node, event = {}) {
     let _startPos = {};
     let _endPos = {};
 
+    const MIN_DIST = 100;
+
     let _directionSolver = function (startX, startY, endX, endY) {
-        let _isVertical = (Math.abs(endX - startX) < Math.abs(endY - startY))
-        if (startX < endX && !_isVertical)
+        let _distX = Math.abs(endX - startX);
+        let _distY = Math.abs(endY - startY);
+
+        let _isVertical = (_distX < _distY)
+
+        if (startX < endX && !_isVertical && _distX >= MIN_DIST)
             return _directions.left;
-        if (endX < startX && !_isVertical)
+        if (endX < startX && !_isVertical && _distX >= MIN_DIST)
             return _directions.right;
-        if (startY < endY && _isVertical)
+        if (startY < endY && _isVertical && _distY >= MIN_DIST)
             return _directions.up;
-        if (endY < startY && _isVertical)
+        if (endY < startY && _isVertical && _distY >= MIN_DIST)
             return _directions.down;
     }
     node.addEventListener("touchstart", (e) => {
@@ -943,7 +962,7 @@ let StorageResponseBuilder = async function (response, targetNode = document.cre
     let _indexedItems = StorageResponseIndexer(response, depth, limit, 0);
     await Promise.all(_indexedItems.map(async (entry) => {
         entry.obj.isIndexed = false;
-        entry.obj.responseIndex = (entry.groupItemIndex==undefined)?entry.groupIndex:entry.groupItemIndex;
+        entry.obj.responseIndex = (entry.groupItemIndex == undefined) ? entry.groupIndex : entry.groupItemIndex;
         entry.obj.type == GLOBAL.group ?
             await createGroupTile(_items[entry.index] || targetNode.appendChild(document.createElement("div")), entry.obj)
             :
