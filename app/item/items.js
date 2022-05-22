@@ -2,13 +2,14 @@ const ITEM_VERSION = "0-0-0-3";
 const ITEM_ENVIROMENT = "beta";
 let getGroups = () => [
     new Group("featured", ["best", "best-pixel"], "Featured art", new ItemDate(5, 11, 2021), null, ["home"], { displayItems: [0,1,2] }),
-    new Group("all", ["other", "", "work"], "All projects", new ItemDate(), null, ["home"], {displayItems:[3,5,6]}, true),
+    new Group("all", ["other", "", "work"], "All projects", new ItemDate(), null, ["home"], { displayItems: [6,8,9] }, true),
     new Group("blog", [], "Blog", new ItemDate(), null, ["home"]),
     new Group("home-group", ["home", "landing"], "Home Group"),
     new Group("organic-group",[],"Organic collection",new Item(26,4,2022))
 ];
 let getItems = () => [
-    new Item(null,[],"https://www.instagram.com/p/CcIPscSKKyE/","/crocus","The Crocus","/crocus-base.webp","One of the first signs of spring - crocus, also know as the source of one of the most expensive spice.",new ItemDate(1,5,2022),undefined,["featured","organic-group"]),
+    new Item(null,[],"https://www.instagram.com/p/CdqCxFOq1fh/","/orchid","The Orchid","/orchid.webp","A flower considered a symbol of beauty and love that grows on trees or between rocks rather than directly in the ground.",new ItemDate(18,5,2022),undefined,["featured","organic-group"]),
+    new Item(null,[],"https://www.instagram.com/p/CdqCxFOq1fh/","/crocus","The Crocus","/crocus-base.webp","One of the first signs of spring - crocus, also know as the source of one of the most expensive spice.",new ItemDate(17,5,2022),undefined,["featured","organic-group"]),
     new Item(null, [], "https://www.instagram.com/p/CcIPscSKKyE/", "/lighthouse", "Lighthouse", "/lighthouse.webp", "Alone lighthouse on the night sea with a sky full of stars.", new ItemDate(16, 3, 2022), null, ["featured"]),
     new Item("lily", [], "https://www.instagram.com/p/CXlcDShooxu/", "/lily", "Water lily", "/lily-blank.webp", "Mandatory element in every organic picture of river or lake.", new ItemDate(10, 12, 2021), null, ["best","organic-group"]),
     new Item(null, [], "https://www.instagram.com/p/CPSx-X8hdVM/", "/tree-on-rock", "Organic pixels", "/tree-on-rock.webp", "One of the most iconic plants on the planet - a tree! Here growing on a giant rock.", new ItemDate(23, 5, 2021), null, ["best","organic-group"]),
