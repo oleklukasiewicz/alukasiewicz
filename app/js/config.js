@@ -934,7 +934,7 @@ let StorageResponseIndexer = function (response, depth = 1, limit = 3, startInde
         _currentIndex += 1;
     }
     if (depth == 0)
-        response.arg?.displayItems?.forEach((value, index) => _addIntoResponse(response.content[value]));
+        response.arg?.displayItems?.forEach((value, index) => _addIntoResponse(typeof (value) == "number" ? response.content[value] : ItemController.getItemSnapshotById(value)));
     response.content?.forEach((entry, index) => {
         if (entry.type == GLOBAL.group) {
             _groupItemIndex = 0;
