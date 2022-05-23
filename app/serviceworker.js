@@ -6,7 +6,7 @@ const networkOnlyResources =
     ];
 const alwaysFreshResources =
     [
-        "/item/"
+        "/items/"
     ];
 const isAlwaysFreshResource = (req) => alwaysFreshResources.find((resource) => req.includes(resource));
 const isNetworkOnlyResource = (req) => networkOnlyResources.find((resource) => req.includes(resource));

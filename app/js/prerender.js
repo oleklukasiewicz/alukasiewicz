@@ -18,9 +18,11 @@ const APP = {
         group: "group",
         resource: "image"
     },
-    itemFolder: "/item",
+    itemFolder: "/items",
+    groupFolder: "/groups",
     resourceFolder: "/resources",
-    itemContentFileName: "/content.json"
+    itemContentFileName: "/content.json",
+    itemShapshotFileName: "/item.json"
 };
 
 //global app classes

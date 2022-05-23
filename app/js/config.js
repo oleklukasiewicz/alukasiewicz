@@ -8,24 +8,6 @@ NodeList.prototype.remove = HTMLCollection.prototype.remove = function () {
 };
 
 //item class declaration
-let Item = function (id, aliases = [], isItemLinkToWeb = false, folder = "/" + id, title, tileImage, tileContent, createDate, modifyDate, groups = [], arg = {}) {
-    return {
-        id,
-        aliases,
-        title,
-        tile: {
-            image: tileImage,
-            content: tileContent
-        },
-        createDate,
-        modifyDate,
-        groups,
-        isItemLinkToWeb,
-        folder,
-        arg,
-        type: GLOBAL.item
-    }
-}
 
 //resource classes declaration
 let Resource = function (src, type, hash = createHash(src), props = {}) {
@@ -286,7 +268,7 @@ let ItemController = (function () {
         target.selected = targetResource;
         return target;
     }
-    let _downloadViaAJAX = async function (item) {
+    let _downloadViaAJAX = async function (path) {
         return new Promise((resolve, reject) => {
             let xmlhttp = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject("Microsoft.XMLHTTP");
 
@@ -303,11 +285,19 @@ let ItemController = (function () {
             };
 
             //sending
-            xmlhttp.open("GET", APP.itemFolder + item.folder + APP.resourceFolder + APP.itemContentFileName, true);
+            xmlhttp.open("GET", path, true);
             xmlhttp.send();
         });
     }
-    //loading full item content
+
+    let _loadGroup = async function (groupId) {
+        return await _downloadViaAJAX(APP.groupFolder + "/" + groupId + ".json");
+    }
+
+    let _loadShapshotItem = async function (itemFolder) {
+        return await _downloadViaAJAX(APP.itemFolder + "/" + itemFolder + APP.itemShapshotFileName);
+    }
+
     let _loadFullItem = async function (item) {
         if (!item) {
             ViewController.invokeError("item_not_found");
@@ -315,9 +305,9 @@ let ItemController = (function () {
         }
 
         //TODO: check if components.js and components.css are downloaded id not -> download
-        if (!item.isItemLinkToWeb && !item.isContentCached) {
+        if (!item.isLink && !item.isContentCached) {
             //getting item content
-            let _content = await _downloadViaAJAX(item, item.folder);
+            let _content = await _downloadViaAJAX(APP.itemFolder + item.folder + APP.resourceFolder + APP.itemContentFileName);
 
             //TODO: check content component version if newer -> download new version of components.css and js
 
@@ -339,6 +329,12 @@ let ItemController = (function () {
     let _generateId = (id) => encodeURIComponent(id.toLowerCase().replaceAll(" ", "-"));
     let _generateGroup = function (group) {
         group.content = [];
+        group.type = "group";
+
+        group.createDate = new ItemDate().fromJSON(group.createDate);
+        if (group.modifyDate)
+            group.modifyDate = new ItemDate().fromJSON(group.modifyDate);
+
         group.id = group.id || _generateId(group.title);
         _groupRoutes.push(new Route(group.id, group));
         return group;
@@ -346,7 +342,8 @@ let ItemController = (function () {
     let _getGroupByRoute = (id) => _groupRoutes.find((route) => route.source == id)?.target;
     let _getItemByRoute = (id) => _routes.find((route) => route.source == id)?.target;
     _controller.fetchGroups = async function (groups) {
-        await Promise.all(groups.map(async (group) => {
+        await Promise.all(groups.map(async (groupFile) => {
+            let group = await _loadGroup(groupFile);
             _generateGroup(group);
             _storage.push(group);
             group.aliases.forEach((source) => _groupRoutes.push(new Route(source, group)));
@@ -359,11 +356,23 @@ let ItemController = (function () {
         _groupsLoaded = true;
     }
     _controller.fetchItems = async function (items) {
-        await Promise.all(items.map(async (item) => {
+        items = await Promise.all(items.map(async (itemId) => {
+            let item = await _loadShapshotItem(itemId);
             item.id = item.id || _generateId(item.title);
+
+            item.createDate = new ItemDate().fromJSON(item.createDate);
+            if (item.modifyDate)
+                item.modifyDate = new ItemDate().fromJSON(item.modifyDate);
+
+            item.folder = "/" + itemId;
+            return item;
+        }));
+        console.log(items);
+        items.sort(itemsDefaultSort);
+        await Promise.all(items.map(async (item) => {
             _routes.push(new Route(item.id, item));
             _defaultGroup.content.push(item);
-            item.aliases.forEach((source) => _routes.push(new Route(source, item)));
+            item.aliases?.forEach((source) => _routes.push(new Route(source, item)));
             item.groups?.forEach((group) => _getGroupByRoute(group)?.content.push(item));
             await _controller.invokeEvent("fetchItem", [item]);
         }));
@@ -467,8 +476,8 @@ const itemView = new View(VIEW.item, APP.url.item, { currentItem: null }, {
             } catch { return; }
             if (!item || this.data.currentItem == item)
                 return;
-            if (item.isItemLinkToWeb) {
-                window.open(item.isItemLinkToWeb, '_blank').focus();
+            if (item.isLink) {
+                window.open(item.isLink, '_blank').focus();
                 ViewController.navigateToDefaultView();
                 return;
             }
@@ -686,7 +695,7 @@ window.addEventListener("load", async function () {
         if (APP.version != ITEM_VERSION)
             ViewController.invokeError("item_outdated", true);
         else {
-            await ItemController.fetchGroups(getGroups()).then(() => ItemController.fetchItems(getItems().sort(itemsDefaultSort)));
+            await ItemController.fetchGroups(getGroups()).then(() => ItemController.fetchItems(getItems()));
             incrementVisitors(ITEM_ENVIROMENT == "beta" ? config.beta : config.analitycs);
         }
     } catch (e) {
@@ -747,7 +756,7 @@ let createItemTile = async function (node, item) {
     let nodeLabels = document.createElement("DIV");
     nodeLabels.classList.add("labels");
 
-    let nodeButton = createButton(item.isItemLinkToWeb ? "mi-OpenInNewWindow" : "mi-BackMirrored", item.isItemLinkToWeb ? "Open link" : "Read more", "DIV", true);
+    let nodeButton = createButton(item.isLink ? "mi-OpenInNewWindow" : "mi-BackMirrored", item.isLink ? "Open link" : "Read more", "DIV", true);
 
     nodeLabels.appendChild(nodeButton);
 
@@ -767,7 +776,7 @@ let createItemTile = async function (node, item) {
 
     //loading image of tile
     await new ImageHelper(_iImage, () => {
-        _iImage.style = item.arg.tileImageStyle || "";
+        _iImage.style = item.arg?.tileImageStyle || "";
     }, () => {
         item.isTileImageNotLoaded = true;
         removeResourceFromCache(imageSrc);
@@ -777,12 +786,12 @@ let createItemTile = async function (node, item) {
     node.classList.replace(GLOBAL.loading, GLOBAL.loaded);
     node.onclick = function () {
         event.preventDefault();
-        item.isItemLinkToWeb ?
-            window.open(item.isItemLinkToWeb, '_blank').focus()
+        item.isLink ?
+            window.open(item.isLink, '_blank').focus()
             :
             ViewController.navigate(VIEW.item, { routeArg: [item.id] });
     };
-    node.href = item.isItemLinkToWeb || APP.url.item + item.id;
+    node.href = item.isLink || APP.url.item + item.id;
 
     //loading item
     setTimeout(() => node.classList.remove(GLOBAL.loaded), 300);
@@ -1058,6 +1067,12 @@ let ItemDate = function (day, month, year) {
                 return 1;
             else
                 return 0;
+    }
+    this.fromJSON = function (obj) {
+        this.day = obj.day;
+        this.month = obj.month;
+        this.year = obj.year;
+        return this;
     }
     let _today = new Date();
     this.day = day || _today.getDate();
