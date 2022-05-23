@@ -2,7 +2,8 @@
     "id": "all",
     "aliases": [
         "default",
-        "work"
+        "work",
+        "landing"
     ],
     "isDefault": true,
     "title": "All projects",
@@ -10,6 +11,5 @@
         "day": 23,
         "month": 5,
         "year": 2022
-    },
-    "groups": ["home"]
+    }
 }
