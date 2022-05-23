@@ -1,0 +1,14 @@
+{
+    "id": "all",
+    "aliases": [
+        "default",
+        "work"
+    ],
+    "isDefault": true,
+    "title": "All projects",
+    "createDate": {
+        "day": 23,
+        "month": 5,
+        "year": 2022
+    }
+}
