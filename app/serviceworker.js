@@ -6,20 +6,18 @@ const networkOnlyResources =
     ];
 const alwaysFreshResources =
     [
-        "/items/",
-        "/groups/"
+        "/items/"
     ];
 const isAlwaysFreshResource = (req) => alwaysFreshResources.find((resource) => req.includes(resource));
 const isNetworkOnlyResource = (req) => networkOnlyResources.find((resource) => req.includes(resource));
 const staticResources = [
     "/",
     "/index.html",
-    "/firebase.js",
     "/serviceworker.js",
     "/manifest.webmanifest",
     "/css/global.css",
     "/css/item.css",
-    "/item/items.js",
+    "/items/items-list.js",
     "/js/item.js",
     "/js/prerender.js",
     "/js/postrender.js",

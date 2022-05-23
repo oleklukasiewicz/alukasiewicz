@@ -473,7 +473,6 @@ const itemView = new View(VIEW.item, APP.url.item, { currentItem: null }, {
             //preparing content
             this.data.iContent.innerHTML = "";
             item.content.forEach(async (content) => this.data.iContent.append(await ItemComponentBuilder(content, item.folder, item)));
-            incrementVisitors(APP.itemFolder + "/" + item.id, true);
         } else
             ViewController.invokeError("item_load_error");
     },
@@ -678,7 +677,6 @@ window.addEventListener("load", async function () {
             ViewController.invokeError("item_outdated", true);
         else {
             await ItemController.fetchGroups(getGroups()).then(() => ItemController.fetchItems(getItems()));
-            incrementVisitors(ITEM_ENVIROMENT == "beta" ? config.beta : config.analitycs);
         }
     } catch (e) {
         ViewController.invokeError("item_load_error", true);

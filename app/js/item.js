@@ -82,7 +82,6 @@ let ItemComponentBuilder = async function (component, itemFolder, item) {
                 }
                 _component.children[0].appendChild(_button);
             }
-
             let _list = document.createElement("DIV");
             _list.classList.add("list");
             _component.appendChild(_list);

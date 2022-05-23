@@ -18,8 +18,8 @@ const APP = {
         group: "group",
         resource: "image"
     },
-    itemFolder: "/items",
-    groupFolder: "/groups",
+    itemFolder: "/items/posts",
+    groupFolder: "/items/groups",
     resourceFolder: "/resources",
     itemContentFileName: "/content.json",
     itemShapshotFileName: "/item.json"
