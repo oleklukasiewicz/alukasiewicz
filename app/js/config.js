@@ -7,8 +7,6 @@ NodeList.prototype.remove = HTMLCollection.prototype.remove = function () {
         this[i].parentElement.removeChild(this[i]);
 };
 
-//item class declaration
-
 //resource classes declaration
 let Resource = function (src, type, hash = createHash(src), props = {}) {
     return { src, type, hash, props }
@@ -18,21 +16,6 @@ let ResourceGroup = function (resourcesList = [], selectedResourceHash) {
 }
 let ResourceDictionary = function (resourcesGroups = []) {
     return resourcesGroups;
-}
-
-//group class declaration
-let Group = function (id, aliases = [], title, createDate, modifyDate, groups = [], arg = {}, isDefault = false) {
-    return {
-        id,
-        aliases,
-        arg,
-        title,
-        groups,
-        isDefault,
-        createDate,
-        modifyDate,
-        type: GLOBAL.group
-    }
 }
 
 //view class declaration
