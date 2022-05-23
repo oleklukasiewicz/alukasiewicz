@@ -1,12 +1,13 @@
-const cacheName = "v-s-0-0-2-0";
-const serviceWorkerVersion = "08-05-22-v1";
+const cacheName = "v-s-0-0-3-0";
+const serviceWorkerVersion = "23-05-22-v1";
 const networkOnlyResources =
     [
         "/v1/"
     ];
 const alwaysFreshResources =
     [
-        "/items/"
+        "/items/",
+        "/groups/"
     ];
 const isAlwaysFreshResource = (req) => alwaysFreshResources.find((resource) => req.includes(resource));
 const isNetworkOnlyResource = (req) => networkOnlyResources.find((resource) => req.includes(resource));

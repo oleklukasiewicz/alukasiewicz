@@ -1,7 +1,8 @@
 {
     "id": "all",
     "aliases": [
-        "default"
+        "default",
+        "work"
     ],
     "isDefault": true,
     "title": "All projects",

@@ -307,7 +307,7 @@ let ItemController = (function () {
         //TODO: check if components.js and components.css are downloaded id not -> download
         if (!item.isLink && !item.isContentCached) {
             //getting item content
-            let _content = await _downloadViaAJAX(APP.itemFolder + item.folder + APP.resourceFolder + APP.itemContentFileName);
+            let _content = await _downloadViaAJAX(APP.itemFolder + item.folder + APP.itemContentFileName);
 
             //TODO: check content component version if newer -> download new version of components.css and js
 
@@ -367,7 +367,6 @@ let ItemController = (function () {
             item.folder = "/" + itemId;
             return item;
         }));
-        console.log(items);
         items.sort(itemsDefaultSort);
         await Promise.all(items.map(async (item) => {
             _routes.push(new Route(item.id, item));
@@ -934,6 +933,7 @@ let StorageResponseIndexer = function (response, depth = 1, limit = 3, startInde
     let _groupIndex = 0;
     let _currentIndex = startIndex;
     let _addIntoResponse = function (entry) {
+        if(!entry) return;
         entry.isIndexed = true;
         //adding item into response
         _indexedItems.push({ index: _currentIndex, obj: entry, groupItemIndex: _groupItemIndex });
@@ -942,20 +942,27 @@ let StorageResponseIndexer = function (response, depth = 1, limit = 3, startInde
             limit -= 1;
         _currentIndex += 1;
     }
+    let _addGroupIntoResponse = function (entry) {
+        if(!entry) return;
+        _groupItemIndex = 0;
+        _groupIndex += 1;
+        entry.isIndexed = true;
+        if (depth > 0) {
+            //adding group into response
+            _indexedItems.push({ index: _currentIndex, obj: entry, groupIndex: _groupIndex });
+            //getting nested groups into response
+            _indexedItems = _indexedItems.concat(StorageResponseIndexer(entry, depth - 1, limitOfDepth, _currentIndex + 1));
+            //setting current index into index of last item from recursion
+            _currentIndex = _indexedItems[_indexedItems.length - 1].index + 1;
+        }
+    }
     if (depth == 0)
-        response.arg?.displayItems?.forEach((value, index) => _addIntoResponse(typeof (value) == "number" ? response.content[value] : ItemController.getItemSnapshotById(value)));
+        response.arg?.itemsOrder?.forEach((value, index) => _addIntoResponse(typeof (value) == "number" ? response.content[value] : ItemController.getItemSnapshotById(value)));
+    response.arg?.groupsOrder?.forEach((value, index) => _addGroupIntoResponse(ItemController.getGroupById(value)));
     response.content?.forEach((entry, index) => {
         if (entry.type == GLOBAL.group) {
-            _groupItemIndex = 0;
-            _groupIndex += 1;
-            if (depth > 0) {
-                //adding group into response
-                _indexedItems.push({ index: _currentIndex, obj: entry, groupIndex: _groupIndex });
-                //getting nested groups into response
-                _indexedItems = _indexedItems.concat(StorageResponseIndexer(entry, depth - 1, limitOfDepth, _currentIndex + 1));
-                //setting current index into index of last item from recursion
-                _currentIndex = _indexedItems[_indexedItems.length - 1].index + 1;
-            }
+            if (!entry.isIndexed)
+                _addGroupIntoResponse(entry);
         } else {
             //checking is item count in group display limit, getting only not indexed items or required to fill group
             if (((limit > 0) && (!entry.isIndexed || (response.content.length - index) <= limit)) || limit == -1)

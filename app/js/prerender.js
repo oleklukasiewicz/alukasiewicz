@@ -10,7 +10,7 @@ const VIEW = {
 //global app variables
 const APP = {
     name: "Olek Łukasiewicz",
-    version: "0-0-0-3",
+    version: "0-0-0-4",
     url: {
         landing: "",
         item: "posts",

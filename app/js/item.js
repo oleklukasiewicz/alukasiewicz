@@ -41,13 +41,11 @@ let ItemComponentBuilder = async function (component, itemFolder, item) {
         case "gallery":
             _component = document.createElement("DIV");
             _component.classList.add("gallery");
-
             //setting up images order and count
             let _loadingPromises = [];
             let _maxImagesCount = 5;
             let _displayImagesCount = (_arg.imagesCount && _arg.imagesCount <= _maxImagesCount) ? _arg.imagesCount : (component.resources.length < _maxImagesCount ? component.resources.length : _maxImagesCount);
             let _displayImages = new Array(_displayImagesCount);
-
             //getting indexes from resourceOrder argument
             if (_arg.resourceOrder) {
                 let _insertedImages = 0;
@@ -66,7 +64,6 @@ let ItemComponentBuilder = async function (component, itemFolder, item) {
                 for (let _resIndex = 0; _resIndex < _displayImagesCount; _resIndex++)
                     _displayImages[_resIndex] = component.resources[_resIndex];
             }
-
             if (!_arg.hideControls && component.resources.length > 1) {
                 _component.innerHTML = "<div><b class='font-subtitle'>" + component.title + "</b></div>";
                 _component.classList.add("show-controls");
@@ -89,7 +86,6 @@ let ItemComponentBuilder = async function (component, itemFolder, item) {
             let _list = document.createElement("DIV");
             _list.classList.add("list");
             _component.appendChild(_list);
-
             //generating images
             for (let index = 0; index < _displayImagesCount; index++) {
                 let res = _displayImages[index];
@@ -173,9 +169,8 @@ let ResourceConverter = function (component, targetFolder, componentId) {
         case "group":
             let group = ItemController.getGroupById(component.id);
             group.content.forEach((item) => {
-
                 //ignoring images if are just placeholders
-                if (!item.arg.ignoreTileImageInGallery)
+                if (!item.arg?.ignoreTileImageInGallery)
                     resources.push(new Resource(APP.itemFolder + item.folder + item.tile.image, "image", createHash(APP.itemFolder + item.folder + item.tile.image + componentId), component.props))
             });
             break;
