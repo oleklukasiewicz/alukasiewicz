@@ -5,7 +5,7 @@ let getGroups = () => [
     new Group("featured", ["best", "best-pixel"], "Featured art", new ItemDate(5, 11, 2021), null, ["home"], { displayItems: ["orchid", "lighthouse", "lily"] }),
     new Group("organic-group", [], "Organic collection", new ItemDate(26, 4, 2022), null, ["home"], { displayItems: ["crocus", "rose", "tree"] }),
     new Group("all", ["other", "", "work"], "All projects", new ItemDate(), null, ["home"], {}, true),
-    new Group("blog", [], "Blog", new ItemDate(), null, ["home"]),
+    new Group("blog", [], "Blog", new ItemDate(), null, ["home"])
 ];
 let getItems = () => [
     new Item("orchid", [], "https://www.instagram.com/p/CdqCxFOq1fh/", "/orchid", "The Orchid", "/orchid.webp", "A flower considered a symbol of beauty and love that grows on trees or between rocks rather than directly in the ground.", new ItemDate(22, 5, 2022), undefined, ["best", "organic-group"]),
