@@ -1,0 +1,18 @@
+{
+    "id": "lily",
+    "isLink": "https://www.instagram.com/p/CdqCxFOq1fh/",
+    "title": "Water Lily",
+    "tile": {
+        "content": "Mandatory element in every organic picture of river or lake.",
+        "image": "/lily-blank.webp"
+    },
+    "groups": [
+        "best",
+        "organic-group"
+    ],
+    "createDate": {
+        "day": 10,
+        "month": 12,
+        "year": 2021
+    }
+}
