@@ -1,0 +1,21 @@
+{
+    "id": "featured",
+    "aliases": [
+        "best"
+    ],
+    "title": "Featured art",
+    "createDate": {
+        "day": 23,
+        "month": 5,
+        "year": 2022
+    },
+    "arg":
+    {
+        "itemsOrder":
+        [
+            "orchid",
+            "lily",
+            "lighthouse"
+        ]
+    }
+}
