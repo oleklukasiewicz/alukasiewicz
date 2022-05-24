@@ -9,6 +9,11 @@
         "month": 5,
         "year": 2022
     },
+    "groups":
+    [
+      "featured",
+      "all"  
+    ],
     "arg":
     {
         "groupsOrder":

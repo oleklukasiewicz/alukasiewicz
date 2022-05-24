@@ -7,6 +7,21 @@ NodeList.prototype.remove = HTMLCollection.prototype.remove = function () {
         this[i].parentElement.removeChild(this[i]);
 };
 
+//hashing algorythm
+const createHash = function (str, seed = 0) {
+    let h1 = 0xdeadbeef ^ seed;
+    let h2 = 0x41c6ce57 ^ seed;
+    for (let i = 0, ch; i < str.length; i++) {
+        ch = str.charCodeAt(i);
+        h1 = Math.imul(h1 ^ ch, 2654435761);
+        h2 = Math.imul(h2 ^ ch, 1597334677);
+    }
+    h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^ Math.imul(h2 ^ (h2 >>> 13), 3266489909);
+    h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^ Math.imul(h1 ^ (h1 >>> 13), 3266489909);
+    let _s = 4294967296 * (2097151 & h2) + (h1 >>> 0);
+    return _s;
+};
+
 //resource classes declaration
 let Resource = function (src, type, hash = createHash(src), props = {}) {
     return { src, type, hash, props }
@@ -47,21 +62,6 @@ let HistoryItem = function (id, index, arg) {
     }
 }
 
-//hashing algorythm
-const createHash = function (str, seed = 0) {
-    let h1 = 0xdeadbeef ^ seed;
-    let h2 = 0x41c6ce57 ^ seed;
-    for (let i = 0, ch; i < str.length; i++) {
-        ch = str.charCodeAt(i);
-        h1 = Math.imul(h1 ^ ch, 2654435761);
-        h2 = Math.imul(h2 ^ ch, 1597334677);
-    }
-    h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^ Math.imul(h2 ^ (h2 >>> 13), 3266489909);
-    h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^ Math.imul(h1 ^ (h1 >>> 13), 3266489909);
-    let _s = 4294967296 * (2097151 & h2) + (h1 >>> 0);
-    return _s;
-};
-
 //controllers declarations
 let AppViews = (function () {
     let _controller = {};
@@ -71,7 +71,10 @@ let AppViews = (function () {
     let _defaultView;
     let _currentView;
     let _previousView;
+
+    //adding events
     EventController.call(_controller, ["navigateToView", "navigationRequest", "navigateFromView", "navigateDefault", "historyEdit"]);
+
     //integrated error controller
     let _errors = [];
     let _errorHistory = [];
@@ -82,14 +85,22 @@ let AppViews = (function () {
             _errors.push(error);
     }
     _controller.invokeError = function (errorId, globalInvoke = false) {
+        //find error by id
         let __error = _errors.find((_error) => (errorId == _error.id) || (errorId.id == _error.id));
         let _errorCanBeInvoked = true;
+
+        // check if error can be triggered based on previous errors - some errors can be caused by other
         __error.triggerErrorsList.forEach((err) => {
             if (_errorHistory.includes(err))
                 _errorCanBeInvoked = false;
         });
+
+        //trigger
         if (_errorCanBeInvoked) {
+            console.error(__error.title + " " + __error.message);
             if (globalInvoke) {
+
+                //trigger for every view
                 _views.forEach((view) => view.registered ? view.event?.onError.call(view, __error) : "");
                 _currentGlobalError = __error;
             }
@@ -103,6 +114,8 @@ let AppViews = (function () {
     let _getViewById = (id) => _views.find((view) => view.id == id) || _defaultView;
     let _registerDelayedView = function (view) {
         if (view.isRegisterDelayed && !view.registered) {
+
+            //trigger error if was send before registration
             if (_currentGlobalError)
                 view.event?.onError.call(view, _currentGlobalError);
             view.event.onRegister?.call(view);
@@ -145,6 +158,7 @@ let AppViews = (function () {
 
         //unloading old view if exist
         if (_currentView) {
+
             //finishing loading view if needed, unloading and generating node if needed
             _invokeLoadFinishEvent(_currentView);
             _unLoadView(_currentView);
@@ -220,9 +234,9 @@ let AppViews = (function () {
 let AppStorage = (function () {
     let _routes = [];
     let _storage = [];
-    let _itemsLoaded = false;
+    let _itemsLoaded = true;
     let _groupRoutes = [];
-    let _groupsLoaded = false;
+    let _groupsLoaded = true;
     let _defaultGroup;
     let _controller = {};
 
@@ -237,6 +251,7 @@ let AppStorage = (function () {
         "item_load_error"
     ]));
     AppViews.addError(new ErrorClass("item_not_fetched", "Item cannot be loaded", "Check your internet connection"));
+
     let _getResourceGroupByHash = function (dictionary, hash) {
         let targetResource;
         let target = dictionary.find((resGroup) => {
@@ -268,14 +283,6 @@ let AppStorage = (function () {
         });
     }
 
-    let _loadGroup = async function (groupId) {
-        return await _downloadViaAJAX(APP.groupFolder + "/" + groupId + ".json");
-    }
-
-    let _loadShapshotItem = async function (itemFolder) {
-        return await _downloadViaAJAX(APP.itemFolder + "/" + itemFolder + APP.itemShapshotFileName);
-    }
-
     let _loadFullItem = async function (item) {
         if (!item) {
             AppViews.invokeError("item_not_found");
@@ -304,61 +311,90 @@ let AppStorage = (function () {
         }
         return item;
     }
+
     let _generateId = (id) => encodeURIComponent(id.toLowerCase().replaceAll(" ", "-"));
-    let _generateGroup = function (group) {
-        group.content = [];
-        group.type = GLOBAL.group;
 
-        group.createDate = new ItemDate().fromJSON(group.createDate);
-        if (group.modifyDate)
-            group.modifyDate = new ItemDate().fromJSON(group.modifyDate);
-
-        group.id = group.id || _generateId(group.title);
-        _groupRoutes.push(new Route(group.id, group));
-        return group;
-    }
     let _getGroupByRoute = (id) => _groupRoutes.find((route) => route.source == id)?.target;
     let _getItemByRoute = (id) => _routes.find((route) => route.source == id)?.target;
-    _controller.fetchGroups = async function (groups) {
-        await Promise.all(groups.map(async (groupFile) => {
-            let group = await _loadGroup(groupFile);
-            _generateGroup(group);
-            _storage.push(group);
+
+    let _itemsCache = [];
+    let _fetchGroup = async function (groupFSId) {
+
+        let cachedGroup = _getGroupByRoute(groupFSId);
+        if (cachedGroup) return cachedGroup;
+
+        let group = await _downloadViaAJAX(APP.groupFolder + "/" + groupFSId + ".json");
+        if (group) {
+            group.id = group.id || _generateId(groupFSId);
+            group.content = [];
+            group.type = GLOBAL.group;
+            group.createDate = new ItemDate().fromJSON(group.createDate);
+            if (group.modifyDate)
+                group.modifyDate = new ItemDate().fromJSON(group.modifyDate);
+
+            //adding routes
+            _groupRoutes.push(new Route(group.id, group));
+            _groupRoutes.push(new Route(groupFSId, group));
             group.aliases.forEach((source) => _groupRoutes.push(new Route(source, group)));
+
+            //fetching all sub groups
+            if (group.groups)
+                await Promise.all(group.groups.map(async (subGroup) => {
+
+                    let fetchedSubGroup = await _fetchGroup(subGroup);
+                    group.content.push(fetchedSubGroup);
+                }));
+
+            //fetching all items
+            if (group.items)
+                await Promise.all(group.items.map(async (item) => {
+                    let fetchedItem = await _fetchItem(item);
+                    group.content.push(fetchedItem);
+                }));
+
+            _storage.push(group);
             if (group.isDefault)
                 _defaultGroup = group;
-        }));
-        _storage.forEach((group) => group.groups?.forEach((_group) => _getGroupByRoute(_group)?.content.push(group)));
-        _groupsLoaded = true;
-    }
-    _controller.fetchItems = async function (items) {
-        items = await Promise.all(items.map(async (itemId) => {
-            let item = await _loadShapshotItem(itemId);
-            item.id = item.id || _generateId(item.title);
-            item.type = GLOBAL.item;
+            return group;
+        } else {
+            //no group was found
+        }
 
+    }
+    let _fetchItem = async function (itemFSId) {
+        let cachedItem = _getItemByRoute(itemFSId);
+        if (cachedItem) return cachedItem;
+
+        let item = await _downloadViaAJAX(APP.itemFolder + "/" + itemFSId + APP.itemShapshotFileName);
+        if (item) {
+            item.id = item.id || _generateId(itemFSId);
+            item.type = GLOBAL.item;
+            item.folder = "/" + itemFSId;
             item.createDate = new ItemDate().fromJSON(item.createDate);
             if (item.modifyDate)
                 item.modifyDate = new ItemDate().fromJSON(item.modifyDate);
 
-            item.folder = "/" + itemId;
-            return item;
-        }));
-        items.sort(itemsDefaultSort);
-        await Promise.all(items.map(async (item) => {
+            _itemsCache.push(item);
+            if (_defaultGroup)
+                _defaultGroup.content.push(item);
             _routes.push(new Route(item.id, item));
-            _defaultGroup.content.push(item);
+            _routes.push(new Route(itemFSId, item));
             item.aliases?.forEach((source) => _routes.push(new Route(source, item)));
-            item.groups?.forEach((group) => _getGroupByRoute(group)?.content.push(item));
-        }));
-        _itemsLoaded = true;
+            return item;
+        } else {
+            //no items was found
+        }
     }
-    _controller.loadModes = {
-        group: "group",
-        item: "item",
-        allItems: "allitems",
-        all: "all"
+
+    _controller.fetchData = async function (groups = getGroups(), items = getItems()) {
+        for (let group of groups) {
+            await _fetchGroup(group);
+        }
+        for (let item of items) {
+            await _fetchItem(item);
+        }
     }
+
     Object.defineProperties(_controller, {
         storage: {
             get: () => _storage
@@ -392,8 +428,6 @@ const landingView = new View(VIEW.landing, APP.url.landing, { scrollY: -1 }, {
         if (this.data.scrollY >= 0)
             window.scroll(0, this.data.scrollY)
         document.title = APP.name;
-        if (!AppStorage.isItemsLoaded)
-            AppViews.invokeError("item_load_error");
     },
     onRegister: function () {
         let _pButton = getById("profile-link-button");
@@ -414,8 +448,12 @@ const landingView = new View(VIEW.landing, APP.url.landing, { scrollY: -1 }, {
     },
     onLoad: async function () {
         this.rootNode.classList.add(GLOBAL.loading);
+        //getting data
+        await AppStorage.fetchData();
         if (AppStorage.isItemsLoaded && AppStorage.isGroupsLoaded)
-            StorageResponseBuilder(await AppStorage.getGroupById("landing"), this.data.iList, 1, -1)
+            StorageResponseBuilder(await AppStorage.getGroupById("landing"), this.data.iList, 1, -1);
+        else
+            AppViews.invokeError("item_load_error");
     },
     onError: function (err) {
         this.rootNode.classList.add(GLOBAL.error);
@@ -441,6 +479,8 @@ const itemView = new View(VIEW.item, APP.url.item, { currentItem: null }, {
     },
     onLoad: async function (arg) {
         this.rootNode.classList.add(GLOBAL.loading);
+        //getting data
+        await AppStorage.fetchData();
         if (AppStorage.isItemsLoaded) {
             //getting 
             let item;
@@ -492,6 +532,7 @@ const groupView = new View(VIEW.group, APP.url.group, { scrollY: -1 }, {
     onLoad: async function (arg) {
         this.rootNode.classList.add(GLOBAL.loading);
         this.data.groupData.classList.add(GLOBAL.loading);
+        await AppStorage.fetchData();
         if (!AppStorage.isItemsLoaded)
             AppViews.invokeError("item_load_error");
         //getting group
@@ -578,6 +619,7 @@ const resourceView = new View(VIEW.resource, APP.url.resource, {},
         },
         onLoad: async function (arg) {
 
+            await AppStorage.fetchData();
             //setting timeout for loading animation
             setTimeout(function (_sender) {
                 if (!_sender.isLoaded)
@@ -623,7 +665,7 @@ AppViews.addEventListener("historyEdit", (historyItem, view) => {
     else
         history.pushState(historyItem, '', _url);
 });
-AppViews.addEventListener("navigationRequest", () => hideNavigation());
+AppViews.addEventListener("navigationRequest", () => closeNavigationMenu());
 AppViews.addEventListener("navigateDefault", (arg) => {
     let _homeIndex = history.state.defaultViewHistoryIndex;
     let _indexDelta = _homeIndex - history.state.index;
@@ -636,14 +678,14 @@ AppViews.addEventListener("navigateToView", (view, lastView) => {
     view.rootNode.classList.add(GLOBAL.activeView);
     APP_NODE.classList.replace(lastView?.id, view.id);
     document.body.classList.toggle("scroll-fix", !isScrollbarVisible());
-    setNavigationState(false);
+    setNavigationMenuState(false);
 });
 AppViews.addEventListener("navigateFromView", (lastView) => lastView.rootNode.classList.remove(GLOBAL.activeView));
 
 //DOM events
 window.addEventListener("load", async function () {
     //adding errors
-    AppViews.addError(new ErrorClass("item_load_error", "Items cannot be loaded", "Try refreshing the page"));
+    AppViews.addError(new ErrorClass("item_load_error", "Items cannot be loaded", "Try refreshing the page", ["item_outdated"]));
     AppViews.addError(new ErrorClass("item_outdated", "Items are outdated", "Try refreshing the page"));
 
     //adding home button event
@@ -659,18 +701,6 @@ window.addEventListener("load", async function () {
         e.preventDefault();
         AppViews.navigate(VIEW.group, { routeArg: ["work"] });
     });
-
-    //loading items and groups
-    try {
-        if (APP.version != ITEM_VERSION)
-            AppViews.invokeError("item_outdated", true);
-        else {
-            await AppStorage.fetchGroups(getGroups()).then(() => AppStorage.fetchItems(getItems()));
-        }
-    } catch (e) {
-        AppViews.invokeError("item_load_error", true);
-        console.error(e);
-    }
 
     //navigating to view based by url or by history state
     if (history.state)
@@ -746,7 +776,7 @@ let createItemTile = async function (node, item) {
             :
             AppViews.navigate(VIEW.item, { routeArg: [item.id] });
     };
-    node.href = item.isLink || APP.url.item + item.id;
+    node.href = item.isLink || "/" + APP.url.item + "/" + item.id;
 
     //loading item
     setTimeout(() => node.classList.remove(GLOBAL.loaded), 300);
@@ -1036,6 +1066,7 @@ let createButton = function (icon, label, tagName = "A", rightLabel = false) {
 //Image helper for images
 let ImageHelper = function (image, onload = () => { }, onerror = () => { }) {
     let imageIsNotLoaded = function () {
+        image.dataset.href = image.src;
         image.src = "/img/image_error.webp";
         image.onload = function () { }
         onerror(image);

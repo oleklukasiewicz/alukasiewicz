@@ -23,6 +23,7 @@ let ItemBuilder = function (item) {
             item.resources.push(new ResourceGroup(component.resources));
         }
     });
+    
     if (item.debug)
         console.log(item);
 }

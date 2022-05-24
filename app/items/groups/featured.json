@@ -9,11 +9,16 @@
         "month": 5,
         "year": 2022
     },
-    "groups": ["home"],
-    "arg":
-    {
-        "itemsOrder":
-        [
+    "items": [
+        "orchid",
+        "lily",
+        "lighthouse",
+        "tree",
+        "isometric",
+        "crocus"
+    ],
+    "arg": {
+        "itemsOrder": [
             "orchid",
             "lily",
             "lighthouse"

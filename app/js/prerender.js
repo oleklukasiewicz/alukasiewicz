@@ -25,9 +25,8 @@ const APP = {
     itemShapshotFileName: "/item.json"
 };
 
-//global app classes
+//global app classes and strings
 const GLOBAL = {
-    toggled: "toggled",
     item: "item",
     group: "group",
     loading: "loading",
@@ -56,7 +55,10 @@ let Route = function (source, target = source, isDefault = false) {
 //event sub controller declaration for addEventListener method
 let EventController = function (eventsList = []) {
     let _events = {}
+    
+    //adding events into controller
     eventsList.forEach((eventName) => _events[eventName] = []);
+
     this.addEventListener = (event, listener = function () { }) => _events[event].push(listener);
     this.invokeEvent = async (event, arg) => await Promise.all(_events[event].map((event) => event(...arg)));
 }
