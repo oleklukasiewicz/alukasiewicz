@@ -1,12 +1,1 @@
-{
-    "id": "organic-group",
-    "aliases": [
-        "organic"
-    ],
-    "title": "Organic projects",
-    "createDate": {
-        "day": 23,
-        "month": 5,
-        "year": 2022
-    }
-}
+{"id":"organic-group","aliases":["organic"],"title":"Organic projects","createDate":{"day":23,"month":5,"year":2022}}

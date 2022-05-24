@@ -1,15 +1,1 @@
-{
-    "id": "all",
-    "aliases": [
-        "default",
-        "work",
-        "landing"
-    ],
-    "isDefault": true,
-    "title": "All projects",
-    "createDate": {
-        "day": 23,
-        "month": 5,
-        "year": 2022
-    }
-}
+{"id":"all","aliases":["default","work","landing"],"isDefault":true,"title":"All projects","createDate":{"day":23,"month":5,"year":2022}}

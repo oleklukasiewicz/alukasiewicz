@@ -1,17 +1,1 @@
-{
-    "id": "isometric-castle",
-    "isLink": "https://www.instagram.com/p/CLEOiDiBDey/",
-    "title": "Procedural World",
-    "tile": {
-        "content": "The world is full of patterns. Here it is represented as a set of tiles.",
-        "image": "/isometric_castle.webp"
-    },
-    "groups": [
-        "best"
-    ],
-    "createDate": {
-        "day": 9,
-        "month": 2,
-        "year": 2021
-    }
-}
+{"id":"isometric-castle","isLink":"https://www.instagram.com/p/CLEOiDiBDey/","title":"Procedural World","tile":{"content":"The world is full of patterns. Here it is represented as a set of tiles.","image":"/isometric_castle.webp"},"groups":["best"],"createDate":{"day":9,"month":2,"year":2021}}

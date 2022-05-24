@@ -1,14 +1,1 @@
-{
-    "id": "adventure",
-    "isLink": "https://www.instagram.com/p/CCmAJKGBWeb/",
-    "title": "Let the journey begin!",
-    "tile": {
-        "content": "Don't wait for the adventure's start - begin it by yourself!",
-        "image": "/adventure.webp"
-    },
-    "createDate": {
-        "day": 13,
-        "month": 7,
-        "year": 2020
-    }
-}
+{"id":"adventure","isLink":"https://www.instagram.com/p/CCmAJKGBWeb/","title":"Let the journey begin!","tile":{"content":"Don't wait for the adventure's start - begin it by yourself!","image":"/adventure.webp"},"createDate":{"day":13,"month":7,"year":2020}}
