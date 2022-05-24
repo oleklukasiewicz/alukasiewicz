@@ -7,7 +7,7 @@ const VIEW = {
     resource: "resource"
 };
 
-//global app variables
+//global app variables and pathes
 const APP = {
     name: "Olek Łukasiewicz",
     version: "0-0-0-4",
@@ -53,7 +53,7 @@ let Route = function (source, target = source, isDefault = false) {
         isDefault
     }
 }
-//event sub controller declaration
+//event sub controller declaration for addEventListener method
 let EventController = function (eventsList = []) {
     let _events = {}
     eventsList.forEach((eventName) => _events[eventName] = []);

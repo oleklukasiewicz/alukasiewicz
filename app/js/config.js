@@ -18,8 +18,8 @@ let ResourceDictionary = function (resourcesGroups = []) {
     return resourcesGroups;
 }
 
-//view class declaration
-let View = function (id, url, data = {}, event = {}, rootNode = null, isRegisterDelayed = false, loadingMode = ViewController.loadingModes.single) {
+//navigation related classes declarations
+let View = function (id, url, data = {}, event = {}, rootNode = null, isRegisterDelayed = false, loadingMode = AppViews.loadingModes.single) {
     return {
         id,
         url,
@@ -30,17 +30,6 @@ let View = function (id, url, data = {}, event = {}, rootNode = null, isRegister
         loadingMode
     }
 }
-
-//history item class declaration
-let HistoryItem = function (id, index, arg) {
-    return {
-        id,
-        index,
-        arg
-    }
-}
-
-//error class declaration
 let ErrorClass = function (id, title, message, triggerErrorsList = [], refreshRequire = true) {
     return {
         id,
@@ -48,6 +37,13 @@ let ErrorClass = function (id, title, message, triggerErrorsList = [], refreshRe
         message,
         triggerErrorsList,
         refreshRequire
+    }
+}
+let HistoryItem = function (id, index, arg) {
+    return {
+        id,
+        index,
+        arg
     }
 }
 
@@ -67,7 +63,7 @@ const createHash = function (str, seed = 0) {
 };
 
 //controllers declarations
-let ViewController = (function () {
+let AppViews = (function () {
     let _controller = {};
     let _views = [];
     let _currentHistoryIndex = -1;
@@ -221,7 +217,7 @@ let ViewController = (function () {
     return _controller;
 }());
 
-let ItemController = (function () {
+let AppStorage = (function () {
     let _routes = [];
     let _storage = [];
     let _itemsLoaded = false;
@@ -229,19 +225,18 @@ let ItemController = (function () {
     let _groupsLoaded = false;
     let _defaultGroup;
     let _controller = {};
-    EventController.call(_controller, ["fetchGroup", "fetchGroupFinish", "fetchItem", "fetchItemFinish"]);
 
     //adding error types for item and group not errors
-    ViewController.addError(new ErrorClass("item_not_found", "Item don't exist", "We don't have what you're looking for", [
+    AppViews.addError(new ErrorClass("item_not_found", "Item don't exist", "We don't have what you're looking for", [
         "item_outdated",
         "item_load_error",
         "group_not_found"
     ]));
-    ViewController.addError(new ErrorClass("group_not_found", "Group don't exist", "We don't have what you're looking for", [
+    AppViews.addError(new ErrorClass("group_not_found", "Group don't exist", "We don't have what you're looking for", [
         "item_outdated",
         "item_load_error"
     ]));
-    ViewController.addError(new ErrorClass("item_not_fetched", "Item cannot be loaded", "Check your internet connection"));
+    AppViews.addError(new ErrorClass("item_not_fetched", "Item cannot be loaded", "Check your internet connection"));
     let _getResourceGroupByHash = function (dictionary, hash) {
         let targetResource;
         let target = dictionary.find((resGroup) => {
@@ -261,7 +256,7 @@ let ItemController = (function () {
                     if (this.status == 200)
                         resolve(JSON.parse(this.responseText));
                     else {
-                        ViewController.invokeError("item_not_fetched", false);
+                        AppViews.invokeError("item_not_fetched", false);
                         reject("Error in AJAX request");
                     }
                 }
@@ -283,7 +278,7 @@ let ItemController = (function () {
 
     let _loadFullItem = async function (item) {
         if (!item) {
-            ViewController.invokeError("item_not_found");
+            AppViews.invokeError("item_not_found");
             return;
         }
 
@@ -312,7 +307,7 @@ let ItemController = (function () {
     let _generateId = (id) => encodeURIComponent(id.toLowerCase().replaceAll(" ", "-"));
     let _generateGroup = function (group) {
         group.content = [];
-        group.type = "group";
+        group.type = GLOBAL.group;
 
         group.createDate = new ItemDate().fromJSON(group.createDate);
         if (group.modifyDate)
@@ -332,16 +327,15 @@ let ItemController = (function () {
             group.aliases.forEach((source) => _groupRoutes.push(new Route(source, group)));
             if (group.isDefault)
                 _defaultGroup = group;
-            await _controller.invokeEvent("fetchGroup", [group]);
         }));
         _storage.forEach((group) => group.groups?.forEach((_group) => _getGroupByRoute(_group)?.content.push(group)));
-        await _controller.invokeEvent("fetchGroupFinish");
         _groupsLoaded = true;
     }
     _controller.fetchItems = async function (items) {
         items = await Promise.all(items.map(async (itemId) => {
             let item = await _loadShapshotItem(itemId);
             item.id = item.id || _generateId(item.title);
+            item.type = GLOBAL.item;
 
             item.createDate = new ItemDate().fromJSON(item.createDate);
             if (item.modifyDate)
@@ -356,9 +350,7 @@ let ItemController = (function () {
             _defaultGroup.content.push(item);
             item.aliases?.forEach((source) => _routes.push(new Route(source, item)));
             item.groups?.forEach((group) => _getGroupByRoute(group)?.content.push(item));
-            await _controller.invokeEvent("fetchItem", [item]);
         }));
-        await _controller.invokeEvent("fetchItemFinish", []);
         _itemsLoaded = true;
     }
     _controller.loadModes = {
@@ -394,20 +386,21 @@ let ItemController = (function () {
     return _controller;
 }());
 
-const landingView = new View(VIEW.landing, APP.url.landing, { scrollY: -1, itemsLoaded: false }, {
+//views
+const landingView = new View(VIEW.landing, APP.url.landing, { scrollY: -1 }, {
     onNavigate: function () {
         if (this.data.scrollY >= 0)
             window.scroll(0, this.data.scrollY)
         document.title = APP.name;
-        if (!ItemController.isItemsLoaded)
-            ViewController.invokeError("item_load_error");
+        if (!AppStorage.isItemsLoaded)
+            AppViews.invokeError("item_load_error");
     },
     onRegister: function () {
         let _pButton = getById("profile-link-button");
         _pButton.href = APP.url.profile;
         _pButton.addEventListener("click", () => {
             event.preventDefault();
-            ViewController.navigate(VIEW.profile);
+            AppViews.navigate(VIEW.profile);
         });
         this.data.iList = getById("main-list");
     },
@@ -421,22 +414,20 @@ const landingView = new View(VIEW.landing, APP.url.landing, { scrollY: -1, items
     },
     onLoad: async function () {
         this.rootNode.classList.add(GLOBAL.loading);
-        if (ItemController.isItemsLoaded && ItemController.isGroupsLoaded)
-            StorageResponseBuilder(await ItemController.getGroupById("landing"), this.data.iList, 1, -1)
+        if (AppStorage.isItemsLoaded && AppStorage.isGroupsLoaded)
+            StorageResponseBuilder(await AppStorage.getGroupById("landing"), this.data.iList, 1, -1)
     },
     onError: function (err) {
         this.rootNode.classList.add(GLOBAL.error);
         createErrorMsg(err, getById("landing-error-node"));
     }
-}, VIEW.landing, true, ViewController.loadingModes.single);
-
+}, VIEW.landing, true, AppViews.loadingModes.single);
 const profileView = new View(VIEW.profile, APP.url.profile, {}, {
     onNavigate: () => {
         window.scroll(0, 0);
         document.title = "About me - " + APP.name
     }
-}, VIEW.profile, false, ViewController.loadingModes.never);
-
+}, VIEW.profile, false, AppViews.loadingModes.never);
 const itemView = new View(VIEW.item, APP.url.item, { currentItem: null }, {
     onNavigate: () => window.scroll(0, 0),
     onNavigateFrom: function () {
@@ -450,17 +441,17 @@ const itemView = new View(VIEW.item, APP.url.item, { currentItem: null }, {
     },
     onLoad: async function (arg) {
         this.rootNode.classList.add(GLOBAL.loading);
-        if (ItemController.isItemsLoaded) {
+        if (AppStorage.isItemsLoaded) {
             //getting 
             let item;
             try {
-                item = await ItemController.getItemById(arg.routeArg[0]);
+                item = await AppStorage.getItemById(arg.routeArg[0]);
             } catch { return; }
             if (!item || this.data.currentItem == item)
                 return;
             if (item.isLink) {
                 window.open(item.isLink, '_blank').focus();
-                ViewController.navigateToDefaultView();
+                AppViews.navigateToDefaultView();
                 return;
             }
             this.data.currentItem = item;
@@ -474,7 +465,7 @@ const itemView = new View(VIEW.item, APP.url.item, { currentItem: null }, {
             this.data.iContent.innerHTML = "";
             item.content.forEach(async (content) => this.data.iContent.append(await ItemComponentBuilder(content, item.folder, item)));
         } else
-            ViewController.invokeError("item_load_error");
+            AppViews.invokeError("item_load_error");
     },
     onLoadFinish: function () {
         this.rootNode.classList.remove(GLOBAL.loading);
@@ -483,8 +474,7 @@ const itemView = new View(VIEW.item, APP.url.item, { currentItem: null }, {
         this.rootNode.classList.add(GLOBAL.error);
         createErrorMsg(err, getById("item-error-node"));
     }
-}, VIEW.item, true, ViewController.loadingModes.always);
-
+}, VIEW.item, true, AppViews.loadingModes.always);
 const groupView = new View(VIEW.group, APP.url.group, { scrollY: -1 }, {
     onRegister: function () {
         let _data = this.data;
@@ -502,12 +492,12 @@ const groupView = new View(VIEW.group, APP.url.group, { scrollY: -1 }, {
     onLoad: async function (arg) {
         this.rootNode.classList.add(GLOBAL.loading);
         this.data.groupData.classList.add(GLOBAL.loading);
-        if (!ItemController.isItemsLoaded)
-            ViewController.invokeError("item_load_error");
+        if (!AppStorage.isItemsLoaded)
+            AppViews.invokeError("item_load_error");
         //getting group
-        let group = await ItemController.getGroupById(arg.routeArg[0]);
+        let group = await AppStorage.getGroupById(arg.routeArg[0]);
         if (!group) {
-            ViewController.invokeError("group_not_found");
+            AppViews.invokeError("group_not_found");
             return;
         }
 
@@ -529,8 +519,7 @@ const groupView = new View(VIEW.group, APP.url.group, { scrollY: -1 }, {
         this.rootNode.classList.add(GLOBAL.error);
         createErrorMsg(err, getById("group-error-node"));
     }
-}, VIEW.group, true, ViewController.loadingModes.always);
-
+}, VIEW.group, true, AppViews.loadingModes.always);
 const resourceView = new View(VIEW.resource, APP.url.resource, {},
     {
         onNavigate: function () {
@@ -538,7 +527,7 @@ const resourceView = new View(VIEW.resource, APP.url.resource, {},
         },
         onRegister: function () {
             //adding image errors
-            ViewController.addError(new ErrorClass("image_not_found", "Image not found", "Try refresh page", [
+            AppViews.addError(new ErrorClass("image_not_found", "Image not found", "Try refresh page", [
                 "item_not_found",
                 "item_outdated",
                 "item_load_error"
@@ -556,7 +545,7 @@ const resourceView = new View(VIEW.resource, APP.url.resource, {},
             _prevBtn.addEventListener("click", this.data.resSlider.previous);
 
             //adding close button
-            getById("image-viewer-close").addEventListener("click", ViewController.back);
+            getById("image-viewer-close").addEventListener("click", AppViews.back);
             let _setButtonsDisplay = function (isHidden) {
                 _nextBtn.classList.toggle(GLOBAL.hidden, isHidden);
                 _prevBtn.classList.toggle(GLOBAL.hidden, isHidden);
@@ -596,10 +585,10 @@ const resourceView = new View(VIEW.resource, APP.url.resource, {},
             }, 300, this);
 
             //loading item and resource group
-            this.data.currentItem = arg.currentItem || await ItemController.getItemById(arg.routeArg[0]);
-            let resourceGroup = ItemController.findResourceByHash(this.data.currentItem.resources, arg.routeArg[1]);
+            this.data.currentItem = arg.currentItem || await AppStorage.getItemById(arg.routeArg[0]);
+            let resourceGroup = AppStorage.findResourceByHash(this.data.currentItem.resources, arg.routeArg[1]);
             if (!resourceGroup) {
-                ViewController.invokeError("image_not_found", false);
+                AppViews.invokeError("image_not_found", false);
                 return;
             }
             //loading resources to slider
@@ -616,17 +605,17 @@ const resourceView = new View(VIEW.resource, APP.url.resource, {},
             this.rootNode.classList.add(GLOBAL.error);
             createErrorMsg(err, getById("resources-error-node"));
         }
-    }, VIEW.resource, true, ViewController.loadingModes.always);
+    }, VIEW.resource, true, AppViews.loadingModes.always);
 
 //registering views
-ViewController.register(landingView, true);
-ViewController.register(profileView);
-ViewController.register(itemView);
-ViewController.register(groupView);
-ViewController.register(resourceView);
+AppViews.register(landingView, true);
+AppViews.register(profileView);
+AppViews.register(itemView);
+AppViews.register(groupView);
+AppViews.register(resourceView);
 
 //view controller events
-ViewController.addEventListener("historyEdit", (historyItem, view) => {
+AppViews.addEventListener("historyEdit", (historyItem, view) => {
     //url params are getted from navigation controller from navigate() arg
     let _url = "/" + view.url + ((historyItem.arg.routeArg?.length > 0) ? ("/" + (historyItem.arg.routeArg?.join('/') || '')) : "");
     if (historyItem.index == 0)
@@ -634,79 +623,65 @@ ViewController.addEventListener("historyEdit", (historyItem, view) => {
     else
         history.pushState(historyItem, '', _url);
 });
-ViewController.addEventListener("navigationRequest", () => hideNavigation());
-ViewController.addEventListener("navigateDefault", (arg) => {
+AppViews.addEventListener("navigationRequest", () => hideNavigation());
+AppViews.addEventListener("navigateDefault", (arg) => {
     let _homeIndex = history.state.defaultViewHistoryIndex;
     let _indexDelta = _homeIndex - history.state.index;
     if (_homeIndex != -1 && _indexDelta != 0)
         history.go(_indexDelta);
     else
-        ViewController.navigate(null, arg);
+        AppViews.navigate(null, arg);
 });
-ViewController.addEventListener("navigateToView", (view, lastView) => {
+AppViews.addEventListener("navigateToView", (view, lastView) => {
     view.rootNode.classList.add(GLOBAL.activeView);
     APP_NODE.classList.replace(lastView?.id, view.id);
     document.body.classList.toggle("scroll-fix", !isScrollbarVisible());
     setNavigationState(false);
 });
-ViewController.addEventListener("navigateFromView", (lastView) => lastView.rootNode.classList.remove(GLOBAL.activeView));
+AppViews.addEventListener("navigateFromView", (lastView) => lastView.rootNode.classList.remove(GLOBAL.activeView));
 
 //DOM events
 window.addEventListener("load", async function () {
     //adding errors
-    ViewController.addError(new ErrorClass("item_load_error", "Items cannot be loaded", "Try refreshing the page"));
-    ViewController.addError(new ErrorClass("item_outdated", "Items are outdated", "Try refreshing the page"));
+    AppViews.addError(new ErrorClass("item_load_error", "Items cannot be loaded", "Try refreshing the page"));
+    AppViews.addError(new ErrorClass("item_outdated", "Items are outdated", "Try refreshing the page"));
 
     //adding home button event
     getById("home-button").addEventListener("click", (e) => {
         e.preventDefault();
-        ViewController.navigateToDefaultView();
+        AppViews.navigateToDefaultView();
     });
     getById("main-header-about-button").addEventListener("click", (e) => {
         e.preventDefault();
-        ViewController.navigate(VIEW.profile);
+        AppViews.navigate(VIEW.profile);
     });
     getById("main-header-work-button").addEventListener("click", (e) => {
         e.preventDefault();
-        ViewController.navigate(VIEW.group, { routeArg: ["work"] });
+        AppViews.navigate(VIEW.group, { routeArg: ["work"] });
     });
 
     //loading items and groups
     try {
         if (APP.version != ITEM_VERSION)
-            ViewController.invokeError("item_outdated", true);
+            AppViews.invokeError("item_outdated", true);
         else {
-            await ItemController.fetchGroups(getGroups()).then(() => ItemController.fetchItems(getItems()));
+            await AppStorage.fetchGroups(getGroups()).then(() => AppStorage.fetchItems(getItems()));
         }
     } catch (e) {
-        ViewController.invokeError("item_load_error", true);
+        AppViews.invokeError("item_load_error", true);
         console.error(e);
     }
 
     //navigating to view based by url or by history state
     if (history.state)
-        ViewController.navigateFromHistory(history.state);
+        AppViews.navigateFromHistory(history.state);
     else
-        await ViewController.navigate(START_ROUTE.target, {
-            routeArg: START_URL.slice(1, START_URL.length - 1)
-        });
+        await AppViews.navigate(START_ROUTE.target, { routeArg: START_URL.slice(1, START_URL.length - 1) });
 });
-window.addEventListener("popstate", (event) =>
-    ViewController.navigateFromHistory(event.state));
-window.onresize = () =>
-    document.body.classList.toggle("scroll-fix", !isScrollbarVisible());
+window.addEventListener("popstate", (event) => AppViews.navigateFromHistory(event.state));
+window.onresize = () => document.body.classList.toggle("scroll-fix", !isScrollbarVisible());
 
-//check if scrollbar is visible
-let isScrollbarVisible = (element = document.body) => element.scrollHeight > element.clientHeight;
-
-//default sort method for items
-let itemsDefaultSort = function (a, b) {
-    let aDate = a.modifyDate || a.createDate;
-    let bDate = b.modifyDate || b.createDate;
-    return bDate.compare(aDate);
-}
-
-//item tile creating method
+//item and group tile creating method
 let createItemTile = async function (node, item) {
     if (node.nodeName != "A") {
         let oldNode = node;
@@ -769,7 +744,7 @@ let createItemTile = async function (node, item) {
         item.isLink ?
             window.open(item.isLink, '_blank').focus()
             :
-            ViewController.navigate(VIEW.item, { routeArg: [item.id] });
+            AppViews.navigate(VIEW.item, { routeArg: [item.id] });
     };
     node.href = item.isLink || APP.url.item + item.id;
 
@@ -777,8 +752,6 @@ let createItemTile = async function (node, item) {
     setTimeout(() => node.classList.remove(GLOBAL.loaded), 300);
     return node;
 }
-
-//group tile creating method
 let createGroupTile = function (node, group) {
     if (node.nodeName != "DIV") {
         let oldNode = node;
@@ -801,7 +774,7 @@ let createGroupTile = function (node, group) {
     //settings up tile events
     node.children[1].onclick = function () {
         event.preventDefault();
-        ViewController.navigate(VIEW.group, { routeArg: [group.id] });
+        AppViews.navigate(VIEW.group, { routeArg: [group.id] });
     };
     node.children[1].href = APP.url.group + group.id;
     return node;
@@ -907,14 +880,60 @@ let GestureBuilder = function (node, event = {}) {
 
 }
 
-//storage response indexer for group and landing views
+//default sort method for items
+let itemsDefaultSort = (a, b) => (b.modifyDate || b.createDate).compare(a.modifyDate || a.createDate);
+
+//item date class declaration
+let ItemDate = function (day, month, year) {
+    this.toHTMLString = function (months = [
+        "Jan",
+        "Feb",
+        "Mar",
+        "Apr",
+        "May",
+        "Jun",
+        "Jul",
+        "Aug",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dec"
+    ]) {
+        return (this.day + "&nbsp;" + months[this.month - 1] + ",&nbsp;" + this.year)
+    }
+    this.toString = function () {
+        return this.year.toString() + (this.month < 10 ? '0' + this.month.toString() : this.month.toString()) + (this.day < 10 ? '0' + this.day.toString() : this.day.toString());
+    }
+    this.compare = function (date) {
+        let intDate = parseInt(date);
+        if (intDate > parseInt(this.toString()))
+            return -1;
+        else
+            if (intDate < parseInt(this.toString()))
+                return 1;
+            else
+                return 0;
+    }
+    this.fromJSON = function (obj) {
+        this.day = obj.day;
+        this.month = obj.month;
+        this.year = obj.year;
+        return this;
+    }
+    let _today = new Date();
+    this.day = day || _today.getDate();
+    this.month = month || _today.getMonth() + 1;
+    this.year = year || _today.getFullYear();
+}
+
+//storage response indexer and builder for group and landing views
 let StorageResponseIndexer = function (response, depth = 1, limit = 3, startIndex = 0, limitOfDepth = 3) {
     let _indexedItems = [];
     let _groupItemIndex = 0;
     let _groupIndex = 0;
     let _currentIndex = startIndex;
     let _addIntoResponse = function (entry) {
-        if(!entry) return;
+        if (!entry) return;
         entry.isIndexed = true;
         //adding item into response
         _indexedItems.push({ index: _currentIndex, obj: entry, groupItemIndex: _groupItemIndex });
@@ -924,7 +943,7 @@ let StorageResponseIndexer = function (response, depth = 1, limit = 3, startInde
         _currentIndex += 1;
     }
     let _addGroupIntoResponse = function (entry) {
-        if(!entry) return;
+        if (!entry) return;
         _groupItemIndex = 0;
         _groupIndex += 1;
         entry.isIndexed = true;
@@ -937,9 +956,10 @@ let StorageResponseIndexer = function (response, depth = 1, limit = 3, startInde
             _currentIndex = _indexedItems[_indexedItems.length - 1].index + 1;
         }
     }
+    //display items or groups from arguments
     if (depth == 0)
-        response.arg?.itemsOrder?.forEach((value, index) => _addIntoResponse(typeof (value) == "number" ? response.content[value] : ItemController.getItemSnapshotById(value)));
-    response.arg?.groupsOrder?.forEach((value, index) => _addGroupIntoResponse(ItemController.getGroupById(value)));
+        response.arg?.itemsOrder?.forEach((value, index) => _addIntoResponse(typeof (value) == "number" ? response.content[value] : AppStorage.getItemSnapshotById(value)));
+    response.arg?.groupsOrder?.forEach((value, index) => _addGroupIntoResponse(response.content.find(contentEntry => contentEntry.id == value && contentEntry.type == GLOBAL.group)));
     response.content?.forEach((entry, index) => {
         if (entry.type == GLOBAL.group) {
             if (!entry.isIndexed)
@@ -952,8 +972,6 @@ let StorageResponseIndexer = function (response, depth = 1, limit = 3, startInde
     });
     return _indexedItems;
 }
-
-//storage response nodes builder for landing and group views
 let StorageResponseBuilder = async function (response, targetNode = document.createElement("DIV"), depth = 1, limit = 3) {
     let _items = [...targetNode.getElementsByClassName(GLOBAL.dataNode)];
     let _indexedItems = StorageResponseIndexer(response, depth, limit, 0);
@@ -997,6 +1015,8 @@ let createErrorMsg = function (err, node, customImage) {
         node.appendChild(_but);
     }
 }
+
+//button creation shortcut
 let createButton = function (icon, label, tagName = "A", rightLabel = false) {
     let _button = document.createElement(tagName);
     _button.classList.add("button");
@@ -1012,6 +1032,7 @@ let createButton = function (icon, label, tagName = "A", rightLabel = false) {
     if (rightLabel) _button.appendChild(_buttonIcon);
     return _button;
 }
+
 //Image helper for images
 let ImageHelper = function (image, onload = () => { }, onerror = () => { }) {
     let imageIsNotLoaded = function () {
@@ -1025,45 +1046,5 @@ let ImageHelper = function (image, onload = () => { }, onerror = () => { }) {
     });
 }
 
-//item date class declaration
-let ItemDate = function (day, month, year) {
-    this.toHTMLString = function (months = [
-        "Jan",
-        "Feb",
-        "Mar",
-        "Apr",
-        "May",
-        "Jun",
-        "Jul",
-        "Aug",
-        "Sep",
-        "Oct",
-        "Nov",
-        "Dec"
-    ]) {
-        return (this.day + "&nbsp;" + months[this.month - 1] + ",&nbsp;" + this.year)
-    }
-    this.toString = function () {
-        return this.year.toString() + (this.month < 10 ? '0' + this.month.toString() : this.month.toString()) + (this.day < 10 ? '0' + this.day.toString() : this.day.toString());
-    }
-    this.compare = function (date) {
-        let intDate = parseInt(date);
-        if (intDate > parseInt(this.toString()))
-            return -1;
-        else
-            if (intDate < parseInt(this.toString()))
-                return 1;
-            else
-                return 0;
-    }
-    this.fromJSON = function (obj) {
-        this.day = obj.day;
-        this.month = obj.month;
-        this.year = obj.year;
-        return this;
-    }
-    let _today = new Date();
-    this.day = day || _today.getDate();
-    this.month = month || _today.getMonth() + 1;
-    this.year = year || _today.getFullYear();
-};
+//check if scrollbar is visible
+let isScrollbarVisible = (element = document.body) => element.scrollHeight > element.clientHeight;
