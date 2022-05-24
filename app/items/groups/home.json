@@ -1,1 +1,1 @@
-{"id":"home","aliases":[""],"title":"All projects","createDate":{"day":23,"month":5,"year":2022}}
+{"id":"landing","aliases":["home"],"title":"All projects","createDate":{"day":23,"month":5,"year":2022},"arg":{"groupsOrder":["featured","all"]}}
