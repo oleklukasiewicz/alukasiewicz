@@ -153,7 +153,7 @@ let ItemComponentBuilder = async function (component, itemFolder, item) {
                 for (let _resIndex = 0; _resIndex < _displayImagesCount; _resIndex++)
                     _displayImages[_resIndex] = component.resources[_resIndex];
             }
-            
+
             if (!_arg.hideControls && component.resources.length > 1) {
                 _finalComponent.innerHTML = "<div><b class='font-subtitle'>" + component.title + "</b></div>";
                 _finalComponent.classList.add("show-controls");
@@ -162,6 +162,7 @@ let ItemComponentBuilder = async function (component, itemFolder, item) {
                 let _button = document.createElement("A");
                 _button.innerHTML = "<i class='mi mi-Picture'></i><span>Show all</span>";
                 _button.className = "button";
+                _button.href = APP.url.resource + "/" + item.id + "/" + _displayImages[0].hash;
 
                 _button.onclick = function () {
                     AppViews.navigate(VIEW.resource, {
