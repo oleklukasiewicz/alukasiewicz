@@ -1,5 +1,16 @@
+//shortcut for getElementById
+const getById = (id) => document.getElementById(id);
+
 //main app node declaration
-const APP_NODE = document.getElementById("app");
+const APP_NODE = getById("app");
+
+//route class declaration
+let Route = function (source, target = source) {
+    return {
+        source,
+        target
+    }
+}
 
 //route controller declaration
 let RouteController = (function () {
@@ -12,6 +23,7 @@ let RouteController = (function () {
         _defaultRoute = isDefault ? route : _defaultRoute;
     }
     _controller.resolve = (arg) => _routes.find((route) => route.source == arg) || _defaultRoute;
+    
     return _controller;
 }());
 

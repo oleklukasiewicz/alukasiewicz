@@ -105,6 +105,16 @@ let ItemDate = function (day, month, year) {
     }
 };
 
+//event sub controller declaration
+let EventController = function (eventsList = []) {
+    let _events = {}
+
+    eventsList.forEach((eventName) => _events[eventName] = []);
+
+    this.addEventListener = (event, listener = function () { }) => _events[event].push(listener);
+    this.invokeEvent = async (event, arg) => await Promise.all(_events[event].map((event) => event(...arg)));
+}
+
 //controllers declarations
 let ViewController = (function () {
     let _controller = {};
@@ -389,7 +399,7 @@ let ItemController = (function () {
         await _controller.invokeEvent("fetchItemFinish", []);
         _itemsLoaded = true;
     }
-    _controller.loadData = function (groups, items, itemsSorting = _itemsSortingMethod) {
+    _controller.loadData = async function (groups, items, itemsSorting = _itemsSortingMethod) {
         if (!_groupsLoaded)
             await _fetchGroups(groups);
         if (!_itemsLoaded)

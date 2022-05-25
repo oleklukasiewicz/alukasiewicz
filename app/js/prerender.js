@@ -38,23 +38,3 @@ const GLOBAL = {
 
 //website start url
 const START_URL = (window.location.pathname + (window.location.pathname.substr(-1) == "/" ? "" : "/")).substring(1).split("/");
-
-//shortcut for getElementById
-const getById = (id) => document.getElementById(id);
-
-//route class declaration
-let Route = function (source, target = source) {
-    return {
-        source,
-        target
-    }
-}
-//event sub controller declaration
-let EventController = function (eventsList = []) {
-    let _events = {}
-
-    eventsList.forEach((eventName) => _events[eventName] = []);
-
-    this.addEventListener = (event, listener = function () { }) => _events[event].push(listener);
-    this.invokeEvent = async (event, arg) => await Promise.all(_events[event].map((event) => event(...arg)));
-}
