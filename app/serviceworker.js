@@ -18,7 +18,7 @@ const staticResources = [
     "/manifest.webmanifest",
     "/css/global.css",
     "/css/item.css",
-    "/item/items.js",
+    "/item/storage.js",
     "/js/item.js",
     "/js/prerender.js",
     "/js/postrender.js",

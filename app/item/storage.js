@@ -14,7 +14,7 @@ let storageGroups = () =>
             {
                 day: 5,
                 month: 11,
-                yer: 2021
+                year: 2021
             },
             groups: ["home"],
             arg:
