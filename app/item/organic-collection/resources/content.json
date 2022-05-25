@@ -1,0 +1,41 @@
+{
+    "version": "0-0-0-3",
+    "component_version": 1,
+    "content": [
+        {
+            "type": "gallery",
+            "id":"header-image",
+            "resources": [
+                {
+                    "type": "item",
+                    "id": "lily",
+                    "props":
+                    {
+                        "alt":"Water lily"
+                    }
+                }
+            ],
+            "arguments": {
+                "hideControls": true,
+                "alt":true
+            }
+        },
+        {
+            "content": "There is something truly wonderful about giving and receiving plants. Since ancient times, it has been believed in various cultures and traditions that plants have deep spiritual meaning. However, as generations pass, our society has become less and less familiar with these symbols."
+        },
+        {
+            "type": "gallery",
+            "title": "Organic collection",
+            "id": "organic-gallery",
+            "resources": [
+                {
+                    "type": "group",
+                    "id": "organic-group"
+                }
+            ],
+            "arguments": {
+                "imagesCount": 3
+            }
+        }
+    ]
+}
