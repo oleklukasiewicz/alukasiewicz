@@ -271,17 +271,21 @@ let ViewController = (function () {
 }());
 let ItemController = (function () {
     let _routes = [];
-    let _storage = [];
-    let _itemsLoaded = false;
     let _groupRoutes = [];
+    let _storage = [];
+
+    let _itemsLoaded = false;
     let _groupsLoaded = false;
+    
     let _defaultGroup;
+    let _controller = {};
+
     let _itemsSortingMethod = function (a, b) {
         let aDate = a.modifyDate || a.createDate;
         let bDate = b.modifyDate || b.createDate;
         return bDate.compare(aDate);
     }
-    let _controller = {};
+    
     EventController.call(_controller, ["fetchGroup", "fetchGroupFinish", "fetchItem", "fetchItemFinish"]);
 
     //adding error types for item and group not errors
@@ -295,15 +299,7 @@ let ItemController = (function () {
         "item_load_error"
     ]));
     ViewController.addError(new ErrorClass("item_not_fetched", "Item cannot be loaded", "Check your internet connection"));
-    let _getResourceGroupByHash = function (dictionary, hash) {
-        let targetResource;
-        let target = dictionary.find((resGroup) => {
-            targetResource = resGroup.resources.find((res => res.hash === hash))
-            return targetResource ? true : false;
-        });
-        target.selected = targetResource;
-        return target;
-    }
+
     let _downloadViaAJAX = async function (item) {
         return new Promise((resolve, reject) => {
             let xmlhttp = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject("Microsoft.XMLHTTP");
@@ -330,14 +326,71 @@ let ItemController = (function () {
             xmlhttp.send();
         });
     }
+
+    let _generateId = (id) => encodeURIComponent(id.toLowerCase().replaceAll(" ", "-"));
+    let _generateValidStorageObject = function (obj) {
+        obj.id = obj.id || _generateId(obj.title);
+        obj.createDate = new ItemDate(obj.createDate);
+        if (obj.modifyDate)
+            obj.modifyDate = new ItemDate(obj.modifyDate);
+    }
+    let _generateGroup = function (group) {
+        group.content = [];
+        group.type = GLOBAL.group;
+        _generateValidStorageObject(group);
+        _groupRoutes.push(new Route(group.id, group));
+        return group;
+    }
+
+    let _getGroupByRoute = (id) => _groupRoutes.find((route) => route.source == id)?.target;
+    let _getItemByRoute = (id) => _routes.find((route) => route.source == id)?.target;
+    let _getResourceGroupByHash = function (dictionary, hash) {
+        let targetResource;
+        let target = dictionary.find((resGroup) => {
+            targetResource = resGroup.resources.find((res => res.hash === hash))
+            return targetResource ? true : false;
+        });
+        target.selected = targetResource;
+        return target;
+    }
+
+    let _fetchGroups = async function (groups) {
+        await Promise.all(groups.map(async (group) => {
+            _generateGroup(group);
+            _storage.push(group);
+            group.aliases?.forEach((source) => _groupRoutes.push(new Route(source, group)));
+            if (group.isDefault)
+                _defaultGroup = group;
+            await _controller.invokeEvent("fetchGroup", [group]);
+        }));
+        _storage.forEach((group) => group.groups?.forEach((_group) => _getGroupByRoute(_group)?.content.push(group)));
+        await _controller.invokeEvent("fetchGroupFinish");
+        _groupsLoaded = true;
+    }
+    let _fetchItems = async function (items, sortingMethod) {
+        await Promise.all(items.map(async (item) => {
+            _generateValidStorageObject(item);
+            item.type = GLOBAL.item;
+            _routes.push(new Route(item.id, item));
+        }));
+        items.sort(sortingMethod);
+        await Promise.all(items.map(async (item) => {
+            _defaultGroup.content.push(item);
+            item.aliases?.forEach((source) => _routes.push(new Route(source, item)));
+            item.groups?.forEach((group) => _getGroupByRoute(group)?.content.push(item));
+            await _controller.invokeEvent("fetchItem", [item]);
+        }));
+        await _controller.invokeEvent("fetchItemFinish", []);
+        _itemsLoaded = true;
+    }
     //loading full item content
-    let _loadFullItem = async function (item) {
+    let _fetchItemContent = async function (item) {
         if (!item) {
             ViewController.invokeError("item_not_found");
             return;
         }
 
-        //TODO: check if components.js and components.css are downloaded id not -> download
+        //TODO: check if components.js and components.css are downloaded if not -> download
         if (!item.isItemLinkToWeb && !item.isContentCached) {
             //getting item content
             let _content = await _downloadViaAJAX(item, item.folder);
@@ -359,63 +412,13 @@ let ItemController = (function () {
         }
         return item;
     }
-    let _generateId = (id) => encodeURIComponent(id.toLowerCase().replaceAll(" ", "-"));
-    let _generateValidStorageObject = function (obj) {
-        obj.id = obj.id || _generateId(obj.title);
-        obj.createDate = new ItemDate(obj.createDate);
-        if (obj.modifyDate)
-            obj.modifyDate = new ItemDate(obj.modifyDate);
-    }
-    let _generateGroup = function (group) {
-        group.content = [];
-        group.type = GLOBAL.group;
-        _generateValidStorageObject(group);
-        _groupRoutes.push(new Route(group.id, group));
-        return group;
-    }
-    let _getGroupByRoute = (id) => _groupRoutes.find((route) => route.source == id)?.target;
-    let _getItemByRoute = (id) => _routes.find((route) => route.source == id)?.target;
-    _fetchGroups = async function (groups) {
-        await Promise.all(groups.map(async (group) => {
-            _generateGroup(group);
-            _storage.push(group);
-            group.aliases?.forEach((source) => _groupRoutes.push(new Route(source, group)));
-            if (group.isDefault)
-                _defaultGroup = group;
-            await _controller.invokeEvent("fetchGroup", [group]);
-        }));
-        _storage.forEach((group) => group.groups?.forEach((_group) => _getGroupByRoute(_group)?.content.push(group)));
-        await _controller.invokeEvent("fetchGroupFinish");
-        _groupsLoaded = true;
-    }
-    _fetchItems = async function (items, sortingMethod) {
-        await Promise.all(items.map(async (item) => {
-            _generateValidStorageObject(item);
-            item.type = GLOBAL.item;
-            _routes.push(new Route(item.id, item));
-        }));
-        items.sort(sortingMethod);
-        await Promise.all(items.map(async (item) => {
-            _defaultGroup.content.push(item);
-            item.aliases?.forEach((source) => _routes.push(new Route(source, item)));
-            item.groups?.forEach((group) => _getGroupByRoute(group)?.content.push(item));
-            await _controller.invokeEvent("fetchItem", [item]);
-        }));
-        await _controller.invokeEvent("fetchItemFinish", []);
-        _itemsLoaded = true;
-    }
     _controller.loadData = async function (groups, items, itemsSorting = _itemsSortingMethod) {
         if (!_groupsLoaded)
             await _fetchGroups(groups);
         if (!_itemsLoaded)
             await _fetchItems(items, itemsSorting);
     }
-    _controller.loadModes = {
-        group: "group",
-        item: "item",
-        allItems: "allitems",
-        all: "all"
-    }
+
     Object.defineProperties(_controller, {
         storage: {
             get: () => _storage
@@ -433,7 +436,7 @@ let ItemController = (function () {
             value: (id) => _getItemByRoute(id)
         },
         getItemById: {
-            value: async (id) => await _loadFullItem(_getItemByRoute(id))
+            value: async (id) => await _fetchItemContent(_getItemByRoute(id))
         },
         findResourceByHash:
         {
