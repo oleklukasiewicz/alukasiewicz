@@ -311,14 +311,19 @@ let ItemController = (function () {
             //loading item content
             xmlhttp.onreadystatechange = function () {
                 if (this.readyState == 4) {
-                    if (this.status == 200)
-                        resolve(JSON.parse(this.responseText));
+                    if (this.status == 200) {
+                        try {
+                            resolve(JSON.parse(this.responseText));
+                        } catch (e) {
+                            console.error("JSON parse error: " + path);
+                        }
+                    }
                     else {
                         ViewController.invokeError("item_not_fetched", false);
-                        reject("Error in AJAX request");
+                        reject("Error in AJAX request" + item.id);
                     }
                 }
-            };
+            }
 
             //sending
             xmlhttp.open("GET", APP.itemFolder + item.folder + APP.resourceFolder + APP.itemContentFileName, true);
@@ -497,7 +502,7 @@ const itemView = new View(VIEW.item, APP.url.item, { currentItem: null }, {
             let item;
             try {
                 item = await ItemController.getItemById(arg.routeArg[0]);
-            } catch { return; }
+            } catch (e) { console.error(e); return; }
             if (!item || this.data.currentItem == item)
                 return;
             if (item.isItemLinkToWeb) {
@@ -835,6 +840,7 @@ let StorageResponseIndexer = function (response, depth = 1, limit = 3, startInde
     let _groupItemIndex = 0;
     let _groupIndex = 0;
     let _currentIndex = startIndex;
+
     let _addIntoResponse = function (entry) {
         if (!entry) return;
         entry.isIndexed = true;
@@ -859,10 +865,12 @@ let StorageResponseIndexer = function (response, depth = 1, limit = 3, startInde
             _currentIndex = _indexedItems[_indexedItems.length - 1].index + 1;
         }
     }
+
     //display items or groups from arguments
     if (depth == 0)
         response.arg?.itemsOrder?.forEach((value, index) => _addIntoResponse(typeof (value) == "number" ? response.content[value] : ItemController.getItemSnapshotById(value)));
     response.arg?.groupsOrder?.forEach((value, index) => _addGroupIntoResponse(response.content.find(contentEntry => contentEntry.id == value && contentEntry.type == GLOBAL.group)));
+
     response.content?.forEach((entry, index) => {
         if (entry.type == GLOBAL.group) {
             if (!entry.isIndexed)

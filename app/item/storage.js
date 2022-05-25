@@ -5,7 +5,16 @@ let storageGroups = () =>
             aliases:
                 [
                     "landing"
-                ]
+                ],
+            arg:
+            {
+                groupsOrder:
+                    [
+                        "featured",
+                        "organic-group",
+                        "all"
+                    ]
+            }
         },
         {
             id: "featured",
@@ -22,17 +31,20 @@ let storageGroups = () =>
                 itemsOrder:
                     [
                         "orchid", "lighthouse", "lily"
-                    ],
-                groupsOrder:
-                [
-                    "featured",
-                    "all"
-                ]
+                    ]
             }
         },
         {
             id: "organic-group",
-            title: "Organic collection"
+            title: "Organic collection",
+            groups:
+                [
+                    "home"
+                ],
+            arg:
+            {
+                itemsOrder: ["crocus", "lily", "tree"]
+            }
         },
         {
             id: "all",
@@ -103,7 +115,7 @@ let storageItems = () =>
         },
         {
             id: "isometric-castle",
-            folder:"/isometric",
+            folder: "/isometric",
             isLink: "https://www.instagram.com/p/CLEOiDiBDey/",
             title: "Procedural World",
             tile: {
