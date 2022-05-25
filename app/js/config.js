@@ -7,50 +7,6 @@ NodeList.prototype.remove = HTMLCollection.prototype.remove = function () {
         this[i].parentElement.removeChild(this[i]);
 };
 
-//resource classes declaration
-let Resource = function (src, type, hash = createHash(src), props = {}) {
-    return { src, type, hash, props }
-}
-let ResourceGroup = function (resourcesList = [], selectedResourceHash) {
-    return { resources: resourcesList, selected: selectedResourceHash }
-}
-let ResourceDictionary = function (resourcesGroups = []) {
-    return resourcesGroups;
-}
-
-//view class declaration
-let View = function (id, url, data = {}, event = {}, rootNode = null, isRegisterDelayed = false, loadingMode = ViewController.loadingModes.single) {
-    return {
-        id,
-        url,
-        data,
-        event,
-        rootNode,
-        isRegisterDelayed,
-        loadingMode
-    }
-}
-
-//history item class declaration
-let HistoryItem = function (id, index, arg) {
-    return {
-        id,
-        index,
-        arg
-    }
-}
-
-//error class declaration
-let ErrorClass = function (id, title, message, triggerErrorsList = [], refreshRequire = true) {
-    return {
-        id,
-        title,
-        message,
-        triggerErrorsList,
-        refreshRequire
-    }
-}
-
 //hashing algorythm
 const createHash = function (str, seed = 0) {
     let h1 = 0xdeadbeef ^ seed;
@@ -64,6 +20,89 @@ const createHash = function (str, seed = 0) {
     h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^ Math.imul(h1 ^ (h1 >>> 13), 3266489909);
     let _s = 4294967296 * (2097151 & h2) + (h1 >>> 0);
     return _s;
+};
+
+//resource classes declaration
+let Resource = function (src, type, hash = createHash(src), props = {}) {
+    return { src, type, hash, props }
+}
+let ResourceGroup = function (resourcesList = [], selectedResourceHash) {
+    return { resources: resourcesList, selected: selectedResourceHash }
+}
+let ResourceDictionary = function (resourcesGroups = []) {
+    return resourcesGroups;
+}
+
+let View = function (id, url, data = {}, event = {}, rootNode = null, isRegisterDelayed = false, loadingMode = ViewController.loadingModes.single) {
+    return {
+        id,
+        url,
+        data,
+        event,
+        rootNode,
+        isRegisterDelayed,
+        loadingMode
+    }
+}
+let ErrorClass = function (id, title, message, triggerErrorsList = [], refreshRequire = true) {
+    return {
+        id,
+        title,
+        message,
+        triggerErrorsList,
+        refreshRequire
+    }
+}
+let HistoryItem = function (id, index, arg) {
+    return {
+        id,
+        index,
+        arg
+    }
+}
+
+//item date class declaration
+let ItemDate = function (day, month, year) {
+    this.toHTMLString = function (months = [
+        "Jan",
+        "Feb",
+        "Mar",
+        "Apr",
+        "May",
+        "Jun",
+        "Jul",
+        "Aug",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dec"
+    ]) {
+        return (this.day + "&nbsp;" + months[this.month - 1] + ",&nbsp;" + this.year)
+    }
+    this.toString = function () {
+        return this.year.toString() + (this.month < 10 ? '0' + this.month.toString() : this.month.toString()) + (this.day < 10 ? '0' + this.day.toString() : this.day.toString());
+    }
+    this.compare = function (date) {
+        let intDate = parseInt(date);
+        if (intDate > parseInt(this.toString()))
+            return -1;
+        else
+            if (intDate < parseInt(this.toString()))
+                return 1;
+            else
+                return 0;
+    }
+
+    if (typeof (arguments[0]) === 'object') {
+        this.day = arguments[0].day;
+        this.month = arguments[0].month;
+        this.year = arguments[0].year;
+    } else {
+        let _today = new Date();
+        this.day = day || _today.getDate();
+        this.month = month || _today.getMonth() + 1;
+        this.year = year || _today.getFullYear();
+    }
 };
 
 //controllers declarations
@@ -220,7 +259,6 @@ let ViewController = (function () {
     }
     return _controller;
 }());
-
 let ItemController = (function () {
     let _routes = [];
     let _storage = [];
@@ -228,6 +266,11 @@ let ItemController = (function () {
     let _groupRoutes = [];
     let _groupsLoaded = false;
     let _defaultGroup;
+    let _itemsSortingMethod = function (a, b) {
+        let aDate = a.modifyDate || a.createDate;
+        let bDate = b.modifyDate || b.createDate;
+        return bDate.compare(aDate);
+    }
     let _controller = {};
     EventController.call(_controller, ["fetchGroup", "fetchGroupFinish", "fetchItem", "fetchItemFinish"]);
 
@@ -317,7 +360,7 @@ let ItemController = (function () {
     }
     let _getGroupByRoute = (id) => _groupRoutes.find((route) => route.source == id)?.target;
     let _getItemByRoute = (id) => _routes.find((route) => route.source == id)?.target;
-    _controller.fetchGroups = async function (groups) {
+    _fetchGroups = async function (groups) {
         await Promise.all(groups.map(async (group) => {
             _generateGroup(group);
             _storage.push(group);
@@ -330,13 +373,13 @@ let ItemController = (function () {
         await _controller.invokeEvent("fetchGroupFinish");
         _groupsLoaded = true;
     }
-    _controller.fetchItems = async function (items) {
+    _fetchItems = async function (items, sortingMethod) {
         await Promise.all(items.map(async (item) => {
             _generateValidStorageObject(item);
             item.type = GLOBAL.item;
             _routes.push(new Route(item.id, item));
         }));
-        items.sort(itemsDefaultSort);
+        items.sort(sortingMethod);
         await Promise.all(items.map(async (item) => {
             _defaultGroup.content.push(item);
             item.aliases?.forEach((source) => _routes.push(new Route(source, item)));
@@ -345,6 +388,12 @@ let ItemController = (function () {
         }));
         await _controller.invokeEvent("fetchItemFinish", []);
         _itemsLoaded = true;
+    }
+    _controller.loadData = function (groups, items, itemsSorting = _itemsSortingMethod) {
+        if (!_groupsLoaded)
+            await _fetchGroups(groups);
+        if (!_itemsLoaded)
+            await _fetchItems(items, itemsSorting);
     }
     _controller.loadModes = {
         group: "group",
@@ -414,14 +463,12 @@ const landingView = new View(VIEW.landing, APP.url.landing, { scrollY: -1, items
         createErrorMsg(err, getById("landing-error-node"));
     }
 }, VIEW.landing, true, ViewController.loadingModes.single);
-
 const profileView = new View(VIEW.profile, APP.url.profile, {}, {
     onNavigate: () => {
         window.scroll(0, 0);
         document.title = "About me - " + APP.name
     }
 }, VIEW.profile, false, ViewController.loadingModes.never);
-
 const itemView = new View(VIEW.item, APP.url.item, { currentItem: null }, {
     onNavigate: () => window.scroll(0, 0),
     onNavigateFrom: function () {
@@ -469,7 +516,6 @@ const itemView = new View(VIEW.item, APP.url.item, { currentItem: null }, {
         createErrorMsg(err, getById("item-error-node"));
     }
 }, VIEW.item, true, ViewController.loadingModes.always);
-
 const groupView = new View(VIEW.group, APP.url.group, { scrollY: -1 }, {
     onRegister: function () {
         let _data = this.data;
@@ -515,7 +561,6 @@ const groupView = new View(VIEW.group, APP.url.group, { scrollY: -1 }, {
         createErrorMsg(err, getById("group-error-node"));
     }
 }, VIEW.group, true, ViewController.loadingModes.always);
-
 const resourceView = new View(VIEW.resource, APP.url.resource, {},
     {
         onNavigate: function () {
@@ -619,7 +664,7 @@ ViewController.addEventListener("historyEdit", (historyItem, view) => {
     else
         history.pushState(historyItem, '', _url);
 });
-ViewController.addEventListener("navigationRequest", () => hideNavigation());
+ViewController.addEventListener("navigationRequest", () => closeNavigation());
 ViewController.addEventListener("navigateDefault", (arg) => {
     let _homeIndex = history.state.defaultViewHistoryIndex;
     let _indexDelta = _homeIndex - history.state.index;
@@ -658,7 +703,7 @@ window.addEventListener("load", async function () {
 
     //loading items and groups
     try {
-        await ItemController.fetchGroups(storageGroups()).then(() => ItemController.fetchItems(storageItems()));
+        await ItemController.loadData(storageGroups(), storageItems());
     } catch (e) {
         ViewController.invokeError("item_load_error", true);
         console.error(e);
@@ -676,16 +721,6 @@ window.addEventListener("popstate", (event) =>
     ViewController.navigateFromHistory(event.state));
 window.onresize = () =>
     document.body.classList.toggle("scroll-fix", !isScrollbarVisible());
-
-//check if scrollbar is visible
-let isScrollbarVisible = (element = document.body) => element.scrollHeight > element.clientHeight;
-
-//default sort method for items
-let itemsDefaultSort = function (a, b) {
-    let aDate = a.modifyDate || a.createDate;
-    let bDate = b.modifyDate || b.createDate;
-    return bDate.compare(aDate);
-}
 
 //item tile creating method
 let createItemTile = async function (node, item) {
@@ -758,8 +793,6 @@ let createItemTile = async function (node, item) {
     setTimeout(() => node.classList.remove(GLOBAL.loaded), 300);
     return node;
 }
-
-//group tile creating method
 let createGroupTile = function (node, group) {
     if (node.nodeName != "DIV") {
         let oldNode = node;
@@ -786,6 +819,63 @@ let createGroupTile = function (node, group) {
     };
     node.children[1].href = APP.url.group + group.id;
     return node;
+}
+let StorageResponseIndexer = function (response, depth = 1, limit = 3, startIndex = 0, limitOfDepth = 3) {
+    let _indexedItems = [];
+    let _groupItemIndex = 0;
+    let _groupIndex = 0;
+    let _currentIndex = startIndex;
+    let _addIntoResponse = function (entry) {
+        if (!entry) return;
+        entry.isIndexed = true;
+        //adding item into response
+        _indexedItems.push({ index: _currentIndex, obj: entry, groupItemIndex: _groupItemIndex });
+        _groupItemIndex += 1;
+        if (limit > 0)
+            limit -= 1;
+        _currentIndex += 1;
+    }
+    let _addGroupIntoResponse = function (entry) {
+        if (!entry) return;
+        _groupItemIndex = 0;
+        _groupIndex += 1;
+        entry.isIndexed = true;
+        if (depth > 0) {
+            //adding group into response
+            _indexedItems.push({ index: _currentIndex, obj: entry, groupIndex: _groupIndex });
+            //getting nested groups into response
+            _indexedItems = _indexedItems.concat(StorageResponseIndexer(entry, depth - 1, limitOfDepth, _currentIndex + 1));
+            //setting current index into index of last item from recursion
+            _currentIndex = _indexedItems[_indexedItems.length - 1].index + 1;
+        }
+    }
+    //display items or groups from arguments
+    if (depth == 0)
+        response.arg?.itemsOrder?.forEach((value, index) => _addIntoResponse(typeof (value) == "number" ? response.content[value] : ItemController.getItemSnapshotById(value)));
+    response.arg?.groupsOrder?.forEach((value, index) => _addGroupIntoResponse(response.content.find(contentEntry => contentEntry.id == value && contentEntry.type == GLOBAL.group)));
+    response.content?.forEach((entry, index) => {
+        if (entry.type == GLOBAL.group) {
+            if (!entry.isIndexed)
+                _addGroupIntoResponse(entry);
+        } else {
+            //checking is item count in group display limit, getting only not indexed items or required to fill group
+            if (((limit > 0) && (!entry.isIndexed || (response.content.length - index) <= limit)) || limit == -1)
+                _addIntoResponse(entry);
+        }
+    });
+    return _indexedItems;
+}
+let StorageResponseBuilder = async function (response, targetNode = document.createElement("DIV"), depth = 1, limit = 3) {
+    let _items = [...targetNode.getElementsByClassName(GLOBAL.dataNode)];
+    let _indexedItems = StorageResponseIndexer(response, depth, limit, 0);
+    await Promise.all(_indexedItems.map(async (entry) => {
+        entry.obj.isIndexed = false;
+        entry.obj.responseIndex = (entry.groupItemIndex == undefined) ? entry.groupIndex : entry.groupItemIndex;
+        entry.obj.type == GLOBAL.group ?
+            await createGroupTile(_items[entry.index] || targetNode.appendChild(document.createElement("div")), entry.obj)
+            :
+            await createItemTile(_items[entry.index] || targetNode.appendChild(document.createElement("a")), entry.obj);
+    }));
 }
 
 //universal slider class for resourceMap objects
@@ -888,64 +978,6 @@ let GestureBuilder = function (node, event = {}) {
 
 }
 
-let StorageResponseIndexer = function (response, depth = 1, limit = 3, startIndex = 0, limitOfDepth = 3) {
-    let _indexedItems = [];
-    let _groupItemIndex = 0;
-    let _groupIndex = 0;
-    let _currentIndex = startIndex;
-    let _addIntoResponse = function (entry) {
-        if (!entry) return;
-        entry.isIndexed = true;
-        //adding item into response
-        _indexedItems.push({ index: _currentIndex, obj: entry, groupItemIndex: _groupItemIndex });
-        _groupItemIndex += 1;
-        if (limit > 0)
-            limit -= 1;
-        _currentIndex += 1;
-    }
-    let _addGroupIntoResponse = function (entry) {
-        if (!entry) return;
-        _groupItemIndex = 0;
-        _groupIndex += 1;
-        entry.isIndexed = true;
-        if (depth > 0) {
-            //adding group into response
-            _indexedItems.push({ index: _currentIndex, obj: entry, groupIndex: _groupIndex });
-            //getting nested groups into response
-            _indexedItems = _indexedItems.concat(StorageResponseIndexer(entry, depth - 1, limitOfDepth, _currentIndex + 1));
-            //setting current index into index of last item from recursion
-            _currentIndex = _indexedItems[_indexedItems.length - 1].index + 1;
-        }
-    }
-    //display items or groups from arguments
-    if (depth == 0)
-        response.arg?.itemsOrder?.forEach((value, index) => _addIntoResponse(typeof (value) == "number" ? response.content[value] : ItemController.getItemSnapshotById(value)));
-    response.arg?.groupsOrder?.forEach((value, index) => _addGroupIntoResponse(response.content.find(contentEntry => contentEntry.id == value && contentEntry.type == GLOBAL.group)));
-    response.content?.forEach((entry, index) => {
-        if (entry.type == GLOBAL.group) {
-            if (!entry.isIndexed)
-                _addGroupIntoResponse(entry);
-        } else {
-            //checking is item count in group display limit, getting only not indexed items or required to fill group
-            if (((limit > 0) && (!entry.isIndexed || (response.content.length - index) <= limit)) || limit == -1)
-                _addIntoResponse(entry);
-        }
-    });
-    return _indexedItems;
-}
-let StorageResponseBuilder = async function (response, targetNode = document.createElement("DIV"), depth = 1, limit = 3) {
-    let _items = [...targetNode.getElementsByClassName(GLOBAL.dataNode)];
-    let _indexedItems = StorageResponseIndexer(response, depth, limit, 0);
-    await Promise.all(_indexedItems.map(async (entry) => {
-        entry.obj.isIndexed = false;
-        entry.obj.responseIndex = (entry.groupItemIndex == undefined) ? entry.groupIndex : entry.groupItemIndex;
-        entry.obj.type == GLOBAL.group ?
-            await createGroupTile(_items[entry.index] || targetNode.appendChild(document.createElement("div")), entry.obj)
-            :
-            await createItemTile(_items[entry.index] || targetNode.appendChild(document.createElement("a")), entry.obj);
-    }));
-}
-
 //error message node builder
 let createErrorMsg = function (err, node, customImage) {
     node.innerHTML = "";
@@ -1004,46 +1036,5 @@ let ImageHelper = function (image, onload = () => { }, onerror = () => { }) {
     });
 }
 
-//item date class declaration
-let ItemDate = function (day, month, year) {
-    this.toHTMLString = function (months = [
-        "Jan",
-        "Feb",
-        "Mar",
-        "Apr",
-        "May",
-        "Jun",
-        "Jul",
-        "Aug",
-        "Sep",
-        "Oct",
-        "Nov",
-        "Dec"
-    ]) {
-        return (this.day + "&nbsp;" + months[this.month - 1] + ",&nbsp;" + this.year)
-    }
-    this.toString = function () {
-        return this.year.toString() + (this.month < 10 ? '0' + this.month.toString() : this.month.toString()) + (this.day < 10 ? '0' + this.day.toString() : this.day.toString());
-    }
-    this.compare = function (date) {
-        let intDate = parseInt(date);
-        if (intDate > parseInt(this.toString()))
-            return -1;
-        else
-            if (intDate < parseInt(this.toString()))
-                return 1;
-            else
-                return 0;
-    }
-
-    if (typeof (arguments[0]) === 'object') {
-        this.day = arguments[0].day;
-        this.month = arguments[0].month;
-        this.year = arguments[0].year;
-    } else {
-        let _today = new Date();
-        this.day = day || _today.getDate();
-        this.month = month || _today.getMonth() + 1;
-        this.year = year || _today.getFullYear();
-    }
-};
+//check if scrollbar is visible
+let isScrollbarVisible = (element = document.body) => element.scrollHeight > element.clientHeight;

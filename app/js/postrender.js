@@ -7,23 +7,24 @@ let RouteController = (function () {
     let _routes = [];
     let _defaultRoute;
 
-    _controller.add = function (route) {
+    _controller.add = function (route, isDefault = false) {
         _routes.push(route);
-        _defaultRoute = route.isDefault ? route : _defaultRoute;
+        _defaultRoute = isDefault ? route : _defaultRoute;
     }
     _controller.resolve = (arg) => _routes.find((route) => route.source == arg) || _defaultRoute;
     return _controller;
 }());
 
 //adding views routes
-RouteController.add(new Route(APP.url.landing, VIEW.landing, true));
-RouteController.add(new Route(APP.url.item,VIEW.item));
+RouteController.add(new Route(APP.url.landing, VIEW.landing), true);
+RouteController.add(new Route(APP.url.item, VIEW.item));
 RouteController.add(new Route(APP.url.profile, VIEW.profile));
-RouteController.add(new Route(APP.url.group,VIEW.group));
-RouteController.add(new Route(APP.url.resource,VIEW.resource));
+RouteController.add(new Route(APP.url.group, VIEW.group));
+RouteController.add(new Route(APP.url.resource, VIEW.resource));
 
 //loading start view
 const START_ROUTE = RouteController.resolve(START_URL[0]);
+
 getById(START_ROUTE.target).classList.add(GLOBAL.activeView);
 APP_NODE.classList.add(START_ROUTE.target);
 
@@ -37,7 +38,7 @@ let setNavigationState = function (isOpened) {
     isNavigationOpen = isOpened;
 }
 let toggleNavigationState = () => setNavigationState(!isNavigationOpen)
-let hideNavigation = function () {
+let closeNavigation = function () {
     if (isNavigationOpen)
         setNavigationState(false);
 }
@@ -45,5 +46,5 @@ let hideNavigation = function () {
 //adding navigation buttons methods
 getById("main-header-nav-button").addEventListener("click", toggleNavigationState);
 let closeSpace = getById("main-header-navigation-close-space");
-closeSpace.addEventListener("click", hideNavigation, { "passive": true });
-closeSpace.addEventListener("touchstart", hideNavigation, { "passive": true });
+closeSpace.addEventListener("click", closeNavigation, { "passive": true });
+closeSpace.addEventListener("touchstart", closeNavigation, { "passive": true });

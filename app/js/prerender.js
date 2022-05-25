@@ -10,7 +10,7 @@ const VIEW = {
 //global app variables
 const APP = {
     name: "Olek Łukasiewicz",
-    version: "0-0-0-3",
+    version: "2.2.1.0",
     url: {
         landing: "",
         item: "posts",
@@ -25,7 +25,6 @@ const APP = {
 
 //global app classes
 const GLOBAL = {
-    toggled: "toggled",
     item: "item",
     group: "group",
     loading: "loading",
@@ -44,17 +43,18 @@ const START_URL = (window.location.pathname + (window.location.pathname.substr(-
 const getById = (id) => document.getElementById(id);
 
 //route class declaration
-let Route = function (source, target = source, isDefault = false) {
+let Route = function (source, target = source) {
     return {
         source,
-        target,
-        isDefault
+        target
     }
 }
 //event sub controller declaration
 let EventController = function (eventsList = []) {
     let _events = {}
+
     eventsList.forEach((eventName) => _events[eventName] = []);
+
     this.addEventListener = (event, listener = function () { }) => _events[event].push(listener);
     this.invokeEvent = async (event, arg) => await Promise.all(_events[event].map((event) => event(...arg)));
 }
