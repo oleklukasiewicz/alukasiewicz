@@ -7,26 +7,6 @@ NodeList.prototype.remove = HTMLCollection.prototype.remove = function () {
         this[i].parentElement.removeChild(this[i]);
 };
 
-//item class declaration
-let Item = function (id, aliases = [], isItemLinkToWeb = false, folder = "/" + id, title, tileImage, tileContent, createDate, modifyDate, groups = [], arg = {}) {
-    return {
-        id,
-        aliases,
-        title,
-        tile: {
-            image: tileImage,
-            content: tileContent
-        },
-        createDate,
-        modifyDate,
-        groups,
-        isItemLinkToWeb,
-        folder,
-        arg,
-        type: GLOBAL.item
-    }
-}
-
 //resource classes declaration
 let Resource = function (src, type, hash = createHash(src), props = {}) {
     return { src, type, hash, props }
@@ -36,21 +16,6 @@ let ResourceGroup = function (resourcesList = [], selectedResourceHash) {
 }
 let ResourceDictionary = function (resourcesGroups = []) {
     return resourcesGroups;
-}
-
-//group class declaration
-let Group = function (id, aliases = [], title, createDate, modifyDate, groups = [], arg = {}, isDefault = false) {
-    return {
-        id,
-        aliases,
-        arg,
-        title,
-        groups,
-        isDefault,
-        createDate,
-        modifyDate,
-        type: GLOBAL.group
-    }
 }
 
 //view class declaration
@@ -337,9 +302,16 @@ let ItemController = (function () {
         return item;
     }
     let _generateId = (id) => encodeURIComponent(id.toLowerCase().replaceAll(" ", "-"));
+    let _generateValidStorageObject = function (obj) {
+        obj.id = obj.id || _generateId(obj.title);
+        obj.createDate = new ItemDate(obj.createDate);
+        if (obj.modifyDate)
+            obj.modifyDate = new ItemDate(obj.modifyDate);
+    }
     let _generateGroup = function (group) {
         group.content = [];
-        group.id = group.id || _generateId(group.title);
+        group.type = GLOBAL.group;
+        _generateValidStorageObject(group);
         _groupRoutes.push(new Route(group.id, group));
         return group;
     }
@@ -349,7 +321,7 @@ let ItemController = (function () {
         await Promise.all(groups.map(async (group) => {
             _generateGroup(group);
             _storage.push(group);
-            group.aliases.forEach((source) => _groupRoutes.push(new Route(source, group)));
+            group.aliases?.forEach((source) => _groupRoutes.push(new Route(source, group)));
             if (group.isDefault)
                 _defaultGroup = group;
             await _controller.invokeEvent("fetchGroup", [group]);
@@ -360,10 +332,14 @@ let ItemController = (function () {
     }
     _controller.fetchItems = async function (items) {
         await Promise.all(items.map(async (item) => {
-            item.id = item.id || _generateId(item.title);
+            _generateValidStorageObject(item);
+            item.type = GLOBAL.item;
             _routes.push(new Route(item.id, item));
+        }));
+        items.sort(itemsDefaultSort);
+        await Promise.all(items.map(async (item) => {
             _defaultGroup.content.push(item);
-            item.aliases.forEach((source) => _routes.push(new Route(source, item)));
+            item.aliases?.forEach((source) => _routes.push(new Route(source, item)));
             item.groups?.forEach((group) => _getGroupByRoute(group)?.content.push(item));
             await _controller.invokeEvent("fetchItem", [item]);
         }));
@@ -482,7 +458,6 @@ const itemView = new View(VIEW.item, APP.url.item, { currentItem: null }, {
             //preparing content
             this.data.iContent.innerHTML = "";
             item.content.forEach(async (content) => this.data.iContent.append(await ItemComponentBuilder(content, item.folder, item)));
-            incrementVisitors(APP.itemFolder + "/" + item.id, true);
         } else
             ViewController.invokeError("item_load_error");
     },
@@ -683,12 +658,7 @@ window.addEventListener("load", async function () {
 
     //loading items and groups
     try {
-        if (APP.version != ITEM_VERSION)
-            ViewController.invokeError("item_outdated", true);
-        else {
-            await ItemController.fetchGroups(getGroups()).then(() => ItemController.fetchItems(getItems().sort(itemsDefaultSort)));
-            incrementVisitors(ITEM_ENVIROMENT == "beta" ? config.beta : config.analitycs);
-        }
+        await ItemController.fetchGroups(storageGroups()).then(() => ItemController.fetchItems(storageItems()));
     } catch (e) {
         ViewController.invokeError("item_load_error", true);
         console.error(e);
@@ -767,7 +737,7 @@ let createItemTile = async function (node, item) {
 
     //loading image of tile
     await new ImageHelper(_iImage, () => {
-        _iImage.style = item.arg.tileImageStyle || "";
+        _iImage.style = item.arg?.tileImageStyle || "";
     }, () => {
         item.isTileImageNotLoaded = true;
         removeResourceFromCache(imageSrc);
@@ -918,13 +888,13 @@ let GestureBuilder = function (node, event = {}) {
 
 }
 
-//storage response indexer for group and landing views
 let StorageResponseIndexer = function (response, depth = 1, limit = 3, startIndex = 0, limitOfDepth = 3) {
     let _indexedItems = [];
     let _groupItemIndex = 0;
     let _groupIndex = 0;
     let _currentIndex = startIndex;
     let _addIntoResponse = function (entry) {
+        if (!entry) return;
         entry.isIndexed = true;
         //adding item into response
         _indexedItems.push({ index: _currentIndex, obj: entry, groupItemIndex: _groupItemIndex });
@@ -933,20 +903,28 @@ let StorageResponseIndexer = function (response, depth = 1, limit = 3, startInde
             limit -= 1;
         _currentIndex += 1;
     }
+    let _addGroupIntoResponse = function (entry) {
+        if (!entry) return;
+        _groupItemIndex = 0;
+        _groupIndex += 1;
+        entry.isIndexed = true;
+        if (depth > 0) {
+            //adding group into response
+            _indexedItems.push({ index: _currentIndex, obj: entry, groupIndex: _groupIndex });
+            //getting nested groups into response
+            _indexedItems = _indexedItems.concat(StorageResponseIndexer(entry, depth - 1, limitOfDepth, _currentIndex + 1));
+            //setting current index into index of last item from recursion
+            _currentIndex = _indexedItems[_indexedItems.length - 1].index + 1;
+        }
+    }
+    //display items or groups from arguments
     if (depth == 0)
-        response.arg?.displayItems?.forEach((value, index) => _addIntoResponse(typeof (value) == "number" ? response.content[value] : ItemController.getItemSnapshotById(value)));
+        response.arg?.itemsOrder?.forEach((value, index) => _addIntoResponse(typeof (value) == "number" ? response.content[value] : ItemController.getItemSnapshotById(value)));
+    response.arg?.groupsOrder?.forEach((value, index) => _addGroupIntoResponse(response.content.find(contentEntry => contentEntry.id == value && contentEntry.type == GLOBAL.group)));
     response.content?.forEach((entry, index) => {
         if (entry.type == GLOBAL.group) {
-            _groupItemIndex = 0;
-            _groupIndex += 1;
-            if (depth > 0) {
-                //adding group into response
-                _indexedItems.push({ index: _currentIndex, obj: entry, groupIndex: _groupIndex });
-                //getting nested groups into response
-                _indexedItems = _indexedItems.concat(StorageResponseIndexer(entry, depth - 1, limitOfDepth, _currentIndex + 1));
-                //setting current index into index of last item from recursion
-                _currentIndex = _indexedItems[_indexedItems.length - 1].index + 1;
-            }
+            if (!entry.isIndexed)
+                _addGroupIntoResponse(entry);
         } else {
             //checking is item count in group display limit, getting only not indexed items or required to fill group
             if (((limit > 0) && (!entry.isIndexed || (response.content.length - index) <= limit)) || limit == -1)
@@ -955,8 +933,6 @@ let StorageResponseIndexer = function (response, depth = 1, limit = 3, startInde
     });
     return _indexedItems;
 }
-
-//storage response nodes builder for landing and group views
 let StorageResponseBuilder = async function (response, targetNode = document.createElement("DIV"), depth = 1, limit = 3) {
     let _items = [...targetNode.getElementsByClassName(GLOBAL.dataNode)];
     let _indexedItems = StorageResponseIndexer(response, depth, limit, 0);
@@ -1059,8 +1035,15 @@ let ItemDate = function (day, month, year) {
             else
                 return 0;
     }
-    let _today = new Date();
-    this.day = day || _today.getDate();
-    this.month = month || _today.getMonth() + 1;
-    this.year = year || _today.getFullYear();
+
+    if (typeof (arguments[0]) === 'object') {
+        this.day = arguments[0].day;
+        this.month = arguments[0].month;
+        this.year = arguments[0].year;
+    } else {
+        let _today = new Date();
+        this.day = day || _today.getDate();
+        this.month = month || _today.getMonth() + 1;
+        this.year = year || _today.getFullYear();
+    }
 };

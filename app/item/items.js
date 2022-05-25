@@ -1,23 +1,255 @@
-const ITEM_VERSION = "0-0-0-3";
-const ITEM_ENVIROMENT = "beta";
-let getGroups = () => [
-    new Group("home-group", ["home", "landing"], "Home Group"),
-    new Group("featured", ["best", "best-pixel"], "Featured art", new ItemDate(5, 11, 2021), null, ["home"], { displayItems: ["orchid", "lighthouse", "lily"] }),
-    new Group("organic-group", [], "Organic collection", new ItemDate(26, 4, 2022), null, ["home"], { displayItems: ["crocus", "rose", "tree"] }),
-    new Group("all", ["other", "", "work"], "All projects", new ItemDate(), null, ["home"], {}, true),
-    new Group("blog", [], "Blog", new ItemDate(), null, ["home"])
-];
-let getItems = () => [
-    new Item("orchid", [], "https://www.instagram.com/p/CdqCxFOq1fh/", "/orchid", "The Orchid", "/orchid.webp", "A flower considered a symbol of beauty and love that grows on trees or between rocks rather than directly in the ground.", new ItemDate(22, 5, 2022), undefined, ["best", "organic-group"]),
-    new Item("crocus", [], "https://www.instagram.com/p/CdqCxFOq1fh/", "/crocus", "The Crocus", "/crocus-base.webp", "One of the first signs of spring - crocus, also know as the source of one of the most expensive spice.", new ItemDate(17, 5, 2022), undefined, ["best", "organic-group"]),
-    new Item(null, [], "https://www.instagram.com/p/CcIPscSKKyE/", "/lighthouse", "Lighthouse", "/lighthouse.webp", "Alone lighthouse on the night sea with a sky full of stars.", new ItemDate(16, 3, 2022), null, ["best"]),
-    new Item("lily", [], "https://www.instagram.com/p/CXlcDShooxu/", "/lily", "Water lily", "/lily-blank.webp", "Mandatory element in every organic picture of river or lake.", new ItemDate(10, 12, 2021), null, ["best", "organic-group"]),
-    new Item("tree", [], "https://www.instagram.com/p/CPSx-X8hdVM/", "/tree-on-rock", "Organic pixels", "/tree-on-rock.webp", "One of the most iconic plants on the planet - a tree! Here growing on a giant rock.", new ItemDate(23, 5, 2021), null, ["best", "organic-group"]),
-    new Item(null, [], "https://www.instagram.com/p/CMXFzXihSGw/", "/airship", "Ocean of clouds", "/airship-v2.webp", "The great adventure does not have to take place at sea. Now with new frame and clouds!", new ItemDate(27, 10, 2020), new ItemDate(13, 3, 2021)),
-    new Item(null, [], "https://www.instagram.com/p/COAYwduB3jc/", "/person", "Character practise", "/person_practise.webp", "The first result of learning to draw pixel characters. Based on tutorial by Slynyrd.", new ItemDate(23, 4, 2021)),
-    new Item("rose", [], "https://www.instagram.com/p/CMZkmJaBhd1/", "/rose", "The digital blossom", "/rose_plant.webp", "A simple red rose. Slightly improved with new colours and details.", new ItemDate(9, 12, 2020), new ItemDate(14, 3, 2021), ["organic-group"]),
-    new Item(null, [], "https://www.instagram.com/p/CLEOiDiBDey/", "/isometric", "Procedural world", "/isometric_castle.webp", "The world is full of patterns. Here it is represented as a set of tiles.", new ItemDate(9, 2, 2021)),
-    new Item("let-the-adventure-begin", [], "https://www.instagram.com/p/CCmAJKGBWeb/", "/adventure", "Let the journey begin!", "/adventure.webp", "Don't wait for the adventure's start - begin it by yourself.", new ItemDate(13, 07, 2020), null, [], { tileImageStyle: "object-position:0% 100%;" }),
-    new Item(null, ["ms-fluent", "fluent", "ms"], false, "/beta", "Fluent Design System", "/fluent.webp", "Reflections on our design history, the progression, and the potential of how we collectively design for the future.", new ItemDate(27, 10, 2020), new ItemDate(5, 11, 2021), ["blog"]),
-    new Item("organic-collection", [], false, "/organic-collection", "Organic Collection", "/lily-blank.webp", `Since ancient times, it has been believed in various cultures and traditions that plants have deep spiritual meaning.`, new ItemDate(26, 4, 2022), undefined, ["blog"])
-];
+let storageGroups = () =>
+    [
+        {
+            id: "home",
+            aliases:
+                [
+                    "landing"
+                ]
+        },
+        {
+            id: "featured",
+            title: "Featured art",
+            createDate:
+            {
+                day: 5,
+                month: 11,
+                yer: 2021
+            },
+            groups: ["home"],
+            arg:
+            {
+                itemsOrder:
+                    [
+                        "orchid", "lighthouse", "lily"
+                    ],
+                groupsOrder:
+                [
+                    "featured",
+                    "all"
+                ]
+            }
+        },
+        {
+            id: "organic-group",
+            title: "Organic collection"
+        },
+        {
+            id: "all",
+            aliases:
+                [
+                    "work"
+                ],
+            title: "All projects",
+            groups: ["home"],
+            isDefault: true
+        }
+    ]
+let storageItems = () =>
+    [
+        {
+            id: "adventure",
+            folder: "/adventure",
+            isLink: "https://www.instagram.com/p/CCmAJKGBWeb/",
+            title: "Let the journey begin!",
+            tile: {
+                content: "Don't wait for the adventure's start - begin it by yourself!",
+                image: "/adventure.webp"
+            },
+            createDate: {
+                day: 13,
+                month: 7,
+                year: 2020
+            }
+        },
+        {
+            id: "airship",
+            folder: "/airship",
+            isLink: "https://www.instagram.com/p/CMXFzXihSGw/",
+            title: "Ocean of Clouds",
+            tile: {
+                content: "The great adventure does not have to take place at sea. Now with new frame and improved clouds!",
+                image: "/airship-v2.webp"
+            },
+            createDate: {
+                day: 27,
+                month: 10,
+                year: 2020
+            },
+            modifyDate: {
+                day: 13,
+                month: 3,
+                year: 2021
+            }
+        },
+        {
+            id: "crocus",
+            folder: "/crocus",
+            isLink: "https://www.instagram.com/p/CdqCxFOq1fh/",
+            title: "The Crocus",
+            tile: {
+                content: "One of the first signs of spring - crocus, also know as the source of one of the most expensive spice.",
+                image: "/crocus-base.webp"
+            },
+            groups: [
+                "featured",
+                "organic-group"
+            ],
+            createDate: {
+                day: 17,
+                month: 5,
+                year: 2022
+            }
+        },
+        {
+            id: "isometric-castle",
+            folder:"/isometric",
+            isLink: "https://www.instagram.com/p/CLEOiDiBDey/",
+            title: "Procedural World",
+            tile: {
+                content: "The world is full of patterns. Here it is represented as a set of tiles.",
+                image: "/isometric_castle.webp"
+            },
+            groups: [
+                "featured"
+            ],
+            createDate: {
+                day: 9,
+                month: 2,
+                year: 2021
+            }
+        },
+        {
+            id: "lighthouse",
+            folder: "/lighthouse",
+            isLink: "https://www.instagram.com/p/CcIPscSKKyE/",
+            title: "Lighthouse",
+            tile: {
+                content: "Alone lighthouse on the night sea with a sky full of stars.",
+                image: "/lighthouse.webp"
+            },
+            groups: [
+                "featured"
+            ],
+            createDate: {
+                day: 16,
+                month: 3,
+                year: 2022
+            }
+        },
+        {
+            id: "lily",
+            folder: "/lily",
+            isLink: "https://www.instagram.com/p/CXlcDShooxu/",
+            title: "Water Lily",
+            tile: {
+                content: "Mandatory element in every organic picture of river or lake.",
+                image: "/lily-blank.webp"
+            },
+            groups: [
+                "featured",
+                "organic-group"
+            ],
+            createDate: {
+                day: 10,
+                month: 12,
+                year: 2021
+            }
+        },
+        {
+            id: "orchid",
+            folder: "/orchid",
+            isLink: "https://www.instagram.com/p/Cd3DiBBqvOR/",
+            title: "The Orchid",
+            tile: {
+                content: "A flower considered a symbol of beauty and love that grows on trees or between rocks rather than directly in the ground.",
+                image: "/orchid.webp"
+            },
+            groups: [
+                "featured",
+                "organic-group"
+            ],
+            createDate: {
+                day: 22,
+                month: 5,
+                year: 2022
+            }
+        },
+        {
+            id: "person-practise",
+            folder: "/person",
+            isLink: "https://www.instagram.com/p/COAYwduB3jc/",
+            title: "Character practise",
+            tile: {
+                content: "The first result of learning to draw pixel characters. Based on tutorial by Slynyrd.",
+                image: "/person_practise.webp"
+            },
+            createDate: {
+                day: 23,
+                month: 4,
+                year: 2021
+            }
+        },
+        {
+            id: "rose",
+            folder: "/rose",
+            isLink: "https://www.instagram.com/p/CMZkmJaBhd1/",
+            title: "The digital blossom",
+            tile: {
+                content: "A simple red rose. Slightly improved with new colours and details.",
+                image: "/rose_plant.webp"
+            },
+            groups: [
+                "organic-group"
+            ],
+            createDate: {
+                day: 9,
+                month: 12,
+                year: 2020
+            },
+            modifyDate: {
+                day: 14,
+                month: 3,
+                year: 2021
+            }
+        },
+        {
+            id: "tree",
+            folder: "/tree-on-rock",
+            isLink: "https://www.instagram.com/p/CPSx-X8hdVM/",
+            title: "Organic pixels",
+            tile: {
+                content: "One of the most iconic plants on the planet - a tree! Here growing on a giant rock.",
+                image: "/tree-on-rock.webp"
+            },
+            groups: [
+                "featured",
+                "organic-group"
+            ],
+            createDate: {
+                day: 23,
+                month: 5,
+                year: 2021
+            }
+        },
+        {
+            id: "fluent-design-system",
+            folder: "/beta",
+            title: "Fluent Design System",
+            tile:
+            {
+                image: "/fluent.webp",
+                content: "Reflections on our design history, the progression, and the potential of how we collectively design for the future."
+            },
+            createDate: {
+                day: 27,
+                month: 10,
+                year: 2020
+            },
+            modifyDate: {
+                day: 23,
+                month: 5,
+                year: 2022
+            }
+        }
+    ]
