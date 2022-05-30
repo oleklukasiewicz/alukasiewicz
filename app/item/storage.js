@@ -63,7 +63,7 @@ let storageItems = () =>
             id: "adventure",
             folder: "/adventure",
             isLink: "https://www.instagram.com/p/CCmAJKGBWeb/",
-            title: "Let the journey begin!",
+            title: "Let the journey begin",
             tile: {
                 content: "Don't wait for the adventure's start - begin it by yourself!",
                 image: "/adventure.webp"

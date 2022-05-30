@@ -276,7 +276,7 @@ let ItemController = (function () {
 
     let _itemsLoaded = false;
     let _groupsLoaded = false;
-    
+
     let _defaultGroup;
     let _controller = {};
 
@@ -285,7 +285,7 @@ let ItemController = (function () {
         let bDate = b.modifyDate || b.createDate;
         return bDate.compare(aDate);
     }
-    
+
     EventController.call(_controller, ["fetchGroup", "fetchGroupFinish", "fetchItem", "fetchItemFinish"]);
 
     //adding error types for item and group not errors
@@ -682,7 +682,6 @@ ViewController.addEventListener("historyEdit", (historyItem, view) => {
     else
         history.pushState(historyItem, '', _url);
 });
-ViewController.addEventListener("navigationRequest", () => closeNavigation());
 ViewController.addEventListener("navigateDefault", (arg) => {
     let _homeIndex = history.state.defaultViewHistoryIndex;
     let _indexDelta = _homeIndex - history.state.index;
@@ -698,6 +697,7 @@ ViewController.addEventListener("navigateToView", (view, lastView) => {
     setNavigationState(false);
 });
 ViewController.addEventListener("navigateFromView", (lastView) => lastView.rootNode.classList.remove(GLOBAL.activeView));
+ViewController.addEventListener("navigationRequest", () => closeNavigation());
 
 //DOM events
 window.addEventListener("load", async function () {
@@ -735,10 +735,8 @@ window.addEventListener("load", async function () {
             routeArg: START_URL.slice(1, START_URL.length - 1)
         });
 });
-window.addEventListener("popstate", (event) =>
-    ViewController.navigateFromHistory(event.state));
-window.onresize = () =>
-    document.body.classList.toggle("scroll-fix", !isScrollbarVisible());
+window.addEventListener("popstate", (event) => ViewController.navigateFromHistory(event.state));
+window.onresize = () => document.body.classList.toggle("scroll-fix", !isScrollbarVisible());
 
 //item tile creating method
 let createItemTile = async function (node, item) {
