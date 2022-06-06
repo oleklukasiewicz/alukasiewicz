@@ -347,9 +347,10 @@ let ItemController = (function () {
     let _getResourceGroupByHash = function (dictionary, hash) {
         let targetResource;
         let target = dictionary.find((resGroup) => {
-            targetResource = resGroup.resources.find((res => res.hash === hash))
+            targetResource = resGroup.resources.find((res => res.hash == hash))
             return targetResource ? true : false;
         });
+
         target.selected = targetResource;
         return target;
     }
