@@ -23,7 +23,7 @@ let ItemBuilder = function (item) {
             item.resources.push(new ResourceGroup(component.resources));
         }
     });
-    
+
     if (item.debug)
         console.log(item);
 }
@@ -163,9 +163,10 @@ let ItemComponentBuilder = async function (component, itemFolder, item) {
                 let _button = document.createElement("A");
                 _button.innerHTML = "<i class='mi mi-Picture'></i><span>Show all</span>";
                 _button.className = "button";
-                _button.href = APP.url.resource + "/" + item.id + "/" + _displayImages[0].hash;
+                _button.href = "/" + APP.url.resource + "/" + item.id + "/" + _displayImages[0].hash;
 
-                _button.onclick = function () {
+                _button.onclick = function (e) {
+                    e.preventDefault()
                     ViewController.navigate(VIEW.resource, {
                         routeArg: [
                             item.id,

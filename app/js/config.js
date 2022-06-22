@@ -347,7 +347,7 @@ let ItemController = (function () {
     let _getResourceGroupByHash = function (dictionary, hash) {
         let targetResource;
         let target = dictionary.find((resGroup) => {
-            targetResource = resGroup.resources.find((res => res.hash === hash))
+            targetResource = resGroup.resources.find((res => res.hash == hash))
             return targetResource ? true : false;
         });
         target.selected = targetResource;
@@ -391,7 +391,7 @@ let ItemController = (function () {
         }
 
         //TODO: check if components.js and components.css are downloaded if not -> download
-        if (!item.isItemLinkToWeb && !item.isContentCached) {
+        if (!item.isLink && !item.isContentCached) {
             //getting item content
             let _content = await _downloadViaAJAX(item, item.folder);
 
@@ -508,8 +508,8 @@ const itemView = new View(VIEW.item, APP.url.item, { currentItem: null }, {
             } catch (e) { console.error(e); return; }
             if (!item || this.data.currentItem == item)
                 return;
-            if (item.isItemLinkToWeb) {
-                window.open(item.isItemLinkToWeb, '_blank').focus();
+            if (item.isLink) {
+                window.open(item.isLink, '_blank').focus();
                 ViewController.navigateToDefaultView();
                 return;
             }
@@ -768,7 +768,7 @@ let createItemTile = async function (node, item) {
     let nodeLabels = document.createElement("DIV");
     nodeLabels.classList.add("labels");
 
-    let nodeButton = createButton(item.isItemLinkToWeb ? "mi-OpenInNewWindow" : "mi-BackMirrored", item.isItemLinkToWeb ? "Open link" : "Read more", "DIV", true);
+    let nodeButton = createButton(item.isLink ? "mi-OpenInNewWindow" : "mi-BackMirrored", item.isLink ? "Open link" : "Read more", "DIV", true);
 
     nodeLabels.appendChild(nodeButton);
 
@@ -798,12 +798,12 @@ let createItemTile = async function (node, item) {
     node.classList.replace(GLOBAL.loading, GLOBAL.loaded);
     node.onclick = function () {
         event.preventDefault();
-        item.isItemLinkToWeb ?
-            window.open(item.isItemLinkToWeb, '_blank').focus()
+        item.isLink ?
+            window.open(item.isLink, '_blank').focus()
             :
             ViewController.navigate(VIEW.item, { routeArg: [item.id] });
     };
-    node.href = item.isItemLinkToWeb || APP.url.item + item.id;
+    node.href = item.isLink || APP.url.item + item.id;
 
     //loading item
     setTimeout(() => node.classList.remove(GLOBAL.loaded), 300);
