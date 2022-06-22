@@ -166,7 +166,7 @@ let ItemComponentBuilder = async function (component, itemFolder, item) {
                 _button.href = "/" + APP.url.resource + "/" + item.id + "/" + _displayImages[0].hash;
 
                 _button.onclick = function (e) {
-                    e.preventDefault()
+                    e.preventDefault();
                     ViewController.navigate(VIEW.resource, {
                         routeArg: [
                             item.id,

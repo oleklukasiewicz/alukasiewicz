@@ -350,6 +350,7 @@ let ItemController = (function () {
             targetResource = resGroup.resources.find((res => res.hash == hash))
             return targetResource ? true : false;
         });
+
         target.selected = targetResource;
         return target;
     }
