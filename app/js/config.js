@@ -122,8 +122,12 @@ let ViewController = (function () {
     let _currentHistoryIndex = -1;
     let _defaultViewHistoryIndex = -1;
     let _defaultView;
+
     let _currentView;
+
     let _previousView;
+    let _previousViewArgs;
+
     EventController.call(_controller, ["navigateToView", "navigationRequest", "navigateFromView", "navigateDefault", "historyEdit"]);
     //integrated error controller
     let _errors = [];
@@ -187,10 +191,9 @@ let ViewController = (function () {
     _controller.navigate = async function (id, arg = {}) {
 
         _controller.invokeEvent("navigationRequest", [id, _currentView]);
-        let _lastRouteArg = _currentView?.lastNavigationArguments?.routeArg || [];
-
+        _previousViewArgs = _currentView?.lastNavigationArguments?.routeArg || [];
         //canceling navigation when is navigating to the same view with the same routeArg
-        if (id == _currentView?.id && (arg.routeArg?.join("/") == _lastRouteArg.join("/")))
+        if (id == _currentView?.id && (arg.routeArg?.join("/") == _previousViewArgs.join("/")))
             return;
 
         //getting view
@@ -207,6 +210,7 @@ let ViewController = (function () {
             _currentView.event.onNavigateFrom?.call(_currentView, arg);
             _controller.invokeEvent("navigateFromView", [_currentView, arg]);
             _previousView = _currentView;
+
         }
 
         //changing url and adding history state
@@ -249,11 +253,15 @@ let ViewController = (function () {
         if (_currentView != _defaultView)
             _controller.invokeEvent("navigateDefault", [arg]);
     }
-    _controller.back = function () {
+    _controller.back = function (refresh = true) {
         if (history.state.index == 0)
             _controller.navigateToDefaultView();
-        else
-            history.back();
+        else {
+            if (refresh)
+                history.back();
+            else
+                _controller.navigate(_previousView.id, _previousViewArgs);
+        }
     }
     _controller.loadingModes = {
         single: "single",
