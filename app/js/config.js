@@ -53,10 +53,11 @@ let ErrorClass = function (id, title, message, triggerErrorsList = [], refreshRe
         refreshRequire
     }
 }
-let HistoryItem = function (id, index, arg) {
+let HistoryItem = function (id, index, defaultViewHistoryIndex, arg) {
     return {
         id,
         index,
+        defaultViewHistoryIndex,
         arg
     }
 }
@@ -126,7 +127,6 @@ let ViewController = (function () {
     let _currentView;
 
     let _previousView;
-    let _previousViewArgs;
 
     EventController.call(_controller, ["navigateToView", "navigationRequest", "navigateFromView", "navigateDefault", "historyEdit"]);
     //integrated error controller
@@ -191,14 +191,14 @@ let ViewController = (function () {
     _controller.navigate = async function (id, arg = {}) {
 
         _controller.invokeEvent("navigationRequest", [id, _currentView]);
-        _previousViewArgs = _currentView?.lastNavigationArguments?.routeArg || [];
+        let _previousViewArgs = _currentView?.navigationArgs?.routeArg || [];
+
         //canceling navigation when is navigating to the same view with the same routeArg
-        if (id == _currentView?.id && (arg.routeArg?.join("/") == _previousViewArgs.join("/")))
+        if (id == _currentView?.id && ((arg.routeArg?.join("/")||"") == _previousViewArgs.join("/")))
             return;
 
         //getting view
         let _target = _getViewById(id);
-
         //unloading old view if exist
         if (_currentView) {
             //finishing loading view if needed, unloading and generating node if needed
@@ -213,26 +213,28 @@ let ViewController = (function () {
 
         }
 
-        //changing url and adding history state
+        //adding history default index
         if (!arg.noHistoryPush) {
             _currentHistoryIndex++;
             if (_target == _defaultView)
                 _defaultViewHistoryIndex = _currentHistoryIndex;
-
-            //invoking history edit event
-            _controller.invokeEvent("historyEdit", [
-                Object.assign(new HistoryItem(_target.id, _currentHistoryIndex, {
-                    routeArg: arg.routeArg
-                }), {
-                    defaultViewHistoryIndex: _defaultViewHistoryIndex
-                }), _target]
-            );
         }
+
+        let _historyItem = new HistoryItem(_target.id, _currentHistoryIndex, _defaultViewHistoryIndex, {
+            routeArg: arg.routeArg
+        });
 
         //setting current view
         _currentView = _target;
-        _currentView.lastNavigationArguments = arg;
+        _currentView.navigationArgs = arg;
         _generateRootNode(_currentView);
+        _currentView.navigationUrl = "/" + _currentView.url + ((arg.routeArg?.length > 0) ? ("/" + (arg.routeArg?.join('/') || '')) : "");
+        _currentView.historyItem = _historyItem;
+
+        //invoking history and url edit event
+        await _controller.invokeEvent("historyEdit",
+            [_historyItem, _target]
+        );
 
         //registering and invoking navigate event
         await _registerDelayedView(_currentView);
@@ -253,15 +255,11 @@ let ViewController = (function () {
         if (_currentView != _defaultView)
             _controller.invokeEvent("navigateDefault", [arg]);
     }
-    _controller.back = function (refresh = true) {
+    _controller.back = function () {
         if (history.state.index == 0)
             _controller.navigateToDefaultView();
-        else {
-            if (refresh)
-                history.back();
-            else
-                _controller.navigate(_previousView.id, _previousViewArgs);
-        }
+        else
+            history.back();
     }
     _controller.loadingModes = {
         single: "single",
@@ -684,12 +682,10 @@ ViewController.register(resourceView);
 
 //view controller events
 ViewController.addEventListener("historyEdit", (historyItem, view) => {
-    //url params are getted from navigation controller from navigate() arg
-    let _url = "/" + view.url + ((historyItem.arg.routeArg?.length > 0) ? ("/" + (historyItem.arg.routeArg?.join('/') || '')) : "");
-    if (historyItem.index == 0)
-        history.replaceState(historyItem, '', _url)
+    if (historyItem.index == 0 || view.navigationArgs.noHistoryPush)
+        history.replaceState(historyItem, '', view.navigationUrl);
     else
-        history.pushState(historyItem, '', _url);
+        history.pushState(historyItem, '', view.navigationUrl);
 });
 ViewController.addEventListener("navigateDefault", (arg) => {
     let _homeIndex = history.state.defaultViewHistoryIndex;
