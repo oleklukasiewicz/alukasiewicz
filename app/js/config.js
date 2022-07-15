@@ -194,11 +194,12 @@ let ViewController = (function () {
         let _previousViewArgs = _currentView?.navigationArgs?.routeArg || [];
 
         //canceling navigation when is navigating to the same view with the same routeArg
-        if (id == _currentView?.id && ((arg.routeArg?.join("/")||"") == _previousViewArgs.join("/")))
+        if (id == _currentView?.id && ((arg.routeArg?.join("/") || "") == _previousViewArgs.join("/")))
             return;
 
         //getting view
         let _target = _getViewById(id);
+        
         //unloading old view if exist
         if (_currentView) {
             //finishing loading view if needed, unloading and generating node if needed
@@ -227,10 +228,11 @@ let ViewController = (function () {
         //setting current view
         _currentView = _target;
         _currentView.navigationArgs = arg;
-        _generateRootNode(_currentView);
         _currentView.navigationUrl = "/" + _currentView.url + ((arg.routeArg?.length > 0) ? ("/" + (arg.routeArg?.join('/') || '')) : "");
         _currentView.historyItem = _historyItem;
 
+        _generateRootNode(_currentView);
+        
         //invoking history and url edit event
         await _controller.invokeEvent("historyEdit",
             [_historyItem, _target]
