@@ -1,1 +1,1 @@
-My portfolio website.
+My portfolio website with all my art, projects and blog. Builded as PWA with vanilla js

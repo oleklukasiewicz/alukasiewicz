@@ -22,7 +22,7 @@ const staticResources =
         "/js/item.js",
         "/js/prerender.js",
         "/js/postrender.js",
-        "/js/config.js",
+        "/js/main.js",
         "/font/micon_nb.svg",
         "/font/micon_nb.woff2",
         "/img/image_error.webp",

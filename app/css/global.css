@@ -14,6 +14,7 @@
     --color-logo: #5f5f5f;
     --color-logo-A1: #404040;
     --profile-image-src: url(\/img\/profile\.webp);
+    --logo-anim-delay:0.5s;
     --acrylic: blur(60px) saturate(150%);
     --logo-height: 14px;
     --skew: 23deg;
@@ -181,22 +182,22 @@ a.link:hover{
 }
 .al-logo.anim > .l:nth-child(1){
     animation: forwards LogoAnimL1 var(--time);
-    animation-delay: .3s;
+    animation-delay:var(--logo-anim-delay);
     transform: skewX(var(--skewR));
     background-color: var(--color-logo-A1);
 }
 .al-logo.anim > .l:nth-child(2){
-    animation-delay: .6s;
+    animation-delay: calc( var(--logo-anim-delay) + 0.3s);
     margin-left: -3px;
 }
 .al-logo.anim > .l:nth-child(3){
-    animation-delay: .8s;
+    animation-delay: calc( var(--logo-anim-delay) + 0.5s);
     margin-left: -.5px;
 }
 .al-logo.anim > .c{
     transform: scale(0);
     animation: forwards LogoAnimI1 var(--time);
-    animation-delay: 1s;
+    animation-delay:calc( var(--logo-anim-delay) + 0.7s);
     border-radius: 50%;
     height: var(--logo-width);
     vertical-align: top;
