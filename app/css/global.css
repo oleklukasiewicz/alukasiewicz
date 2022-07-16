@@ -109,10 +109,6 @@ a.link:hover{
 .hidden{
     display: none!important;
 }
-.hidden-opacity
-{
-    opacity: 0 !important;
-}
 @font-face{
     font-family: micon_nb;
     font-style: normal;
@@ -1106,12 +1102,4 @@ u.dotted-separator{
         backdrop-filter: none;
         background-color: var(--color-theme);
     }
-}
-.shadow-ca{
-    position: fixed;
-    z-index: 10;
-    transition: var(--time) cubic-bezier(.16,1,.29,.99);
-    object-fit: cover !important;
-    border-radius: var(--border-radius);
-    background-color: var(--color-theme-A1);
 }
