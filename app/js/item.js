@@ -197,6 +197,7 @@ let ItemComponentBuilder = async function (component, itemFolder, item) {
                     function (img) {
                         img.onclick = function () {
                             ViewController.navigate(VIEW.resource, {
+                                connectedAnimation: new ImageConnectedAnimation(img,true),
                                 routeArg: [
                                     item.id,
                                     res.hash

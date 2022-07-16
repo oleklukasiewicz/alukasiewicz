@@ -1064,3 +1064,4 @@ let ImageHelper = function (image, onload = () => { }, onerror = () => { }) {
 
 //check if scrollbar is visible
 let isScrollbarVisible = (element = document.body) => element.scrollHeight > element.clientHeight;
+
