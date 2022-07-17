@@ -44,16 +44,60 @@ let ItemComponentBuilder = async function (component, itemFolder, item) {
 
             //setting up images order and count
             let _loadingPromises = [];
-            let _max = _arg.imagesCount || component.resource.length;
-            _max = _max > 5 ? 5 : _max;
-            let _order = _arg.resourceOrder || [...Array(5).keys()];
-            if (_order.length < _max)
-                for (let orderIndex = _order.length - 1; orderIndex < _max; orderIndex++)
-                    _order[orderIndex] = orderIndex;
+            let _maxImagesCount = 5;
+            let _displayImagesCount = (_arg.imagesCount && _arg.imagesCount <= _maxImagesCount) ? _arg.imagesCount : (component.resources.length < _maxImagesCount ? component.resources.length : _maxImagesCount);
+            let _displayImages = new Array(_displayImagesCount);
 
-            if (!_arg.hideControls && component.resource.length > 1) {
-                _component.innerHTML = "<div><b class='font-subtitle'>" + component.title + "</b></div>";
-                _component.classList.add("show-controls");
+            //set display items if resourceOrder arg exist
+            if (_arg.resourceOrder) {
+                let _insertedImages = 0;
+                for (let _resIndex = 0; _resIndex < component.resources.length; _resIndex++) {
+                    let resource = component.resources[_resIndex];
+                    let _resourceOrderIndex = _arg.resourceOrder.findIndex((hash) => hash == resource.hash);
+
+                    //if resource exist in resourceOrder - set tag and add to displayItems
+                    if (_resourceOrderIndex != -1) {
+                        _displayImages[_resourceOrderIndex] = resource;
+                        resource.isDisplayed = true;
+                        resource.resourceIndexInGroup=_resIndex;
+                        _insertedImages++;
+                    }
+
+                    if (_insertedImages == _arg.resourceOrder.length)
+                        break;
+                };
+
+                //removing all empty resources from displayImages
+                _displayImages = _displayImages.filter((res) => res);
+
+                //filling with not displayed resources if displayItems count is smaller than images count to display
+                if (_insertedImages < _displayImagesCount) {
+                    let _toInsert = _displayImagesCount - _insertedImages;
+                    let _toInsertResIndex = 0;
+
+                    while (_toInsert > 0) {
+                        if (!component.resources[_toInsertResIndex].isDisplayed) {
+                            _displayImages[_displayImagesCount - _toInsert] = component.resources[_toInsertResIndex];
+                            _toInsert--;
+                        }
+                        _toInsertResIndex++;
+                    }
+                }
+
+            } else {
+
+                //default: filling with resources from resources list
+                for (let _resIndex = 0; _resIndex < _displayImagesCount; _resIndex++)
+                   {
+                    _displayImages[_resIndex] = component.resources[_resIndex];
+                    _displayImages[_resIndex].resourceIndexInGroup=_resIndex;
+                   }
+            }
+
+            if (!_arg.hideControls && component.resources.length > 1) {
+                _finalComponent.innerHTML = "<div><b class='font-subtitle'>" + component.title + "</b></div>";
+                _finalComponent.classList.add("show-controls");
+
                 //show all button
                 let _button = document.createElement("A");
                 _button.innerHTML = "<i class='mi mi-Picture'></i><span>Show all</span>";
@@ -88,6 +132,7 @@ let ItemComponentBuilder = async function (component, itemFolder, item) {
                     _firstImg = _img;
 
                 _img.alt = res?.props?.alt || "";
+                res.props.node=_img;
                 _img.src = res.src;
                 _img.classList.add(GLOBAL.loading);
                 _list.appendChild(_img);

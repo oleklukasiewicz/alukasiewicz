@@ -80,6 +80,7 @@ a.link:hover
 .gallery > .list > img.loading{
     pointer-events: none;
     animation-name: Blink;
+    transition: opacity var(--time);
     animation-iteration-count: infinite;
     animation-duration: 1.2s;
 }

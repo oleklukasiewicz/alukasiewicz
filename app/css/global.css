@@ -1077,6 +1077,10 @@ u.dotted-separator{
         background-color: var(--color-theme);
     }
 }
+
+.hidden-opacity{
+    opacity: 0!important;
+}
 .shadow-ca{
     position: fixed;
     z-index: 10;

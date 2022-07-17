@@ -150,6 +150,8 @@ let ViewController = (function () {
     let _currentHistoryIndex = -1;
     let _defaultViewHistoryIndex = -1;
     let _defaultView;
+    let _backHistoryArgs;
+
     let _currentView;
     let _previousView;
     EventController.call(_controller, ["navigateToView", "navigationRequest", "navigateFromView", "navigateDefault", "historyEdit"]);
@@ -256,6 +258,11 @@ let ViewController = (function () {
         _currentView.lastNavigationArguments = arg;
         _generateRootNode(_currentView);
 
+        //invoking history and url edit event
+        await _controller.invokeEvent("historyEdit",
+            [_historyItem, _target]
+        );
+
         //registering and invoking navigate event
         await _registerDelayedView(_currentView);
         _controller.invokeEvent("navigateToView", [_currentView, _previousView, arg]);
@@ -275,10 +282,10 @@ let ViewController = (function () {
         if (_currentView != _defaultView)
             _controller.invokeEvent("navigateDefault", [arg]);
     }
-    _controller.back = function (arg = {}) {
-        _historyBackArg = arg;
+    _controller.back = function (arg) {
+        _backHistoryArgs = arg;
         if (history.state.index == 0)
-            _controller.navigateToDefaultView();
+            _controller.navigateToDefaultView(arg);
         else
             history.back();
     }
@@ -292,7 +299,8 @@ let ViewController = (function () {
         _defaultViewHistoryIndex = historyItem.defaultViewHistoryIndex;
         _controller.navigate(historyItem.id, Object.assign({
             noHistoryPush: true
-        }, historyItem.arg, _historyBackArg));
+        }, historyItem.arg, _backHistoryArgs));
+        _backHistoryArgs = null;
     }
     return _controller;
 }());
@@ -503,18 +511,20 @@ const itemView = new View(VIEW.item, APP.url.item, { currentItem: null }, {
         if (ItemController.isItemsLoaded) {
             //getting 
             let item;
-            try {
-                item = await ItemController.getItemById(arg.routeArg[0]);
-            } catch { return; }
-            if (!item || this.data.currentItem == item)
-                return;
-            if (item.isItemLinkToWeb) {
-                window.open(item.isItemLinkToWeb, '_blank').focus();
-                ViewController.navigateToDefaultView();
-                return;
-            }
-            this.data.currentItem = item;
-
+            if (!arg.currentItem) {
+                try {
+                    item = await ItemController.getItemById(arg.routeArg[0]);
+                } catch (e) { console.error(e); return; }
+                if (!item || this.data.currentItem == item)
+                    return;
+                if (item.isLink) {
+                    window.open(item.isLink, '_blank').focus();
+                    ViewController.navigateToDefaultView();
+                    return;
+                }
+                this.data.currentItem = item;
+            } else
+                item=this.data.currentItem = arg.currentItem;
             //preparing item info
             document.title = item.title + " - " + APP.name;
             this.data.iTitle.innerHTML = item.title;
@@ -527,12 +537,11 @@ const itemView = new View(VIEW.item, APP.url.item, { currentItem: null }, {
         } else
             ViewController.invokeError("item_load_error");
     },
-    onLoadFinish: async function (arg) {
+    onLoadFinish: function (arg) {
+        let item = this.data.currentItem;
         this.rootNode.classList.remove(GLOBAL.loading);
 
-        //setting up animation
         if (arg.connectedAnimation) {
-            let item = this.data.currentItem;
             let targetRes = ItemController.findResourceByHash(item.resources, arg.connectedAnimationHash).selected;
             if (targetRes.props?.node) {
                 let _node = targetRes.props.node;
@@ -541,8 +550,9 @@ const itemView = new View(VIEW.item, APP.url.item, { currentItem: null }, {
                     await arg.connectedAnimation.start(_node);
                     _node.classList.remove("hidden-opacity");
                 }, 0);
-            } else
+            } else {
                 arg.connectedAnimation.cancel()
+            }
         }
     },
     onError: function (err) {
@@ -624,8 +634,9 @@ const resourceView = new View(VIEW.resource, APP.url.resource, {},
             //adding close button
             getById("image-viewer-close").addEventListener("click", () => {
                 ViewController.back({
-                    connectedAnimation: new ImageConnectedAnimation(_sender.data.currentNode, true),
-                    connectedAnimationHash: history.state.arg.routeArg[1]
+                    connectedAnimation: new ImageConnectedAnimation(this.data.resList.children[this.data.resSlider.currentIndex], true),
+                    connectedAnimationHash: history.state.arg.routeArg[1],
+                    currentItem: this.data.currentItem
                 })
             });
             let _setButtonsDisplay = function (isHidden) {
@@ -675,14 +686,11 @@ const resourceView = new View(VIEW.resource, APP.url.resource, {},
                 return;
             }
             //loading resources to slider
-            let _selectedIndex = await this.data.resSlider.loadResources(resourceGroup.resources, resourceGroup.selected);
-
-            //setting up animation
+            await this.data.resSlider.loadResources(resourceGroup.resources, resourceGroup.selected);
             if (arg.connectedAnimation) {
-                let _selectedNode = this.data.resList.children[_selectedIndex];
-                _selectedNode.classList.add("hidden-opacity");
-                await arg.connectedAnimation.start(_selectedNode);
-                _selectedNode.classList.remove("hidden-opacity");
+                this.data.resList.children[this.data.resSlider.currentIndex].classList.add("hidden-opacity");
+                await arg.connectedAnimation.start(this.data.resList.children[this.data.resSlider.currentIndex]);
+                this.data.resList.children[this.data.resSlider.currentIndex].classList.remove("hidden-opacity");
             }
         },
         onLoadFinish: function () {
@@ -922,6 +930,13 @@ let ResourceSlider = function () {
         await _renderIndex(_index);
         await _sender.invokeEvent("previous", [_res[_currentIndex], _index])
     }
+    Object.defineProperties(this,
+        {
+            currentIndex:
+            {
+                get: () => _currentIndex
+            }
+        });
 }
 
 //gesture support for element
@@ -1073,20 +1088,17 @@ let ImageHelper = function (image, onload = () => { }, onerror = () => { }) {
     });
 }
 
-//Connected Animation class fro Images
+//connected animation class
 let ImageConnectedAnimation = function (source, prep = false) {
     let _shadow = source.cloneNode(true);
     let _target;
-    let _setProps = function (__source, __target = _shadow) {
-        let _bounds = __source.getBoundingClientRect();
-        __target.style.top = _bounds.top + "px";
-        __target.style.left = _bounds.left + "px";
-        __target.style.width = _bounds.width + "px";
-        __target.style.height = _bounds.height + "px";
-    }
     this.prepare = function () {
+        let _bounds = source.getBoundingClientRect();
         _shadow.classList.add("shadow-ca");
-        _setProps(source);
+        _shadow.style.top = _bounds.top + "px";
+        _shadow.style.left = _bounds.left + "px";
+        _shadow.style.width = _bounds.width + "px";
+        _shadow.style.height = _bounds.height + "px";
         document.body.append(_shadow);
     }
     let _cancel = function () {
@@ -1094,12 +1106,16 @@ let ImageConnectedAnimation = function (source, prep = false) {
         _shadow.remove();
     }
     let _followScroll = function () {
-        _setProps(_target);
+        let _tBounds = _target.getBoundingClientRect();
+        _shadow.style.top = _tBounds.top + "px";
+        _shadow.style.left = _tBounds.left + "px";
+        _shadow.style.width = _tBounds.width + "px";
+        _shadow.style.height = _tBounds.height + "px";
     }
     this.cancel = _cancel;
     this.start = async function (target) {
         _target = target;
-        return new Promise((resolve) => {
+        return new Promise((resolve, reject) => {
             _followScroll();
             document.addEventListener("scroll", _followScroll);
             setTimeout(function () {
