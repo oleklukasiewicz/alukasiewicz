@@ -1,7 +1,7 @@
 #item-content > .section > .section-title{
     font-weight: 700;
     margin-bottom: 24px;
-    margin-top: 24px;
+    margin-top: 8px;
 }
 #item-content .quote{
     width: 100%;
@@ -27,21 +27,9 @@
     color: var(--color-theme-A5);
     display: table;
 }
-#item-content .gallery.items-count-1 > img{
-    object-fit: cover;
-    border-radius: var(--border-radius);
-    background-color: var(--color-theme-A1);
-    width: 100%;
-    margin-left: auto;
-    margin-right: auto;
-    display: block;
-    margin: 12px 0;
-    cursor: pointer;
-    min-width: 100%;
-    min-height: 300px;
-}
-.gallery.show-controls{
-    margin: 20px 0 0;
+.gallery.show-controls
+{
+    margin-top: 8px;
 }
 .gallery > div{
     width: 100%;
@@ -58,7 +46,7 @@
     float: right;
 }
 .gallery > .list{
-    margin-top: 20px;
+    margin-top: 24px;
     display: grid;
     gap: 6px;
     width: 100%;
@@ -98,6 +86,19 @@
 }
 .gallery.items-count-1 > .list > img{
     aspect-ratio: 8/5;
+}
+.gallery.items-count-1 > img{
+    object-fit: cover;
+    border-radius: var(--border-radius);
+    background-color: var(--color-theme-A1);
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+    margin: 12px 0;
+    cursor: pointer;
+    min-width: 100%;
+    min-height: 300px;
 }
 .gallery.items-count-5 > .list > img:nth-child(1){
     grid-column: 1;
@@ -159,7 +160,7 @@
 }
 @media only screen and (max-width:430px){
     .gallery.items-count-5 > .list{
-        margin-top: 20px;
+        margin-top: 12px;
         display: grid;
         grid-template-columns: 1fr 1fr;
         grid-template-rows: 260px 160px 40px 160px;

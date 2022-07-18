@@ -199,7 +199,7 @@ let ViewController = (function () {
 
         //getting view
         let _target = _getViewById(id);
-        
+
         //unloading old view if exist
         if (_currentView) {
             //finishing loading view if needed, unloading and generating node if needed
@@ -232,7 +232,7 @@ let ViewController = (function () {
         _currentView.historyItem = _historyItem;
 
         _generateRootNode(_currentView);
-        
+
         //invoking history and url edit event
         await _controller.invokeEvent("historyEdit",
             [_historyItem, _target]
@@ -399,12 +399,12 @@ let ItemController = (function () {
             return;
         }
 
-        //TODO: check if components.js and components.css are downloaded if not -> download
+        //TODO: check if item.js and item.css are downloaded if not -> download
         if (!item.isLink && !item.isContentCached) {
             //getting item content
             let _content = await _downloadViaAJAX(item, item.folder);
 
-            //TODO: check content component version if newer -> download new version of components.css and js
+            //TODO: check content component version if newer -> download new version of item.css and js
 
             //creating resource dictionary and adding content.json file into it
             Object.assign(item, _content, {
@@ -415,9 +415,9 @@ let ItemController = (function () {
 
             //building item structure
             ItemBuilder(item);
-
-            if (_content?.version == APP.version)
-                item.isContentCached = true;
+            
+            //indicating content is downloaded
+            item.isContentCached = true;
         }
         return item;
     }

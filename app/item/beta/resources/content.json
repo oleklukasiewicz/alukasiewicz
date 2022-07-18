@@ -1,5 +1,4 @@
 {
-    "version": "0-0-0-3",
     "component_version": 1,
     "content": [
         {
@@ -21,10 +20,14 @@
                     }
                 }
             ],
-            "arguments": {
+            "props": {
                 "alt": "Ocean of clouds"
             },
             "id": "airship-image"
+        },
+        {
+            "type": "section",
+            "content": "Fluent becomes the best version of itself when there is clarity around what it is, what it could be, and why that’s important. Today, we aspire to make Fluent a collective, open design system that connects us, inspiring and influencing everything we create."
         },
         {
             "title": "Designing how we design",
@@ -38,10 +41,6 @@
                 },
                 " continues this work. Fluent is evolving to be more than a set of outcomes and will define the process by which we collectively design and build products. It represents the growth and influence of design thinking within Microsoft."
             ]
-        },
-        {
-            "type": "section",
-            "content": "Fluent becomes the best version of itself when there is clarity around what it is, what it could be, and why that’s important. Today, we aspire to make Fluent a collective, open design system that connects us, inspiring and influencing everything we create.."
         },
         {
             "type": "gallery",
@@ -74,7 +73,7 @@
                 }
             ],
             "id": "airship-gallery",
-            "arguments": {
+            "props": {
                 "imagesCount": 3,
                 "resourceOrder": [
                     4028597573884646,
@@ -93,6 +92,12 @@
         {
             "title": "Partner with Microsoft Design",
             "content": "The Fluent Design System improves with your input. We learn and improve the system based on feedback we receive from our customers, partners, and community of developers and designers. If you have something to share about Fluent design, get in touch with us here."
+        },
+        {
+            "content":"Microsoft does not lack in design talent, but certainly faces the very real challenge of learning to scale and span the products and experiences as we grow."
+        },
+        {
+            "content":"Historically, Microsoft designers have valued product-level expertise, innovation, and experience. As a discipline, we've focused on building design culture, having a seat at the table, and working more closely alongside engineers to learn, to grow, to craft and build together. These engineering partnerships inspired us to think like a network as designers. And to wonder how we could build on the collective cross-disciplinary excellence of our Microsoft design and engineering community — a key component of Fluent."
         }
     ]
 }

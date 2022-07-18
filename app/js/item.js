@@ -65,7 +65,7 @@ let ResourceConverter = function (component, targetFolder, componentId) {
 let ItemComponentBuilder = async function (component, itemFolder, item) {
     if (typeof (component) === "string") return component;
     let _type = component.type;
-    let _arg = component.arguments || {};
+    let _arg = component.props || {};
     let _finalComponent;
     if (component.dontRender) _type = "none";
     //generating nodes
@@ -213,9 +213,9 @@ let ItemComponentBuilder = async function (component, itemFolder, item) {
             Promise.all(_loadingPromises.map(async _promise => await _promise));
             _finalComponent.classList.add("items-count-" + _displayImagesCount);
 
-            if (component.arguments?.alt) {
+            if (component.props?.alt) {
                 let _alt = document.createElement("span");
-                let _altText = typeof (component.arguments.alt) === "boolean" ? component.resources[0].props.alt : component.arguments.alt;
+                let _altText = typeof (component.props.alt) === "boolean" ? component.resources[0].props.alt : component.props.alt;
                 _alt.innerHTML = _altText;
                 _alt.classList.add("img-alt");
                 _finalComponent.appendChild(_alt);
