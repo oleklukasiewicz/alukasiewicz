@@ -606,7 +606,7 @@ body.scroll-fix::-webkit-scrollbar-track{
     height: 100%;
     max-width: 100%;
     box-sizing: border-box;
-    padding: 15px 10px 50px;
+    padding: 12px 10px 30px;
 }
 #resource.loading #image-viewer-list{
     animation-name: Blink;
