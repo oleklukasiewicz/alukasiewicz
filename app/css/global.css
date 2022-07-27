@@ -259,12 +259,12 @@ a.link:hover{
         opacity: .5;
     }
 }
-@keyframes SlideRight
+@keyframes GalleryNext
 {
     0%
     {
         opacity: 0;
-        transform: translateX(-16px)
+        transform: scale(0.9)
     }
     100%
     {
@@ -272,12 +272,12 @@ a.link:hover{
         transform: none
     }
 }
-@keyframes SlideLeft
+@keyframes GalleryPrevious
 {
     0%
     {
         opacity: 0;
-        transform: translateX(16px)
+        transform: scale(1.05)
     }
     100%
     {
@@ -381,9 +381,12 @@ body.scroll-fix::-webkit-scrollbar-track{
     display: table;
 }
 #about,
-#item,
-#resource{
+#item{
     padding: var(--size-margin-base);
+}
+#resource
+{
+    padding: calc(var(--size-margin-base) - 10px);
 }
 #profile-header{
     background-color: var(--color-theme-A1);
@@ -602,6 +605,7 @@ body.scroll-fix::-webkit-scrollbar-track{
     overflow: hidden;
     height: 100%;
     max-width: 100%;
+    padding: 10px;
 }
 #resource.loading #image-viewer-list{
     animation-name: Blink;
@@ -614,35 +618,36 @@ body.scroll-fix::-webkit-scrollbar-track{
     display: none;
 }
 #image-viewer-list > img{
-    margin: auto auto;
+    margin: 0;
     max-width: 100%;
     max-height: 100%;
     object-fit: contain;
-    display: none;
+    opacity: 0;
+   width: 0px;
+   height: 0px;
     border-radius: var(--border-radius);
 }
 #image-viewer-list > img.active-view{
-    display: table;
+    opacity: 1;
+    width: auto;
+    height: auto;
+    margin: auto auto;
 }
 #image-viewer-list > img.active-view.next{
-    animation-name: SlideLeft;
+    animation-name: GalleryNext;
     animation-timing-function:cubic-bezier(.16,1,.29,.99);
-    animation-duration: var(--time);
-    animation-delay: 0.1s;
-    animation-fill-mode: forwards;
-    opacity: 0;
+    animation-duration: var(--time-A1);
 }
 #image-viewer-list > img.previous{
-    animation-name: SlideRight;
+    animation-name: GalleryPrevious;
     animation-timing-function:cubic-bezier(.16,1,.29,.99);
-    animation-duration: var(--time);
-    animation-delay: 0.1s;
-    animation-fill-mode: forwards;
-    opacity: 0;
+    animation-duration: var(--time-A1);
 }
 #image-viewer-controls{
     width: 100%;
     display: table;
+    padding: 10px;
+    box-sizing: border-box;
     margin-bottom: 4px;
 }
 #image-viewer-controls > a{
