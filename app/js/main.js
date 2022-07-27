@@ -991,9 +991,9 @@ let GestureBuilder = function (node, event = {}) {
         if (endX < startX && !_isVertical && _distX >= MIN_DIST)
             return _directions.right;
         if (startY < endY && _isVertical && _distY >= MIN_DIST)
-            return _directions.up;
-        if (endY < startY && _isVertical && _distY >= MIN_DIST)
             return _directions.down;
+        if (endY < startY && _isVertical && _distY >= MIN_DIST)
+            return _directions.up;
     }
     node.addEventListener("touchstart", (e) => {
         _startPos.x = e.touches[0].clientX;
