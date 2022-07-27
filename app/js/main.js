@@ -622,8 +622,8 @@ const resourceView = new View(VIEW.resource, APP.url.resource, {},
             //adding event to slider
             this.data.resSlider.addEventListener("render", function (res, index, oldres, old, direction) {
                 console.log(direction)
-                _resList.children[index].classList.add(direction == 1 ? "next" : "previous");
-                _resList.children[old]?.classList.remove("next","previous");
+                _resList.children[index].classList.add(direction !=-1 ? "next" : "previous");
+                _resList.children[old]?.classList.remove("next", "previous");
                 _resList.children[index].classList.add(GLOBAL.activeView);
                 _resList.children[old]?.classList.remove(GLOBAL.activeView);
                 history.state.arg.routeArg = [_sender.data.currentItem.id, res.hash];
@@ -645,8 +645,8 @@ const resourceView = new View(VIEW.resource, APP.url.resource, {},
             GestureBuilder(this.rootNode, {
                 right: this.data.resSlider.next,
                 left: this.data.resSlider.previous,
-                up:this.data.resSlider.next,
-                down:this.data.resSlider.previous
+                up: this.data.resSlider.next,
+                down: this.data.resSlider.previous
             });
         },
         onLoad: async function (arg) {
