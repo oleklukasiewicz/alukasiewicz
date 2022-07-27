@@ -14,7 +14,7 @@
     --color-logo: #5f5f5f;
     --color-logo-A1: #404040;
     --profile-image-src: url(\/img\/profile\.webp);
-    --logo-anim-delay:0.5s;
+    --logo-anim-delay: 0.5s;
     --acrylic: blur(60px) saturate(150%);
     --logo-height: 14px;
     --skew: 23deg;
@@ -164,6 +164,9 @@ a.link:hover{
 .mi-Navigation:before{
     content: "\EBD8";
 }
+.mi-Shop:before{
+    content: "\EE18";
+}
 .al-logo{
     text-decoration: none;
     display: inline-block;
@@ -182,22 +185,22 @@ a.link:hover{
 }
 .al-logo.anim > .l:nth-child(1){
     animation: forwards LogoAnimL1 var(--time);
-    animation-delay:var(--logo-anim-delay);
+    animation-delay: var(--logo-anim-delay);
     transform: skewX(var(--skewR));
     background-color: var(--color-logo-A1);
 }
 .al-logo.anim > .l:nth-child(2){
-    animation-delay: calc( var(--logo-anim-delay) + 0.3s);
+    animation-delay: calc(var(--logo-anim-delay) + .3s);
     margin-left: -3px;
 }
 .al-logo.anim > .l:nth-child(3){
-    animation-delay: calc( var(--logo-anim-delay) + 0.5s);
+    animation-delay: calc(var(--logo-anim-delay) + .5s);
     margin-left: -.5px;
 }
 .al-logo.anim > .c{
     transform: scale(0);
     animation: forwards LogoAnimI1 var(--time);
-    animation-delay:calc( var(--logo-anim-delay) + 0.7s);
+    animation-delay: calc(var(--logo-anim-delay) + .7s);
     border-radius: 50%;
     height: var(--logo-width);
     vertical-align: top;
@@ -256,6 +259,32 @@ a.link:hover{
         opacity: .5;
     }
 }
+@keyframes SlideRight
+{
+    0%
+    {
+        opacity: 0;
+        transform: translateX(-16px)
+    }
+    100%
+    {
+        opacity: 1;
+        transform: none
+    }
+}
+@keyframes SlideLeft
+{
+    0%
+    {
+        opacity: 0;
+        transform: translateX(16px)
+    }
+    100%
+    {
+        opacity: 1;
+        transform: none
+    }
+}
 body{
     margin: 0;
     background-color: var(--color-theme);
@@ -289,6 +318,7 @@ body.scroll-fix::-webkit-scrollbar-track{
 }
 #main-header-navigation{
     display: flex;
+    max-height: 120px;
     gap: 8px;
 }
 #main-header-nav-button,
@@ -594,6 +624,22 @@ body.scroll-fix::-webkit-scrollbar-track{
 #image-viewer-list > img.active-view{
     display: table;
 }
+#image-viewer-list > img.active-view.next{
+    animation-name: SlideLeft;
+    animation-timing-function:cubic-bezier(.16,1,.29,.99);
+    animation-duration: var(--time);
+    animation-delay: 0.1s;
+    animation-fill-mode: forwards;
+    opacity: 0;
+}
+#image-viewer-list > img.previous{
+    animation-name: SlideRight;
+    animation-timing-function:cubic-bezier(.16,1,.29,.99);
+    animation-duration: var(--time);
+    animation-delay: 0.1s;
+    animation-fill-mode: forwards;
+    opacity: 0;
+}
 #image-viewer-controls{
     width: 100%;
     display: table;
@@ -786,7 +832,7 @@ u.dotted-separator{
 .list-view > .item.loading > .labels > .label{
     background-color: var(--color-theme-A1);
     max-width: 90px;
-    margin: 4px 0px 4px auto;
+    margin: 4px 0 4px auto;
 }
 .list-view > .item.loaded > .img > img{
     opacity: 1;
@@ -1059,7 +1105,6 @@ u.dotted-separator{
         padding-bottom: 8px;
         box-sizing: border-box;
         flex-direction: column;
-        max-height: 120px;
         overflow: hidden;
         background-color: var(--color-theme);
         border-bottom: 1px solid var(--color-theme-A1);

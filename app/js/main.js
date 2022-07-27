@@ -415,7 +415,7 @@ let ItemController = (function () {
 
             //building item structure
             ItemBuilder(item);
-            
+
             //indicating content is downloaded
             item.isContentCached = true;
         }
@@ -620,7 +620,10 @@ const resourceView = new View(VIEW.resource, APP.url.resource, {},
             }
 
             //adding event to slider
-            this.data.resSlider.addEventListener("render", function (res, index, oldres, old) {
+            this.data.resSlider.addEventListener("render", function (res, index, oldres, old, direction) {
+                console.log(direction)
+                _resList.children[index].classList.add(direction == 1 ? "next" : "previous");
+                _resList.children[old]?.classList.remove("next","previous");
                 _resList.children[index].classList.add(GLOBAL.activeView);
                 _resList.children[old]?.classList.remove(GLOBAL.activeView);
                 history.state.arg.routeArg = [_sender.data.currentItem.id, res.hash];
@@ -924,15 +927,15 @@ let ResourceSlider = function () {
 
     });
 
-    let _renderIndex = async function (index) {
+    let _renderIndex = async function (index, direction) {
         _oldIndex = _currentIndex;
         _currentIndex = index;
-        await _sender.invokeEvent("render", [_res[_currentIndex], _currentIndex, _res[_oldIndex], _oldIndex]);
+        await _sender.invokeEvent("render", [_res[_currentIndex], _currentIndex, _res[_oldIndex], _oldIndex, direction]);
     }
     this.loadResources = async function (resourcesList, current) {
         _res = resourcesList;
         await Promise.all(_res.map(async (res, index) => await _sender.invokeEvent("load", [res, index])));
-        _renderIndex(current ? _res.findIndex((res) => res.hash == current.hash) : 0);
+        _renderIndex(current ? _res.findIndex((res) => res.hash == current.hash) : 0, 0);
         await this.invokeEvent("loadFinish", [_res]);
     }
     this.close = async () => {
@@ -946,7 +949,7 @@ let ResourceSlider = function () {
             _index = 0;
         if (_currentIndex == _index)
             return;
-        await _renderIndex(_index);
+        await _renderIndex(_index, 1);
         await _sender.invokeEvent("next", [_res[_currentIndex], _index])
     }
     this.previous = async function () {
@@ -955,7 +958,7 @@ let ResourceSlider = function () {
             _index = _res.length - 1;
         if (_currentIndex == _index)
             return;
-        await _renderIndex(_index);
+        await _renderIndex(_index, -1);
         await _sender.invokeEvent("previous", [_res[_currentIndex], _index])
     }
 }

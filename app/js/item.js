@@ -104,6 +104,7 @@ let ItemComponentBuilder = async function (component, itemFolder, item) {
             break;
 
         case "gallery":
+
             _finalComponent = document.createElement("DIV");
             _finalComponent.className = "gallery";
 
@@ -208,6 +209,8 @@ let ItemComponentBuilder = async function (component, itemFolder, item) {
                     },
                     (img) => img.classList.remove(GLOBAL.loading)
                 ));
+
+                res.props.node=_img;
             }
 
             Promise.all(_loadingPromises.map(async _promise => await _promise));
@@ -230,5 +233,6 @@ let ItemComponentBuilder = async function (component, itemFolder, item) {
             _finalComponent.target = component.target;
             break;
     }
+    component.node=_finalComponent;
     return _finalComponent;
 }
