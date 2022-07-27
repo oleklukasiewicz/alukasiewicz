@@ -622,6 +622,7 @@ body.scroll-fix::-webkit-scrollbar-track{
 }
 #resource.loading #image-viewer-list{
     animation-name: Blink;
+    margin: 12px var(--size-margin-base) 30px;
     animation-iteration-count: infinite;
     animation-duration: 1.2s;
     background-color: var(--color-theme-A1);
