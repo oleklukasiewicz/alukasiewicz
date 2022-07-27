@@ -620,18 +620,26 @@ const resourceView = new View(VIEW.resource, APP.url.resource, {},
             }
 
             //adding event to slider
-            this.data.resSlider.addEventListener("render", function (res, index, oldres, old, direction) {
-                _resList.children[index].classList.add(direction !=-1 ? "next" : "previous");
-                _resList.children[old]?.classList.remove("next", "previous");
+            this.data.resSlider.addEventListener("render", function (res, index, oldres, old,pevOld,prevOldIndex, direction) {
+                _resList.children[prevOldIndex]?.classList.remove("pevious","next","old");
+
+                _resList.children[index].classList.add(direction == 1 ? "next" : "previous");
                 _resList.children[index].classList.add(GLOBAL.activeView);
-                _resList.children[old]?.classList.remove(GLOBAL.activeView);
+
+                _resList.children[old]?.classList.remove("next", "previous","start");
+                _resList.children[old]?.classList.add(direction == 1 ? "next" : "previous");
+                _resList.children[old]?.classList.replace(GLOBAL.activeView,"old");
+
                 history.state.arg.routeArg = [_sender.data.currentItem.id, res.hash];
                 history.replaceState(history.state, '', "/" + _sender.url + "/" + _sender.data.currentItem.id + "/" + res.hash);
             });
             this.data.resSlider.addEventListener("load", async function (res) {
+                let _container=document.createElement("DIV");
+                _container.classList.add("img");
                 let _img = document.createElement("IMG");
                 _img.src = res.src;
-                _resList.appendChild(_img);
+                _container.appendChild(_img)
+                _resList.appendChild(_container);
                 await ImageHelper(_img);
             });
             this.data.resSlider.addEventListener("loadFinish", (res) =>
@@ -913,6 +921,7 @@ let ResourceSlider = function () {
     let _res = [];
     let _currentIndex;
     let _oldIndex;
+    let _previousOldIndex;
     EventController.call(this, ["load", "loadFinish", "next", "previous", "render", "remove", "close"]);
     let _sender = this;
 
@@ -929,9 +938,10 @@ let ResourceSlider = function () {
     });
 
     let _renderIndex = async function (index, direction) {
+        _previousOldIndex=_oldIndex;
         _oldIndex = _currentIndex;
         _currentIndex = index;
-        await _sender.invokeEvent("render", [_res[_currentIndex], _currentIndex, _res[_oldIndex], _oldIndex, direction]);
+        await _sender.invokeEvent("render", [_res[_currentIndex], _currentIndex, _res[_oldIndex], _oldIndex,_res[_previousOldIndex],_previousOldIndex, direction]);
     }
     this.loadResources = async function (resourcesList, current) {
         _res = resourcesList;
