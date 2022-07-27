@@ -644,7 +644,9 @@ const resourceView = new View(VIEW.resource, APP.url.resource, {},
 
             GestureBuilder(this.rootNode, {
                 right: this.data.resSlider.next,
-                left: this.data.resSlider.previous
+                left: this.data.resSlider.previous,
+                up:this.data.resSlider.next,
+                down:this.data.resSlider.previous
             });
         },
         onLoad: async function (arg) {
