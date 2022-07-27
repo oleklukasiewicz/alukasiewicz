@@ -263,26 +263,26 @@ a.link:hover{
 {
     0%
     {
-        opacity: 0;
-        transform: scale(0.9)
+        opacity: 0.5;
+        transform: translateX(26px);
     }
     100%
     {
         opacity: 1;
-        transform: none
+        transform: none;
     }
 }
 @keyframes GalleryPrevious
 {
     0%
     {
-        opacity: 0;
-        transform: scale(1.1)
+        opacity: 0.5;
+        transform: translateX(-26px);
     }
     100%
     {
         opacity: 1;
-        transform: none
+        transform: none;
     }
 }
 body{
@@ -605,7 +605,8 @@ body.scroll-fix::-webkit-scrollbar-track{
     overflow: hidden;
     height: 100%;
     max-width: 100%;
-    padding: 10px;
+    box-sizing: border-box;
+    padding: 15px 10px 50px;
 }
 #resource.loading #image-viewer-list{
     animation-name: Blink;
@@ -623,8 +624,8 @@ body.scroll-fix::-webkit-scrollbar-track{
     max-height: 100%;
     object-fit: contain;
     opacity: 0;
-   width: 0px;
-   height: 0px;
+    width: 0px;
+    height: 0px;
     border-radius: var(--border-radius);
 }
 #image-viewer-list > img.active-view{
@@ -632,6 +633,7 @@ body.scroll-fix::-webkit-scrollbar-track{
     width: auto;
     height: auto;
     margin: auto auto;
+    box-shadow: 0 12px 30px 0 rgba(0,0,0,.13);
 }
 #image-viewer-list > img.active-view.next{
     animation-name: GalleryNext;
