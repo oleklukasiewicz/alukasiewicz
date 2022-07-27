@@ -621,14 +621,12 @@ const resourceView = new View(VIEW.resource, APP.url.resource, {},
 
             //adding event to slider
             this.data.resSlider.addEventListener("render", function (res, index, oldres, old,pevOld,prevOldIndex, direction) {
-                _resList.children[prevOldIndex]?.classList.remove("pevious","next","old");
+                _resList.children[prevOldIndex]?.classList.remove("previous","next","old");
 
-                _resList.children[index].classList.add(direction == 1 ? "next" : "previous");
-                _resList.children[index].classList.add(GLOBAL.activeView);
+                _resList.children[index].classList.add(direction == 1 ? "next" : "previous",GLOBAL.activeView);
 
-                _resList.children[old]?.classList.remove("next", "previous","start");
-                _resList.children[old]?.classList.add(direction == 1 ? "next" : "previous");
-                _resList.children[old]?.classList.replace(GLOBAL.activeView,"old");
+                _resList.children[old]?.classList.remove("next", "previous","start",GLOBAL.activeView);
+                _resList.children[old]?.classList.add(direction == 1 ? "next" : "previous","old");
 
                 history.state.arg.routeArg = [_sender.data.currentItem.id, res.hash];
                 history.replaceState(history.state, '', "/" + _sender.url + "/" + _sender.data.currentItem.id + "/" + res.hash);

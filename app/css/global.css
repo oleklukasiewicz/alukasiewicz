@@ -261,7 +261,7 @@ a.link:hover{
 }
 @keyframes GalleryNext{
     0%{
-        opacity: .5;
+        opacity: 0;
         transform: translateX(26px);
     }
     100%{
@@ -271,7 +271,27 @@ a.link:hover{
 }
 @keyframes GalleryPrevious{
     0%{
-        opacity: .5;
+        opacity: 0;
+        transform: translateX(-26px);
+    }
+    100%{
+        opacity: 1;
+        transform: none;
+    }
+}
+@keyframes GalleryNextOld{
+    0%{
+        opacity: 0;
+        transform: translateX(26px);
+    }
+    100%{
+        opacity: 1;
+        transform: none;
+    }
+}
+@keyframes GalleryPreviousOld{
+    0%{
+        opacity: 0;
         transform: translateX(-26px);
     }
     100%{
@@ -630,24 +650,46 @@ body.scroll-fix::-webkit-scrollbar-track{
     margin: auto auto;
 }
 #image-viewer-list > .img.active-view{
-    opacity: 1;
     width: 100%;
     height: 100%;
+    z-index: 5;
+    opacity: 0;
 }
-#image-viewer-list > .img.active-view.next > img{
+#image-viewer-list > .img.old{
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+}
+#image-viewer-list > .img.active-view.next{
     animation-name: GalleryNext;
     animation-timing-function: cubic-bezier(.16,1,.29,.99);
     animation-duration: var(--time-A1);
+    animation-delay: var(--time);
+    animation-fill-mode: forwards;
 }
-#image-viewer-list > .img.previous > img{
+#image-viewer-list > .img.active-view.previous{
     animation-name: GalleryPrevious;
     animation-timing-function: cubic-bezier(.16,1,.29,.99);
     animation-duration: var(--time-A1);
+    animation-delay: var(--time);
+    animation-fill-mode: forwards;
+}
+#image-viewer-list > .img.old.previous{
+    animation-name: GalleryNextOld;
+    animation-timing-function: cubic-bezier(.16,1,.29,.99);
+    animation-duration: var(--time);
+    animation-direction: reverse;
+}
+#image-viewer-list > .img.old.next{
+    animation-name: GalleryPreviousOld;
+    animation-timing-function: cubic-bezier(.16,1,.29,.99);
+    animation-duration: var(--time);
+    animation-direction: reverse;
 }
 #image-viewer-controls{
     width: 100%;
     display: table;
-    padding:10px var(--size-margin-base) 0;
+    padding: 10px var(--size-margin-base) 0;
     box-sizing: border-box;
     margin-bottom: 4px;
 }
