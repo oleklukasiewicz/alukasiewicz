@@ -261,7 +261,7 @@ a.link:hover{
 }
 @keyframes GalleryNext{
     0%{
-        opacity: 0;
+        opacity: .5;
         transform: translateX(26px);
     }
     100%{
@@ -271,7 +271,7 @@ a.link:hover{
 }
 @keyframes GalleryPrevious{
     0%{
-        opacity: 0;
+        opacity: .5;
         transform: translateX(-26px);
     }
     100%{
