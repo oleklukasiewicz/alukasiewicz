@@ -386,7 +386,8 @@ body.scroll-fix::-webkit-scrollbar-track{
 }
 #resource
 {
-    padding: calc(var(--size-margin-base) - 10px);
+    padding: calc(var(--size-margin-base) - 10px) calc(var(--size-margin-base) - 10px) 0px;
+    min-height: 100%;
 }
 #profile-header{
     background-color: var(--color-theme-A1);
@@ -598,7 +599,7 @@ body.scroll-fix::-webkit-scrollbar-track{
     display: flex;
     flex-direction: column;
     max-width: 100%;
-    height: calc(100vh - 170px);
+    height: calc(100vh - 130px);
 }
 #image-viewer-list{
     display: flex;
@@ -606,7 +607,7 @@ body.scroll-fix::-webkit-scrollbar-track{
     height: 100%;
     max-width: 100%;
     box-sizing: border-box;
-    padding: 12px 10px 30px;
+    padding: 12px 10px 40px;
 }
 #resource.loading #image-viewer-list{
     animation-name: Blink;
