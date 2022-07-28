@@ -664,27 +664,27 @@ body.scroll-fix::-webkit-scrollbar-track{
 #image-viewer-list > .img.active-view.next{
     animation-name: GalleryNext;
     animation-timing-function: cubic-bezier(.16,1,.29,.99);
-    animation-duration: var(--time-A1);
-    animation-delay: var(--time);
+    animation-duration: var(--time);
+    animation-delay: 0.2s;
     animation-fill-mode: forwards;
 }
 #image-viewer-list > .img.active-view.previous{
     animation-name: GalleryPrevious;
     animation-timing-function: cubic-bezier(.16,1,.29,.99);
-    animation-duration: var(--time-A1);
-    animation-delay: var(--time);
+    animation-duration: var(--time);
+    animation-delay: 0.2s;
     animation-fill-mode: forwards;
 }
 #image-viewer-list > .img.old.previous{
     animation-name: GalleryNextOld;
     animation-timing-function: cubic-bezier(.16,1,.29,.99);
-    animation-duration: var(--time);
+    animation-duration: 0.2s;
     animation-direction: reverse;
 }
 #image-viewer-list > .img.old.next{
     animation-name: GalleryPreviousOld;
     animation-timing-function: cubic-bezier(.16,1,.29,.99);
-    animation-duration: var(--time);
+    animation-duration: 0.2s;
     animation-direction: reverse;
 }
 #image-viewer-controls{
