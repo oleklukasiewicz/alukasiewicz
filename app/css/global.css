@@ -363,10 +363,10 @@ body.scroll-fix::-webkit-scrollbar-track{
 }
 #footer > div{
     text-align: left;
-    margin: 0 auto;
+    margin: 0px auto;
     max-width: var(--view-max-width);
     box-sizing: border-box;
-    padding: 0 var(--size-margin-base) 20px;
+    padding: 0px var(--size-margin-base) 20px;
     user-select: none;
     width: 100%;
     line-height: 18px;
@@ -381,13 +381,13 @@ body.scroll-fix::-webkit-scrollbar-track{
     transform: translateY(1px);
     display: inline-block;
     max-width: var(--size-font-caption);
-    margin: 0 2px;
+    margin: px0 2px;
     fill: var(--color-theme-A6);
 }
 .view{
     width: 100%;
     display: none;
-    margin: 0 auto 0 auto;
+    margin: 0px auto 0px auto;
     max-width: var(--view-max-width);
     box-sizing: border-box;
 }
@@ -404,7 +404,7 @@ body.scroll-fix::-webkit-scrollbar-track{
 #profile-header{
     background-color: var(--color-theme-A1);
     border: 1px solid rgba(128,128,128,.08);
-    box-shadow: 0 2px 8px rgba(0,0,0,.08);
+    box-shadow: 0px 2px 8px rgba(0,0,0,.08);
     margin: 12px var(--size-margin-base) 0;
     transition: var(--transition-border);
     box-sizing: border-box;
@@ -416,7 +416,7 @@ body.scroll-fix::-webkit-scrollbar-track{
 #profile-header > div{
     display: inline-table;
     box-sizing: border-box;
-    padding: 6px 0 0 50px;
+    padding: 6px 0px 0px 50px;
 }
 #profile-header > div > b{
     color: var(--color-font);
@@ -430,7 +430,7 @@ body.scroll-fix::-webkit-scrollbar-track{
     margin-bottom: 20px;
 }
 #about{
-    margin: 0 auto;
+    margin: 0px auto;
     height: 100%;
     display: none;
     letter-spacing: .1px;
@@ -454,7 +454,7 @@ body.scroll-fix::-webkit-scrollbar-track{
     flex: 1;
 }
 #about-data{
-    margin: 0 auto;
+    margin: 0px auto;
     max-width: var(--size-max-width);
 }
 #about-content{
@@ -475,7 +475,7 @@ body.scroll-fix::-webkit-scrollbar-track{
     display: block;
     width: auto;
     min-width: 50%;
-    margin: 0 20px 0 0;
+    margin: 0px 20px 0px 0;
     line-height: 30px;
 }
 #item-info{
@@ -500,7 +500,7 @@ body.scroll-fix::-webkit-scrollbar-track{
     line-height: 1.6em;
     letter-spacing: .1px;
     max-width: var(--size-max-width);
-    margin: 0 auto 40px;
+    margin: 0px auto 40px;
 }
 #item #item-content-loading{
     display: none;
@@ -573,7 +573,7 @@ body.scroll-fix::-webkit-scrollbar-track{
 }
 #group-title{
     line-height: 30px;
-    margin: 0 40px 0 0;
+    margin: 0px 40px 0px 0;
     flex: 1;
     min-width: 60%;
 }
@@ -639,7 +639,7 @@ body.scroll-fix::-webkit-scrollbar-track{
     position: absolute;
     border-radius: var(--border-radius);
     display: flex;
-    padding: 12px 10px 40px;
+    padding: 12px var(--size-margin-base) 40px;
     box-sizing: border-box;
 }
 #image-viewer-list > .img > img{
@@ -647,7 +647,7 @@ body.scroll-fix::-webkit-scrollbar-track{
     max-height: 100%;
     max-width: 100%;
     object-fit: contain;
-    box-shadow: 0 12px 30px 0 rgba(0,0,0,.13);
+    box-shadow: 0px 12px 30px 0px rgba(0,0,0,.13);
     margin: auto auto;
 }
 #image-viewer-list > .img.active-view{
@@ -728,7 +728,7 @@ body.scroll-fix::-webkit-scrollbar-track{
     display: none;
     background-color: var(--color-theme-A1);
     border: 1px solid var(--color-theme-A2);
-    box-shadow: 0 2px 8px rgba(0,0,0,.08);
+    box-shadow: 0px 2px 8px rgba(0,0,0,.08);
     box-sizing: border-box;
     padding: 20px;
     margin: 10px var(--size-margin-base);
@@ -736,7 +736,7 @@ body.scroll-fix::-webkit-scrollbar-track{
 }
 .error-msg > i{
     width: 100%;
-    margin: 50px 0 50px;
+    margin: 50px 0px 50px;
 }
 #group.error > #group-data,
 #group.error > #group-list,
@@ -780,12 +780,12 @@ u.dotted-separator{
     cursor: pointer;
 }
 .list-view > .item:hover{
-    box-shadow: 0 12px 30px 0 rgba(0,0,0,.13);
+    box-shadow: 0px 12px 30px 0px rgba(0,0,0,.13);
     transform: translateY(-4px);
     background-color: var(--color-theme-A1);
 }
 .list-view > .item:active{
-    box-shadow: 0 6px 10px 0 rgba(0,0,0,.13);
+    box-shadow: 0px 6px 10px 0px rgba(0,0,0,.13);
     transform: translateY(-2px);
     background-color: var(--color-theme-A1);
 }
@@ -881,7 +881,7 @@ u.dotted-separator{
 .list-view > .item.loading > .labels > .label{
     background-color: var(--color-theme-A1);
     max-width: 90px;
-    margin: 4px 0 4px auto;
+    margin: 4px 0px 4px auto;
 }
 .list-view > .item.loaded > .img > img{
     opacity: 1;
@@ -984,12 +984,12 @@ u.dotted-separator{
 .button.primary:hover,
 .icon-button.toggled:hover{
     background-color: var(--color-accent-A1);
-    box-shadow: 0 2px 12px -1px var(--color-accent-shadow);
+    box-shadow: 0px 2px 12px -1px var(--color-accent-shadow);
 }
 .button.primary:active,
 .icon-button.toggled:active{
     background-color: var(--color-accent-A2);
-    box-shadow: 0 2px 8px -1px var(--color-accent-shadow);
+    box-shadow: 0px 2px 8px -1px var(--color-accent-shadow);
 }
 .button{
     background-color: var(--color-theme-A2);
@@ -1024,29 +1024,29 @@ u.dotted-separator{
 }
 .button.twitter:hover{
     background-color: #1da1f2;
-    box-shadow: 0 2px 12px -1px rgba(29,161,242,.7);
+    box-shadow: 0px 2px 12px -1px rgba(29,161,242,.7);
     color: #fff;
 }
 .button.instagram:hover{
-    box-shadow: 0 2px 12px -1px rgba(237,73,86,.7);
+    box-shadow: 0px 2px 12px -1px rgba(237,73,86,.7);
     background-color: #ed4956;
     color: #fff;
 }
 .button.twitter:active{
     background-color: rgba(29,161,242,.8);
-    box-shadow: 0 2px 12px -1px rgba(29,161,242,.2);
+    box-shadow: 0px 2px 12px -1px rgba(29,161,242,.2);
 }
 .button.instagram:active{
-    box-shadow: 0 2px 12px -1px rgba(237,73,86,.2);
+    box-shadow: 0px 2px 12px -1px rgba(237,73,86,.2);
     background-color: rgba(237,73,86,.8);
 }
 .button.github:hover{
-    box-shadow: 0 2px 12px -1px rgba(45,51,59,.7);
+    box-shadow: 0px 2px 12px -1px rgba(45,51,59,.7);
     background-color: #2d333b;
     color: #fff;
 }
 .button.github:active{
-    box-shadow: 0 2px 12px -1px rgba(45,51,59,.2);
+    box-shadow: 0px 2px 12px -1px rgba(45,51,59,.2);
     background-color: rgba(45,51,59,.8);
 }
 ::-webkit-scrollbar{
@@ -1185,7 +1185,7 @@ u.dotted-separator{
         margin-top: 0;
     }
     .list-view{
-        padding: 10px 0 30px;
+        padding: 10px 0px 30px;
     }
     .list-view > .item{
         max-width: 100%;
