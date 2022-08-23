@@ -494,8 +494,18 @@ const profileView = new View(VIEW.profile, APP.url.profile, {}, {
     onNavigate: () => {
         window.scroll(0, 0);
         document.title = "About me - " + APP.name
+    },
+    onRegister: () => {
+        MultiLayerImageHelper(getById("about-img"), [
+            "/img/about-banner-layers/bg.webp",
+            "/img/about-banner-layers/bg-l1.webp",
+            "/img/about-banner-layers/bg-l2.webp",
+            "/img/about-banner-layers/stars-l1.webp",
+            "/img/about-banner-layers/stars-l2.webp",
+            "/img/about-banner-layers/tree.webp",
+        ]);
     }
-}, VIEW.profile, false, ViewController.loadingModes.never);
+}, VIEW.profile, true, ViewController.loadingModes.never);
 const itemView = new View(VIEW.item, APP.url.item, { currentItem: null }, {
     onNavigate: () => window.scroll(0, 0),
     onNavigateFrom: function () {
@@ -620,19 +630,19 @@ const resourceView = new View(VIEW.resource, APP.url.resource, {},
             }
 
             //adding event to slider
-            this.data.resSlider.addEventListener("render", function (res, index, oldres, old,pevOld,prevOldIndex, direction) {
-                _resList.children[prevOldIndex]?.classList.remove("previous","next","old");
+            this.data.resSlider.addEventListener("render", function (res, index, oldres, old, pevOld, prevOldIndex, direction) {
+                _resList.children[prevOldIndex]?.classList.remove("previous", "next", "old");
 
-                _resList.children[index].classList.add(direction == 1 ? "next" : "previous",GLOBAL.activeView);
+                _resList.children[index].classList.add(direction == 1 ? "next" : "previous", GLOBAL.activeView);
 
-                _resList.children[old]?.classList.remove("next", "previous","start",GLOBAL.activeView);
-                _resList.children[old]?.classList.add(direction == 1 ? "next" : "previous","old");
+                _resList.children[old]?.classList.remove("next", "previous", "start", GLOBAL.activeView);
+                _resList.children[old]?.classList.add(direction == 1 ? "next" : "previous", "old");
 
                 history.state.arg.routeArg = [_sender.data.currentItem.id, res.hash];
                 history.replaceState(history.state, '', "/" + _sender.url + "/" + _sender.data.currentItem.id + "/" + res.hash);
             });
             this.data.resSlider.addEventListener("load", async function (res) {
-                let _container=document.createElement("DIV");
+                let _container = document.createElement("DIV");
                 _container.classList.add("img");
                 let _img = document.createElement("IMG");
                 _img.src = res.src;
@@ -936,10 +946,10 @@ let ResourceSlider = function () {
     });
 
     let _renderIndex = async function (index, direction) {
-        _previousOldIndex=_oldIndex;
+        _previousOldIndex = _oldIndex;
         _oldIndex = _currentIndex;
         _currentIndex = index;
-        await _sender.invokeEvent("render", [_res[_currentIndex], _currentIndex, _res[_oldIndex], _oldIndex,_res[_previousOldIndex],_previousOldIndex, direction]);
+        await _sender.invokeEvent("render", [_res[_currentIndex], _currentIndex, _res[_oldIndex], _oldIndex, _res[_previousOldIndex], _previousOldIndex, direction]);
     }
     this.loadResources = async function (resourcesList, current) {
         _res = resourcesList;
@@ -1072,6 +1082,38 @@ let ImageHelper = function (image, onload = () => { }, onerror = () => { }) {
         image.onload = () => resolve(onload(image));
         image.onerror = () => resolve(imageIsNotLoaded());
     });
+}
+let MultiLayerImageHelper = async function (baseNode, images = [], onload = () => { }, onerror = () => { }) {
+    let imageNotLoaded = function () {
+        let _errimg = document.createElement("IMG");
+        _errimg.src = "/img/image_error.webp";
+        baseNode.appendChild(_errimg);
+        onerror(baseNode);
+    }
+    let _someLayerNotLoaded = false;
+
+    images = images.map((image) => {
+        let _img = document.createElement("IMG");
+        _img.src = image;
+        baseNode.appendChild(_img);
+        return _img;
+    });
+    baseNode.classList.add(GLOBAL.loading);
+    await Promise.all(images.map(async (_img) => {
+        await new Promise((resolve) => {
+            _img.onload = () => resolve();
+            _img.onerror = () => {
+                _img.onload = function () { };
+                _someLayerNotLoaded = true;
+                resolve();
+            };
+        })
+    }));
+    baseNode.classList.replace(GLOBAL.loading,GLOBAL.loaded);
+    if (_someLayerNotLoaded)
+        imageNotLoaded();
+    else
+        onload();
 }
 
 //check if scrollbar is visible
