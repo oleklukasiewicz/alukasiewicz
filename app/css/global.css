@@ -1140,6 +1140,7 @@ u.dotted-separator{
     }
     #about{
         flex-direction: column;
+        gap:10px;
     }
     #about-img.loaded{
         min-height: 250px;
