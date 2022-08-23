@@ -391,7 +391,7 @@ body.scroll-fix::-webkit-scrollbar-track{
     transform: translateY(1px);
     display: inline-block;
     max-width: var(--size-font-caption);
-    margin: px0 2px;
+    margin: 0px 2px;
     fill: var(--color-theme-A6);
 }
 .view{
@@ -456,30 +456,48 @@ body.scroll-fix::-webkit-scrollbar-track{
     display: block;
     flex: 1;
 }
-#about-img.loaded > img{
+#app #about-img
+{
+    animation-name: Blink;
+    animation-iteration-count: infinite;
+    animation-duration: 1.2s;
+    transform: none;
+    background-color: var(--color-theme-A1);
+    box-shadow: none;
+    pointer-events: none;
+}
+#app.loaded #about-img
+{
+    animation: none;
+}
+#app #about-img >img
+{
+    opacity: 0;
+}
+#app.loaded #about-img > img{
     animation-name: FadeInUp;
     animation-duration: 0.9s;
     animation-timing-function: cubic-bezier(.16,1,.29,.99);
     opacity: 0;
     animation-fill-mode: forwards;
 }
-#about-img.loaded > img:nth-child(1){
+#app.loaded #about-img > img:nth-child(1){
     opacity: 1;
     animation: none;
 }
-#about-img.loaded > img:nth-child(2){
+#about-img > img:nth-child(2){
     animation-delay: .1s;
 }
-#about-img.loaded > img:nth-child(3){
+#about-img > img:nth-child(3){
     animation-delay: .3s;
 }
-#about-img.loaded > img:nth-child(4){
+#about-img > img:nth-child(4){
     animation-delay: .5s;
 }
-#about-img.loaded > img:nth-child(5){
+#about-img > img:nth-child(5){
     animation-delay: .7s;
 }
-#about-img.loaded > img:nth-child(6){
+#about-img > img:nth-child(6){
     animation-delay: .9s;
 }
 #about-data{
@@ -1142,7 +1160,7 @@ u.dotted-separator{
         flex-direction: column;
         gap:10px;
     }
-    #about-img.loaded{
+    #about-img{
         min-height: 250px;
     }
 }
