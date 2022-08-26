@@ -1,5 +1,5 @@
-const cacheName = "2.2.2.0";
-const serviceWorkerVersion = "23-08-22-v1";
+const cacheName = "2.2.2.1";
+const serviceWorkerVersion = "26-08-22-v1";
 
 const networkOnlyResources =
     [
@@ -26,14 +26,20 @@ const staticResources =
         "/font/micon_nb.svg",
         "/font/micon_nb.woff2",
         "/img/image_error.webp",
-        "/img/profile.webp",
-        "/img/profile-dark.webp",
-        "/img/about-banner-layers/bg.webp",
-        "/img/about-banner-layers/bg-l1.webp",
-        "/img/about-banner-layers/bg-l2.webp",
-        "/img/about-banner-layers/stars-1.webp",
-        "/img/about-banner-layers/stars-l2.webp",
-        "/img/about-banner-layers/tree.webp",
+        "/img/dark/profile.webp",
+        "/img/dark/about-banner/bg-l1.webp",
+        "/img/dark/about-banner/bg-l2.webp",
+        "/img/dark/about-banner/bg-l3.webp",
+        "/img/dark/about-banner/stars-l1.webp",
+        "/img/dark/about-banner/stars-l2.webp",
+        "/img/dark/about-banner/tree-l1.webp",
+        "/img/light/profile.webp",
+        "/img/light/about-banner/bg-l1.webp",
+        "/img/light/about-banner/bg-l2.webp",
+        "/img/light/about-banner/bg-l3.webp",
+        "/img/light/about-banner/stars-l1.webp",
+        "/img/light/about-banner/stars-l2.webp",
+        "/img/light/about-banner/tree-l1.webp",
         "/icon/favicon-32x32.png"
     ];
 
