@@ -13,7 +13,14 @@
     --color-font-disabled: #aaaaaa;
     --color-logo: #5f5f5f;
     --color-logo-A1: #404040;
-    --profile-image-src: url(\/img\/profile\.webp);
+    --src-profile-image: url(\/img\/light\/profile.webp);
+    --src-about-banner-l1:url(\/img\/light\/about-banner\/bg-l1.webp);
+    --src-about-banner-l2:url(\/img\/light\/about-banner\/bg-l2.webp);
+    --src-about-banner-l3:url(\/img\/light\/about-banner\/bg-l3.webp);
+    --src-about-banner-l4:url(\/img\/light\/about-banner\/stars-l1.webp);
+    --src-about-banner-l5:url(\/img\/light\/about-banner\/stars-l2.webp);
+    --src-about-banner-l6:url(\/img\/light\/about-banner\/tree-l1.webp);
+    --logo-anim-delay: 0.5s;
     --acrylic: blur(60px) saturate(150%);
     --logo-height: 14px;
     --skew: 23deg;
@@ -60,7 +67,13 @@
         --color-font-disabled: #aaaaaa;
         --color-logo: #d0d0d0;
         --color-logo-A1: #a0a0a0;
-        --profile-image-src: url(\/img\/profile-dark\.webp);
+        --src-profile-image: url(\/img\/dark\/profile\.webp);
+        --src-about-banner-l1:url(\/img\/dark\/about-banner\/bg-l1.webp);
+        --src-about-banner-l2:url(\/img\/dark\/about-banner\/bg-l2.webp);
+        --src-about-banner-l3:url(\/img\/dark\/about-banner\/bg-l3.webp);
+        --src-about-banner-l4:url(\/img\/dark\/about-banner\/stars-l1.webp);
+        --src-about-banner-l5:url(\/img\/dark\/about-banner\/stars-l2.webp);
+        --src-about-banner-l6:url(\/img\/dark\/about-banner\/tree-l1.webp);
     }
 }
 .font-base{
@@ -163,6 +176,9 @@ a.link:hover{
 .mi-Navigation:before{
     content: "\EBD8";
 }
+.mi-Shop:before{
+    content: "\EE18";
+}
 .al-logo{
     text-decoration: none;
     display: inline-block;
@@ -181,22 +197,22 @@ a.link:hover{
 }
 .al-logo.anim > .l:nth-child(1){
     animation: forwards LogoAnimL1 var(--time);
-    animation-delay: .3s;
+    animation-delay: var(--logo-anim-delay);
     transform: skewX(var(--skewR));
     background-color: var(--color-logo-A1);
 }
 .al-logo.anim > .l:nth-child(2){
-    animation-delay: .6s;
+    animation-delay: calc(var(--logo-anim-delay) + .3s);
     margin-left: -3px;
 }
 .al-logo.anim > .l:nth-child(3){
-    animation-delay: .8s;
+    animation-delay: calc(var(--logo-anim-delay) + .5s);
     margin-left: -.5px;
 }
 .al-logo.anim > .c{
     transform: scale(0);
     animation: forwards LogoAnimI1 var(--time);
-    animation-delay: 1s;
+    animation-delay: calc(var(--logo-anim-delay) + .7s);
     border-radius: 50%;
     height: var(--logo-width);
     vertical-align: top;
@@ -255,6 +271,56 @@ a.link:hover{
         opacity: .5;
     }
 }
+@keyframes GalleryNext{
+    0%{
+        opacity: .5;
+        transform: translateX(26px);
+    }
+    100%{
+        opacity: 1;
+        transform: none;
+    }
+}
+@keyframes GalleryPrevious{
+    0%{
+        opacity: .5;
+        transform: translateX(-26px);
+    }
+    100%{
+        opacity: 1;
+        transform: none;
+    }
+}
+@keyframes GalleryNextOld{
+    0%{
+        opacity: 0;
+        transform: translateX(26px);
+    }
+    100%{
+        opacity: 1;
+        transform: none;
+    }
+}
+@keyframes GalleryPreviousOld{
+    0%{
+        opacity: 0;
+        transform: translateX(-26px);
+    }
+    100%{
+        opacity: 1;
+        transform: none;
+    }
+}
+@keyframes FadeInUp{
+    0%{
+        opacity: 0;
+        transform: translateY(26px);
+    }
+    100%{
+        opacity: 1;
+        transform: none;
+    }
+}
 body{
     margin: 0;
     background-color: var(--color-theme);
@@ -288,6 +354,7 @@ body.scroll-fix::-webkit-scrollbar-track{
 }
 #main-header-navigation{
     display: flex;
+    max-height: 120px;
     gap: 8px;
 }
 #main-header-nav-button,
@@ -336,7 +403,7 @@ body.scroll-fix::-webkit-scrollbar-track{
     transform: translateY(1px);
     display: inline-block;
     max-width: var(--size-font-caption);
-    margin: 0 2px;
+    margin: 0px 2px;
     fill: var(--color-theme-A6);
 }
 .view{
@@ -350,9 +417,11 @@ body.scroll-fix::-webkit-scrollbar-track{
     display: table;
 }
 #about,
-#item,
-#resource{
+#item{
     padding: var(--size-margin-base);
+}
+#resource{
+    min-height: 100%;
 }
 #profile-header{
     background-color: var(--color-theme-A1);
@@ -395,16 +464,61 @@ body.scroll-fix::-webkit-scrollbar-track{
 #about.active-view{
     display: flex;
 }
-#about-img{
-    object-fit: cover;
-    display: table;
-    width: 100%;
-    height: 100%;
-    border-radius: var(--border-radius);
-}
 #about > div{
     display: block;
     flex: 1;
+}
+#app #about-img
+{
+    animation-name: Blink;
+    animation-iteration-count: infinite;
+    animation-duration: 1.2s;
+    transform: none;
+    background-color: var(--color-theme-A1);
+    box-shadow: none;
+    pointer-events: none;
+}
+#app.loaded #about-img
+{
+    animation: none;
+}
+#app #about-img >*
+{
+    opacity: 0;
+}
+#app.loaded #about-img > *{
+    animation-name: FadeInUp;
+    animation-duration: 0.9s;
+    animation-timing-function: cubic-bezier(.16,1,.29,.99);
+    opacity: 0;
+    animation-fill-mode: forwards;
+    background-size: cover;
+    background-position: center;
+}
+#app.loaded #about-img > *:nth-child(1){
+    opacity: 1;
+    animation: none;
+    background-image: var(--src-about-banner-l1);
+}
+#about-img > *:nth-child(2){
+    animation-delay: .1s;
+    background-image: var(--src-about-banner-l2);
+}
+#about-img > *:nth-child(3){
+    animation-delay: .2s;
+    background-image: var(--src-about-banner-l3);
+}
+#about-img > *:nth-child(4){
+    animation-delay: .4s;
+    background-image: var(--src-about-banner-l4);
+}
+#about-img > *:nth-child(5){
+    animation-delay: .5s;
+    background-image: var(--src-about-banner-l5);
+}
+#about-img > *:nth-child(6){
+    animation-delay: .7s;
+    background-image: var(--src-about-banner-l6);
 }
 #about-data{
     margin: 0 auto;
@@ -448,7 +562,7 @@ body.scroll-fix::-webkit-scrollbar-track{
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 20px;
     width: 100%;
     line-height: 1.6em;
     letter-spacing: .1px;
@@ -564,16 +678,18 @@ body.scroll-fix::-webkit-scrollbar-track{
     display: flex;
     flex-direction: column;
     max-width: 100%;
-    height: calc(100vh - 170px);
+    height: calc(100vh - 130px);
 }
 #image-viewer-list{
-    display: flex;
+    position: relative;
     overflow: hidden;
     height: 100%;
     max-width: 100%;
+    box-sizing: border-box;
 }
 #resource.loading #image-viewer-list{
     animation-name: Blink;
+    margin: 12px var(--size-margin-base) 30px;
     animation-iteration-count: infinite;
     animation-duration: 1.2s;
     background-color: var(--color-theme-A1);
@@ -582,20 +698,67 @@ body.scroll-fix::-webkit-scrollbar-track{
 #resource.loading #image-viewer-prev{
     display: none;
 }
-#image-viewer-list > img{
-    margin: auto auto;
+#image-viewer-list > .img{
+    margin: 0;
     max-width: 100%;
     max-height: 100%;
-    object-fit: contain;
-    display: none;
+    opacity: 0;
+    position: absolute;
     border-radius: var(--border-radius);
+    display: flex;
+    padding: 12px var(--size-margin-base) 40px;
+    box-sizing: border-box;
 }
-#image-viewer-list > img.active-view{
-    display: table;
+#image-viewer-list > .img > img{
+    width: auto;
+    max-height: 100%;
+    max-width: 100%;
+    object-fit: contain;
+    box-shadow: 0 12px 30px 0 rgba(0,0,0,.13);
+    margin: auto auto;
+}
+#image-viewer-list > .img.active-view{
+    width: 100%;
+    height: 100%;
+    z-index: 5;
+    opacity: 0;
+}
+#image-viewer-list > .img.old{
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+}
+#image-viewer-list > .img.active-view.next{
+    animation-name: GalleryNext;
+    animation-timing-function: cubic-bezier(.16,1,.29,.99);
+    animation-duration: var(--time);
+    animation-delay: .2s;
+    animation-fill-mode: forwards;
+}
+#image-viewer-list > .img.active-view.previous{
+    animation-name: GalleryPrevious;
+    animation-timing-function: cubic-bezier(.16,1,.29,.99);
+    animation-duration: var(--time);
+    animation-delay: .2s;
+    animation-fill-mode: forwards;
+}
+#image-viewer-list > .img.old.previous{
+    animation-name: GalleryNextOld;
+    animation-timing-function: cubic-bezier(.16,1,.29,.99);
+    animation-duration: .2s;
+    animation-direction: reverse;
+}
+#image-viewer-list > .img.old.next{
+    animation-name: GalleryPreviousOld;
+    animation-timing-function: cubic-bezier(.16,1,.29,.99);
+    animation-duration: .2s;
+    animation-direction: reverse;
 }
 #image-viewer-controls{
     width: 100%;
     display: table;
+    padding: 10px var(--size-margin-base) 0;
+    box-sizing: border-box;
     margin-bottom: 4px;
 }
 #image-viewer-controls > a{
@@ -785,7 +948,7 @@ u.dotted-separator{
 .list-view > .item.loading > .labels > .label{
     background-color: var(--color-theme-A1);
     max-width: 90px;
-    margin: 4px 0px 4px auto;
+    margin: 4px 0 4px auto;
 }
 .list-view > .item.loaded > .img > img{
     opacity: 1;
@@ -834,6 +997,33 @@ u.dotted-separator{
 }
 .list-view.error > .data-node{
     display: none;
+}
+.multi-layer-img{
+    display: block;
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+    border-radius: var(--border-radius);
+}
+.multi-layer-img > *{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: table;
+}
+.multi-layer-img.loading{
+    animation-name: Blink;
+    animation-iteration-count: infinite;
+    animation-duration: 1.2s;
+    transform: none;
+    background-color: var(--color-theme-A1);
+    box-shadow: none;
+    pointer-events: none;
+}
+.multi-layer-img.loading > *{
+    opacity: 0;
 }
 .button,
 .icon-button{
@@ -988,9 +1178,12 @@ u.dotted-separator{
     }
     #about{
         flex-direction: column;
+        gap:10px;
     }
-    #about-img{
+    #about-img-area{
         aspect-ratio: 3/2;
+        width: 100%;
+        height: 100%;
     }
 }
 @media only screen and (max-width:540px){
@@ -1058,7 +1251,6 @@ u.dotted-separator{
         padding-bottom: 8px;
         box-sizing: border-box;
         flex-direction: column;
-        max-height: 120px;
         overflow: hidden;
         background-color: var(--color-theme);
         border-bottom: 1px solid var(--color-theme-A1);

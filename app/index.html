@@ -15,9 +15,9 @@
     <script src="/item/storage.js" defer></script>
     <link rel="preload" href="/css/global.css" as="style" type="text/css" />
     <link rel="stylesheet" href="/css/global.css" media="screen" />
-    <link rel="preload" href="/img/profile-dark.webp" as="image" type="image/webp" />
-    <link rel="preload" href="/img/profile.webp" as="image" type="image/webp" />
-    <script src="/js/config.js" async></script>
+    <link rel="preload" href="/img/light/profile.webp" as="image" type="image/webp" />
+    <link rel="preload" href="/img/dark/profile.webp" as="image" type="image/webp" />
+    <script src="/js/main.js" async></script>
     <script src="/js/item.js" defer></script>
     <link rel="preload" href="/css/item.css" as="style">
     <link rel="stylesheet" href="/css/item.css">
@@ -54,7 +54,7 @@
     <main id="views" style="margin-top:50px ;">
         <div id="landing" class="view">
             <div id="profile-header"> <i id="profile-image"
-                    style="background-size:160px 160px;height:160px;width:160px;background-image: var(--profile-image-src);border-radius: 50%;min-width:160px;min-height:160px; margin-top: 10px;margin-bottom: 20px; "></i>
+                    style="background-size:160px 160px;height:160px;width:160px;background-image: var(--src-profile-image);border-radius: 50%;min-width:160px;min-height:160px; margin-top: 10px;margin-bottom: 20px; "></i>
                 <div>
                     <b class="font-subheader">Olek Łukasiewicz</b>
                     <span class="font-subtitle"> Web and C# developer </br> Beginning pixel art artist
@@ -154,8 +154,15 @@
             <div class='error-msg font-title' id="item-error-node"></div>
         </div>
         <div id="about" class="view">
-            <div id="about-image">
-                <img id="about-img" src="/img/about-banner.webp" alt="About page banner" />
+            <div id="about-img-area">
+                <div id="about-img" class="multi-layer-img loaded">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
             </div>
             <div id="about-data">
                 <h1 class="font-title">About me</h1>
@@ -167,7 +174,8 @@
                     </br></br>
                     I currently only have an AZ-900 certificate but I'm sure that list will grow soon!
                     </br></br>
-                    When creating pixel art I try to create small but accurate images. I love to experiment with colors
+                    When creating pixel art I try to create small but accurate pictures. I love to experiment with
+                    colors
                     and style. My main subjects for drawing are flowers and all kinds of plants.
                     </br></br>
                     You can also find me on
