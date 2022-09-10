@@ -821,7 +821,7 @@ let createItemTile = async function (node, item) {
             :
             ViewController.navigate(VIEW.item, { routeArg: [item.id] });
     };
-    node.href = item.isLink || APP.url.item + item.id;
+    node.href = item.isLink || APP.url.item + "/" + item.id;
 
     //loading item
     setTimeout(() => node.classList.remove(GLOBAL.loaded), 300);
@@ -851,7 +851,7 @@ let createGroupTile = function (node, group) {
         event.preventDefault();
         ViewController.navigate(VIEW.group, { routeArg: [group.id] });
     };
-    node.children[1].href = APP.url.group + group.id;
+    node.children[1].href = APP.url.group + "/" + group.id;
     return node;
 }
 let StorageResponseIndexer = function (response, depth = 1, limit = 3, startIndex = 0, limitOfDepth = 3) {
