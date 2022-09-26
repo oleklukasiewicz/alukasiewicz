@@ -643,13 +643,11 @@ const resourceView = new View(VIEW.resource, APP.url.resource, {},
                 history.state.arg.routeArg = [_sender.data.currentItem.id, res.hash];
                 history.replaceState(history.state, '', "/" + _sender.url + "/" + _sender.data.currentItem.id + "/" + res.hash);
             });
-            this.data.resSlider.addEventListener("load", async function (res, index, loadAll) {
+            this.data.resSlider.addEventListener("load", async function () {
                 let _container = document.createElement("DIV");
                 _container.classList.add("img");
                 _container.classList.add(GLOBAL.loading);
                 let _img = document.createElement("IMG");
-                if (loadAll)
-                    _img.src = res.src;
                 _container.appendChild(_img)
                 _resList.appendChild(_container);
             });
@@ -668,13 +666,6 @@ const resourceView = new View(VIEW.resource, APP.url.resource, {},
             });
         },
         onLoad: async function (arg) {
-
-            //setting timeout for loading animation
-            setTimeout(function (_sender) {
-                if (!_sender.isLoaded)
-                    _sender.rootNode.classList.add(GLOBAL.loading);
-            }, 300, this);
-
             //loading item and resource group
             this.data.currentItem = arg.currentItem || await ItemController.getItemById(arg.routeArg[0]);
             let resourceGroup = ItemController.findResourceByHash(this.data.currentItem.resources, arg.routeArg[1]);
@@ -684,9 +675,6 @@ const resourceView = new View(VIEW.resource, APP.url.resource, {},
             }
             //loading resources to slider
             await this.data.resSlider.loadResources(resourceGroup.resources, resourceGroup.selected, false);
-        },
-        onLoadFinish: function () {
-            this.rootNode.classList.remove(GLOBAL.loading);
         },
         onNavigateFrom: function () {
             this.rootNode.classList.remove(GLOBAL.error);
