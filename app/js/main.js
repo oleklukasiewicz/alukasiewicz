@@ -620,25 +620,38 @@ const resourceView = new View(VIEW.resource, APP.url.resource, {},
             }
 
             //adding event to slider
-            this.data.resSlider.addEventListener("render", function (res, index, oldres, old, pevOld, prevOldIndex, direction) {
-                _resList.children[prevOldIndex]?.classList.remove("previous", "next", "old");
+            this.data.resSlider.addEventListener("render", async function (res, index, oldres, old, pevOld, prevOldIndex, nextIndexRes, nextIndex, previousIndexRes, previousIndex, direction) {
 
-                _resList.children[index].classList.add(direction == 1 ? "next" : "previous", GLOBAL.activeView);
+                let _resChilds = _resList.children;
+                let _currentChild = _resChilds[index];
 
-                _resList.children[old]?.classList.remove("next", "previous", "start", GLOBAL.activeView);
-                _resList.children[old]?.classList.add(direction == 1 ? "next" : "previous", "old");
+                _currentChild.children[0].src = res.src;
+                ImageHelper(_currentChild.children[0], undefined, undefined, function () {
+                    _currentChild.classList.remove(GLOBAL.loading);
+                });
+
+                _resChilds[nextIndex].children[0].src = nextIndexRes.src;
+                _resChilds[previousIndex].children[0].src = previousIndexRes.src;
+
+                _resChilds[prevOldIndex]?.classList.remove("previous", "next", "old");
+
+                _resChilds[index].classList.add(direction == 1 ? "next" : "previous", GLOBAL.activeView);
+
+                _resChilds[old]?.classList.remove("next", "previous", "start", GLOBAL.activeView);
+                _resChilds[old]?.classList.add(direction == 1 ? "next" : "previous", "old");
 
                 history.state.arg.routeArg = [_sender.data.currentItem.id, res.hash];
                 history.replaceState(history.state, '', "/" + _sender.url + "/" + _sender.data.currentItem.id + "/" + res.hash);
             });
-            this.data.resSlider.addEventListener("load", async function (res) {
+            this.data.resSlider.addEventListener("load", async function (res, index, loadAll) {
                 let _container = document.createElement("DIV");
                 _container.classList.add("img");
+                _container.classList.add(GLOBAL.loading);
                 let _img = document.createElement("IMG");
-                _img.src = res.src;
+                if (loadAll)
+                    _img.src = res.src;
                 _container.appendChild(_img)
                 _resList.appendChild(_container);
-                await ImageHelper(_img);
             });
             this.data.resSlider.addEventListener("loadFinish", (res) =>
                 _setButtonsDisplay(res.length < 2))
@@ -670,7 +683,7 @@ const resourceView = new View(VIEW.resource, APP.url.resource, {},
                 return;
             }
             //loading resources to slider
-            await this.data.resSlider.loadResources(resourceGroup.resources, resourceGroup.selected);
+            await this.data.resSlider.loadResources(resourceGroup.resources, resourceGroup.selected, false);
         },
         onLoadFinish: function () {
             this.rootNode.classList.remove(GLOBAL.loading);
@@ -921,6 +934,10 @@ let ResourceSlider = function () {
     let _currentIndex;
     let _oldIndex;
     let _previousOldIndex;
+
+    let _nextIndex;
+    let _previousIndex;
+
     EventController.call(this, ["load", "loadFinish", "next", "previous", "render", "remove", "close"]);
     let _sender = this;
 
@@ -940,36 +957,37 @@ let ResourceSlider = function () {
         _previousOldIndex = _oldIndex;
         _oldIndex = _currentIndex;
         _currentIndex = index;
-        await _sender.invokeEvent("render", [_res[_currentIndex], _currentIndex, _res[_oldIndex], _oldIndex, _res[_previousOldIndex], _previousOldIndex, direction]);
+
+        _nextIndex = _currentIndex + 1
+        if (_nextIndex >= _res.length)
+            _nextIndex = 0;
+
+        _previousIndex = _currentIndex - 1;
+        if (_previousIndex < 0)
+            _previousIndex = _res.length - 1;
+
+        _res[_currentIndex].isLoaded = true;
+
+        await _sender.invokeEvent("render", [_res[_currentIndex]?.resource, _currentIndex, _res[_oldIndex]?.resource, _oldIndex, _res[_previousOldIndex]?.resource, _previousOldIndex, _res[_nextIndex]?.resource, _nextIndex, _res[_previousIndex]?.resource, _previousIndex, direction]);
     }
-    this.loadResources = async function (resourcesList, current) {
-        _res = resourcesList;
-        await Promise.all(_res.map(async (res, index) => await _sender.invokeEvent("load", [res, index])));
-        _renderIndex(current ? _res.findIndex((res) => res.hash == current.hash) : 0, 0);
+    this.loadResources = async function (resourcesList, current, loadAll = true) {
+        _res = resourcesList.map(_resource => ({ resource: _resource, isLoaded: false }));
+        await Promise.all(_res.map(async (res, index) => await _sender.invokeEvent("load", [res.resource, index, loadAll])));
+        _renderIndex(current ? _res.findIndex((res) => res.resource.hash == current.hash) : 0, 0);
         await this.invokeEvent("loadFinish", [_res]);
     }
     this.close = async () => {
         _oldIndex = -1;
         _currentIndex = -1;
-        await _sender.invokeEvent("close", [_res[_currentIndex], _currentIndex])
+        await _sender.invokeEvent("close", [_res[_currentIndex]?.resource, _currentIndex])
     };
     this.next = async function () {
-        let _index = _currentIndex + 1;
-        if (_index >= _res.length)
-            _index = 0;
-        if (_currentIndex == _index)
-            return;
-        await _renderIndex(_index, 1);
-        await _sender.invokeEvent("next", [_res[_currentIndex], _index])
+        await _renderIndex(_nextIndex, 1);
+        await _sender.invokeEvent("next", [_res[_currentIndex]?.resource, _nextIndex])
     }
     this.previous = async function () {
-        let _index = _currentIndex - 1;
-        if (_index < 0)
-            _index = _res.length - 1;
-        if (_currentIndex == _index)
-            return;
-        await _renderIndex(_index, -1);
-        await _sender.invokeEvent("previous", [_res[_currentIndex], _index])
+        await _renderIndex(_previousIndex, -1);
+        await _sender.invokeEvent("previous", [_res[_currentIndex]?.resource, _previousIndex])
     }
 }
 
@@ -1063,14 +1081,21 @@ let createButton = function (icon, label, tagName = "A", rightLabel = false) {
     return _button;
 }
 //Image helper for images
-let ImageHelper = function (image, onload = () => { }, onerror = () => { }) {
+let ImageHelper = function (image, onload = () => { }, onerror = () => { }, onfinish = () => { }) {
+    if (!image.src)
+        return;
     let imageIsNotLoaded = function () {
         image.src = "/img/image_error.webp";
         image.onload = function () { }
         onerror(image);
+        onfinish(image);
+    }
+    let imageLoaded = function () {
+        onload(image);
+        onfinish(image);
     }
     return new Promise((resolve) => {
-        image.onload = () => resolve(onload(image));
+        image.onload = () => resolve(imageLoaded());
         image.onerror = () => resolve(imageIsNotLoaded());
     });
 }
