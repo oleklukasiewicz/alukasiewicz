@@ -30,8 +30,6 @@ jobs:
         with:
           name: alukasiewicz-artifact
       - name: Deploy to Firebase
-        uses: FirebaseExtended/action-hosting-deploy@v0
-        with:
          uses: w9jds/firebase-action@master
         with:
           args: deploy --only hosting
