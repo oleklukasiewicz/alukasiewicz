@@ -113,7 +113,7 @@ let EventController = function (eventsList = []) {
     eventsList.forEach((eventName) => _events[eventName] = []);
 
     this.addEventListener = (event, listener = function () { }) => _events[event].push(listener);
-    this.invokeEvent = async (event, arg) => await Promise.all(_events[event].map((event) => event(...arg)));
+    this.invokeEvent = async (event, arg=[]) => await Promise.all(_events[event].map((event) => event(...arg)));
 }
 
 //controllers declarations
@@ -969,7 +969,7 @@ let ResourceSlider = function () {
     }
     this.close = async () => {
         _currentIndex = -1;
-        await _sender.invokeEvent("close", [_res[_currentIndex]?.resource, _currentIndex])
+        await _sender.invokeEvent("close")
     };
     this.next = async function () {
         await _renderIndex(_nextIndex, 1);

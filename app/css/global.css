@@ -682,7 +682,8 @@ body.scroll-fix::-webkit-scrollbar-track{
     overflow: hidden;
     height: 100%;
     max-width: 100%;
-    margin: 12px var(--size-margin-base) 30px;
+    width: 100%;
+    margin: 12px 0 30px;
     box-sizing: border-box;
 }
 #resource.loading #image-viewer-next,
@@ -690,14 +691,13 @@ body.scroll-fix::-webkit-scrollbar-track{
     display: none;
 }
 #image-viewer-list > .img{
-    margin: 0;
     max-width: 100%;
     max-height: 100%;
     opacity: 0;
     position: absolute;
     border-radius: var(--border-radius);
     display: flex;
-    padding: 12px var(--size-margin-base) 40px;
+    margin: 12px var(--size-margin-base) 40px;
     box-sizing: border-box;
 }
 #resource #image-viewer-list > .img.active-view.loading{
@@ -714,15 +714,13 @@ body.scroll-fix::-webkit-scrollbar-track{
     box-shadow: 0 12px 30px 0 rgba(0,0,0,.13);
     margin: auto auto;
 }
-#image-viewer-list > .img.active-view{
-    width: 100%;
+#image-viewer-list > .img.active-view,
+#image-viewer-list > .img.old{
+    width: calc(100% - (2 * var(--size-margin-base)));
     height: 100%;
     z-index: 5;
-    opacity: 0;
 }
 #image-viewer-list > .img.old{
-    width: 100%;
-    height: 100%;
     z-index: 0;
 }
 #image-viewer-list > .img.active-view.next{
