@@ -620,7 +620,7 @@ const resourceView = new View(VIEW.resource, APP.url.resource, {},
             }
 
             //adding event to slider
-            this.data.resSlider.addEventListener("render", async function (res, index, oldres, old, pevOld, prevOldIndex, nextIndexRes, nextIndex, previousIndexRes, previousIndex, direction) {
+            this.data.resSlider.addEventListener("render", async function (res, index, resHistory, nextIndexRes, nextIndex, previousIndexRes, previousIndex, direction) {
 
                 let _resChilds = _resList.children;
                 let _currentChild = _resChilds[index];
@@ -633,12 +633,12 @@ const resourceView = new View(VIEW.resource, APP.url.resource, {},
                 _resChilds[nextIndex].children[0].src = nextIndexRes.src;
                 _resChilds[previousIndex].children[0].src = previousIndexRes.src;
 
-                _resChilds[prevOldIndex]?.classList.remove("previous", "next", "old");
+                _resChilds[resHistory[1]?.index]?.classList.remove("previous", "next", "old");
 
                 _resChilds[index].classList.add(direction == 1 ? "next" : "previous", GLOBAL.activeView);
 
-                _resChilds[old]?.classList.remove("next", "previous", "start", GLOBAL.activeView);
-                _resChilds[old]?.classList.add(direction == 1 ? "next" : "previous", "old");
+                _resChilds[resHistory[0]?.index]?.classList.remove("next", "previous", "start", GLOBAL.activeView);
+                _resChilds[resHistory[0]?.index]?.classList.add(direction == 1 ? "next" : "previous", "old");
 
                 history.state.arg.routeArg = [_sender.data.currentItem.id, res.hash];
                 history.replaceState(history.state, '', "/" + _sender.url + "/" + _sender.data.currentItem.id + "/" + res.hash);
@@ -920,8 +920,9 @@ let StorageResponseBuilder = async function (response, targetNode = document.cre
 let ResourceSlider = function () {
     let _res = [];
     let _currentIndex;
-    let _oldIndex;
-    let _previousOldIndex;
+
+    let _history = [];
+    let _historyLimit = 2;
 
     let _nextIndex;
     let _previousIndex;
@@ -942,8 +943,10 @@ let ResourceSlider = function () {
     });
 
     let _renderIndex = async function (index, direction) {
-        _previousOldIndex = _oldIndex;
-        _oldIndex = _currentIndex;
+        _history.unshift({ resource: _res[_currentIndex], index: _currentIndex });
+        if (_history.length > _historyLimit)
+            _history.pop();
+
         _currentIndex = index;
 
         _nextIndex = _currentIndex + 1
@@ -956,7 +959,7 @@ let ResourceSlider = function () {
 
         _res[_currentIndex].isLoaded = true;
 
-        await _sender.invokeEvent("render", [_res[_currentIndex]?.resource, _currentIndex, _res[_oldIndex]?.resource, _oldIndex, _res[_previousOldIndex]?.resource, _previousOldIndex, _res[_nextIndex]?.resource, _nextIndex, _res[_previousIndex]?.resource, _previousIndex, direction]);
+        await _sender.invokeEvent("render", [_res[_currentIndex]?.resource, _currentIndex, _history, _res[_nextIndex]?.resource, _nextIndex, _res[_previousIndex]?.resource, _previousIndex, direction]);
     }
     this.loadResources = async function (resourcesList, current, loadAll = true) {
         _res = resourcesList.map(_resource => ({ resource: _resource, isLoaded: false }));
@@ -965,7 +968,6 @@ let ResourceSlider = function () {
         await this.invokeEvent("loadFinish", [_res]);
     }
     this.close = async () => {
-        _oldIndex = -1;
         _currentIndex = -1;
         await _sender.invokeEvent("close", [_res[_currentIndex]?.resource, _currentIndex])
     };
