@@ -99,8 +99,7 @@ let ItemComponentBuilder = async function (component, itemFolder, item) {
             _quoteAuthor.className = "font-base";
             _quoteAuthor.innerHTML = component.author;
 
-            _finalComponent.appendChild(_quoteText);
-            _finalComponent.appendChild(_quoteAuthor);
+            _finalComponent.append(_quoteText,_quoteAuthor);
             break;
 
         case "gallery":

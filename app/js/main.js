@@ -626,9 +626,6 @@ const resourceView = new View(VIEW.resource, APP.url.resource, {},
                 let _currentChild = _resChilds[index];
 
                 _currentChild.children[0].src = res.src;
-                ImageHelper(_currentChild.children[0], undefined, undefined, function () {
-                    _currentChild.classList.remove(GLOBAL.loading);
-                });
 
                 _resChilds[nextIndex].children[0].src = nextIndexRes.src;
                 _resChilds[previousIndex].children[0].src = previousIndexRes.src;
@@ -642,11 +639,14 @@ const resourceView = new View(VIEW.resource, APP.url.resource, {},
 
                 history.state.arg.routeArg = [_sender.data.currentItem.id, res.hash];
                 history.replaceState(history.state, '', "/" + _sender.url + "/" + _sender.data.currentItem.id + "/" + res.hash);
+
+                await ImageHelper(_currentChild.children[0], undefined, undefined, function () {
+                    _currentChild.classList.remove(GLOBAL.loading);
+                });
             });
             this.data.resSlider.addEventListener("load", async function () {
                 let _container = document.createElement("DIV");
-                _container.classList.add("img");
-                _container.classList.add(GLOBAL.loading);
+                _container.classList.add(GLOBAL.loading,"img");
                 let _img = document.createElement("IMG");
                 _container.appendChild(_img)
                 _resList.appendChild(_container);
@@ -964,7 +964,7 @@ let ResourceSlider = function () {
     this.loadResources = async function (resourcesList, current, loadAll = true) {
         _res = resourcesList.map(_resource => ({ resource: _resource, isLoaded: false }));
         await Promise.all(_res.map(async (res, index) => await _sender.invokeEvent("load", [res.resource, index, loadAll])));
-        _renderIndex(current ? _res.findIndex((res) => res.resource.hash == current.hash) : 0, 0);
+        await _renderIndex(current ? _res.findIndex((res) => res.resource.hash == current.hash) : 0, 0);
         await this.invokeEvent("loadFinish", [_res]);
     }
     this.close = async () => {
