@@ -113,7 +113,7 @@ let EventController = function (eventsList = []) {
     eventsList.forEach((eventName) => _events[eventName] = []);
 
     this.addEventListener = (event, listener = function () { }) => _events[event].push(listener);
-    this.invokeEvent = async (event, arg=[]) => await Promise.all(_events[event].map((event) => event(...arg)));
+    this.invokeEvent = async (event, arg = []) => await Promise.all(_events[event].map((event) => event(...arg)));
 }
 
 //controllers declarations
@@ -972,12 +972,16 @@ let ResourceSlider = function () {
         await _sender.invokeEvent("close")
     };
     this.next = async function () {
-        await _renderIndex(_nextIndex, 1);
-        await _sender.invokeEvent("next", [_res[_currentIndex]?.resource, _nextIndex])
+        if (_res.length > 1) {
+            await _renderIndex(_nextIndex, 1);
+            await _sender.invokeEvent("next", [_res[_currentIndex]?.resource, _nextIndex])
+        }
     }
     this.previous = async function () {
-        await _renderIndex(_previousIndex, -1);
-        await _sender.invokeEvent("previous", [_res[_currentIndex]?.resource, _previousIndex])
+        if (_res.length > 1) {
+            await _renderIndex(_previousIndex, -1);
+            await _sender.invokeEvent("previous", [_res[_currentIndex]?.resource, _previousIndex])
+        }
     }
 }
 
