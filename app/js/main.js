@@ -961,9 +961,9 @@ let ResourceSlider = function () {
 
         await _sender.invokeEvent("render", [_res[_currentIndex]?.resource, _currentIndex, _history, _res[_nextIndex]?.resource, _nextIndex, _res[_previousIndex]?.resource, _previousIndex, direction]);
     }
-    this.loadResources = async function (resourcesList, current, loadAll = true) {
+    this.loadResources = async function (resourcesList, current) {
         _res = resourcesList.map(_resource => ({ resource: _resource, isLoaded: false }));
-        await Promise.all(_res.map(async (res, index) => await _sender.invokeEvent("load", [res.resource, index, loadAll])));
+        await Promise.all(_res.map(async (res, index) => await _sender.invokeEvent("load", [res.resource, index])));
         await _renderIndex(current ? _res.findIndex((res) => res.resource.hash == current.hash) : 0, 0);
         await this.invokeEvent("loadFinish", [_res]);
     }

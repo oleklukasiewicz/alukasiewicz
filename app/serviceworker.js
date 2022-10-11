@@ -1,5 +1,5 @@
-const cacheName = "2.2.2.1";
-const serviceWorkerVersion = "26-08-22-v1";
+const cacheName = "2.2.2.2";
+const serviceWorkerVersion = "11-10-22-v1";
 
 const networkOnlyResources =
     [
@@ -26,14 +26,16 @@ const staticResources =
         "/font/micon_nb.svg",
         "/font/micon_nb.woff2",
         "/img/image_error.webp",
-        "/img/dark/profile.webp",
+        "/img/dark/landing-banner/bg1-d.webp",
+        "/img/dark/landing-banner/profile-picture.webp",
         "/img/dark/about-banner/bg-l1.webp",
         "/img/dark/about-banner/bg-l2.webp",
         "/img/dark/about-banner/bg-l3.webp",
         "/img/dark/about-banner/stars-l1.webp",
         "/img/dark/about-banner/stars-l2.webp",
         "/img/dark/about-banner/tree-l1.webp",
-        "/img/light/profile.webp",
+        "/img/light/landing-banner/bg1-l.webp",
+        "/img/light/landing-banner/profile-picture.webp",
         "/img/light/about-banner/bg-l1.webp",
         "/img/light/about-banner/bg-l2.webp",
         "/img/light/about-banner/bg-l3.webp",

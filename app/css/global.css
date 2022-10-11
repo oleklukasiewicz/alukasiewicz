@@ -13,7 +13,8 @@
     --color-font-disabled: #aaaaaa;
     --color-logo: #5f5f5f;
     --color-logo-A1: #404040;
-    --src-profile-image: url(\/img\/light\/profile.webp);
+    --src-profile-image-l1: url(\/img\/light\/landing-banner\/bg1-l.webp);
+    --src-profile-image-l2: url(\/img\/light\/landing-banner\/profile-picture.webp);
     --src-about-banner-l1: url(\/img\/light\/about-banner\/bg-l1.webp);
     --src-about-banner-l2: url(\/img\/light\/about-banner\/bg-l2.webp);
     --src-about-banner-l3: url(\/img\/light\/about-banner\/bg-l3.webp);
@@ -67,7 +68,8 @@
         --color-font-disabled: #aaaaaa;
         --color-logo: #d0d0d0;
         --color-logo-A1: #a0a0a0;
-        --src-profile-image: url(\/img\/dark\/profile\.webp);
+        --src-profile-image-l1: url(\/img\/dark\/landing-banner\/bg1-d.webp);
+        --src-profile-image-l2: url(\/img\/dark\/landing-banner\/profile-picture.webp);
         --src-about-banner-l1: url(\/img\/dark\/about-banner\/bg-l1.webp);
         --src-about-banner-l2: url(\/img\/dark\/about-banner\/bg-l2.webp);
         --src-about-banner-l3: url(\/img\/dark\/about-banner\/bg-l3.webp);
@@ -438,6 +440,9 @@ body.scroll-fix::-webkit-scrollbar-track{
 #profile-header > div{
     display: inline-table;
     box-sizing: border-box;
+}
+#profile-data
+{
     padding: 6px 0 0 50px;
 }
 #profile-header > div > b{
