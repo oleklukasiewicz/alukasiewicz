@@ -441,8 +441,7 @@ body.scroll-fix::-webkit-scrollbar-track{
     display: inline-table;
     box-sizing: border-box;
 }
-#profile-data
-{
+#profile-data{
     padding: 6px 0 0 50px;
 }
 #profile-header > div > b{
@@ -1202,9 +1201,12 @@ u.dotted-separator{
         margin-left: auto;
         margin-right: auto;
     }
-    #profile-header > div{
+    #profile-data{
         padding-left: 0;
         padding-top: 0;
+    }
+    #profile-image{
+        margin-bottom: 30px;
     }
     #profile-header > div > .button{
         width: 100%;
