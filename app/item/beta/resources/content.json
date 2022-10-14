@@ -103,6 +103,17 @@
             "content": "Rising to this challenge will take a lot of time and effort, and we all have day jobs in specific products. But it’s going to pay dividends along the way. Over time it can bring our culture, our business, our technology, and our experiences together."
         },
         {
+            "type":"list",
+            "items":
+            [
+                "Light",
+                "Depth",
+                "Material",
+                "Motion",
+                "Scale"
+            ]
+        },
+        {
             "title": "Partner with Microsoft Design",
             "content": [
                 "The ",

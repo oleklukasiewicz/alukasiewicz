@@ -274,6 +274,15 @@ let ItemComponentBuilder = async function (component, itemFolder, item) {
             }
             _finalComponent.appendChild(await ItemComponentBuilder(component.content));
             break;
+        case "list":
+            let _type = component.ordered ? "ol" : "ul";
+            _finalComponent = document.createElement(_type);
+            for (item of component.items) {
+                let _itemNode = document.createElement("LI");
+                _itemNode.append(await ItemComponentBuilder(item));
+                _finalComponent.appendChild(_itemNode);
+            }
+            break;
     }
     component.node = _finalComponent;
     return _finalComponent;

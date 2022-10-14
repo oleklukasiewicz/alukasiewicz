@@ -1,5 +1,4 @@
-#item-content>.section
-{
+#item-content > .section{
     display: flex;
     flex-direction: column;
     gap: 20px;
@@ -49,6 +48,23 @@
 .gallery > div > .button{
     display: inline-table;
     float: right;
+}
+ul
+{
+    padding-left: 20px;
+}
+ol{
+    list-style: none;
+    counter-reset: item;
+    padding-left: 0px;
+}
+ol li{
+    counter-increment: item;
+    margin-bottom: 5px;
+}
+ol li:before{
+    margin-right: 4px;
+    content: counter(item) ".";
 }
 .gallery > .list{
     margin-top: 24px;
