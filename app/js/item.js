@@ -74,17 +74,24 @@ let ItemComponentBuilder = async function (component, itemFolder, item) {
             _finalComponent = document.createElement("DIV");
             _finalComponent.className = "section";
 
-            if (component.title) {
-                let _title = document.createElement("DIV");
-                _title.className = "section-title font-subtitle";
-                _title.innerText = component.title;
-                _finalComponent.append(_title);
+            let _text;
+            if (typeof (component) === "string" || Array.isArray(component)) {
+                _text = component
+            } else {
+                ; _text = component.content;
+                if (component.title) {
+                    let _title = document.createElement("DIV");
+                    _title.classList.add("section-title", "font-subtitle");
+                    _title.innerText = component.title;
+                    _finalComponent.append(_title);
+                }
             }
 
-            if (typeof (component.content) === "string")
-                _finalComponent.append(component.content);
+            if (typeof (_text) === "string")
+                _finalComponent.append(_text);
             else
-                component.content.forEach(async content => _finalComponent.append(await ItemComponentBuilder(content, itemFolder, item)));
+                for (content of _text)
+                    _finalComponent.append(await ItemComponentBuilder(content, itemFolder, item));
             break;
 
         case "quote":
@@ -99,7 +106,7 @@ let ItemComponentBuilder = async function (component, itemFolder, item) {
             _quoteAuthor.className = "font-base";
             _quoteAuthor.innerHTML = component.author;
 
-            _finalComponent.append(_quoteText,_quoteAuthor);
+            _finalComponent.append(_quoteText, _quoteAuthor);
             break;
 
         case "gallery":
@@ -209,7 +216,7 @@ let ItemComponentBuilder = async function (component, itemFolder, item) {
                     (img) => img.classList.remove(GLOBAL.loading)
                 ));
 
-                res.props.node=_img;
+                res.props.node = _img;
             }
 
             Promise.all(_loadingPromises.map(async _promise => await _promise));
@@ -231,7 +238,43 @@ let ItemComponentBuilder = async function (component, itemFolder, item) {
             _finalComponent.href = component.href;
             _finalComponent.target = component.target;
             break;
+        case "decoration": case "bold": case "b": case "underline": case "u": case "italic": case "i": case "sup": case "sub":
+            let _nodeType;
+            let _style = component.style || component.type;
+            switch (_style) {
+                case "bold": case "b":
+                    _nodeType = "b";
+                    break;
+                case "underline": case "u":
+                    _nodeType = "u";
+                    break;
+                case "italic": case "i":
+                    _nodeType = "i";
+                    break;
+                case "sup":
+                    _nodeType = "sup";
+                    break;
+                case "sub":
+                    _nodeType = "sub";
+                    break;
+                default:
+                    _nodeType = "span";
+                    break;
+            }
+            _finalComponent = document.createElement(_nodeType);
+            _finalComponent.innerText = component.content;
+            break;
+        case "note":
+            _finalComponent = document.createElement("DIV");
+            _finalComponent.classList.add("note");
+            if (component.title) {
+                let _title = document.createElement("B");
+                _title.innerText = component.title;
+                _finalComponent.appendChild(_title);
+            }
+            _finalComponent.appendChild(await ItemComponentBuilder(component.content));
+            break;
     }
-    component.node=_finalComponent;
+    component.node = _finalComponent;
     return _finalComponent;
 }

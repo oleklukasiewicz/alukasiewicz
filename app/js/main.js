@@ -531,7 +531,8 @@ const itemView = new View(VIEW.item, APP.url.item, { currentItem: null }, {
 
             //preparing content
             this.data.iContent.innerHTML = "";
-            item.content.forEach(async (content) => this.data.iContent.append(await ItemComponentBuilder(content, item.folder, item)));
+
+            this.data.iContent.append(await ItemComponentBuilder(item.content, item.folder, item));
         } else
             ViewController.invokeError("item_load_error");
     },

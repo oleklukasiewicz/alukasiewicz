@@ -1,4 +1,10 @@
-#item-content > .section > .section-title{
+#item-content>.section
+{
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+#item-content .section > .section-title{
     font-weight: 700;
     margin-bottom: 24px;
     margin-top: 8px;
@@ -27,8 +33,7 @@
     color: var(--color-theme-A5);
     display: table;
 }
-.gallery.show-controls
-{
+.gallery.show-controls{
     margin-top: 8px;
 }
 .gallery > div{
@@ -157,6 +162,19 @@
     grid-column: 3;
     grid-row-start: 1;
     grid-row-end: 3;
+}
+#item-content .note{
+    background-color: var(--color-theme-A1);
+    padding: 24px;
+    box-sizing: border-box;
+}
+#item-content .note > b{
+    display: table;
+    margin-bottom: 16px;
+    font-size: var(--size-font-subtitle);
+}
+#item-content .bold{
+    font-weight: 700;
 }
 @media only screen and (max-width:430px){
     .gallery.items-count-5 > .list{
