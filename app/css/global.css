@@ -969,7 +969,7 @@ u.dotted-separator{
     white-space: nowrap;
     width: calc(100% - 82px);
     flex: 1;
-    margin-right: 10px;
+    margin-right: 24px;
 }
 .list-view > .group > .button{
     float: right;
