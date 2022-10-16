@@ -78,7 +78,7 @@ let ItemDate = function (day, month, year) {
         "Nov",
         "Dec"
     ]) {
-        return (this.day + "&nbsp;" + months[this.month - 1] + ",&nbsp;" + this.year)
+        return (months[this.month - 1] + "&nbsp;" + this.day + ",&nbsp;" + this.year)
     }
     this.toString = function () {
         return this.year.toString() + (this.month < 10 ? '0' + this.month.toString() : this.month.toString()) + (this.day < 10 ? '0' + this.day.toString() : this.day.toString());
@@ -647,7 +647,7 @@ const resourceView = new View(VIEW.resource, APP.url.resource, {},
             });
             this.data.resSlider.addEventListener("load", async function () {
                 let _container = document.createElement("DIV");
-                _container.classList.add(GLOBAL.loading,"img");
+                _container.classList.add(GLOBAL.loading, "img");
                 let _img = document.createElement("IMG");
                 _container.appendChild(_img)
                 _resList.appendChild(_container);
