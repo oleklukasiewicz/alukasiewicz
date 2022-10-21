@@ -163,7 +163,7 @@ let storageItems = () =>
             isLink: "https://www.instagram.com/p/CXlcDShooxu/",
             title: "Water Lily",
             tile: {
-                content: "Mandatory element in every organic picture of river or lake.",
+                content: "Mandatory element in almost every organic picture of river or lake.",
                 image: "/lily-blank.webp"
             },
             groups: [
