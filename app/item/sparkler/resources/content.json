@@ -1,0 +1,22 @@
+{
+    "component_version": 1,
+    "content": [
+        {
+            "type":"gallery",
+            "resources": [
+                {
+                    "src": "/sparkler.webp",
+                    "type": "image",
+                    "props": {
+                        "alt": "Airship"
+                    }
+                }
+            ]
+        },
+        {
+            "type":"note",
+            "title":"Build focused on healing na melee",
+            "content":"Items focused for fast team healing, survivability and damage"
+        }
+    ]
+}

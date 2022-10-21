@@ -66,8 +66,11 @@ ol li:before{
     margin-right: 4px;
     content: counter(item) ".";
 }
-.gallery > .list{
+.gallery.show-controls > .list
+{
     margin-top: 24px;
+}
+.gallery > .list{
     display: grid;
     gap: 6px;
     width: 100%;

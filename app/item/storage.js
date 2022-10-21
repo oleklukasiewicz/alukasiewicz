@@ -55,6 +55,14 @@ let storageGroups = () =>
             title: "All projects",
             groups: ["home"],
             isDefault: true
+        },
+        {
+            id: "dungeons-builds",
+            aliases:
+                [
+                    "builds"
+                ],
+            title: "Minecraft Dungeons Builds"
         }
     ]
 let storageItems = () =>
@@ -263,5 +271,23 @@ let storageItems = () =>
                 month: 5,
                 year: 2022
             }
+        },
+        {
+            id:"sparkler-build",
+            folder:"/sparkler",
+            title:"The Sparkler",
+            tile:
+            {
+                image:"/sparkler.webp",
+                content:"Healing and melee focused build for Minecraft Dungeons"
+            },
+            createDate: {
+                day: 21,
+                month: 10,
+                year: 2022
+            },
+            groups: [
+                "builds"
+            ],
         }
     ]

@@ -76,9 +76,9 @@ let ItemComponentBuilder = async function (component, itemFolder, item) {
 
             let _text;
             if (typeof (component) === "string" || Array.isArray(component)) {
-                _text = component
+                _text = component;
             } else {
-                ; _text = component.content;
+                _text = component.content;
                 if (component.title) {
                     let _title = document.createElement("DIV");
                     _title.classList.add("section-title", "font-subtitle");
@@ -86,7 +86,6 @@ let ItemComponentBuilder = async function (component, itemFolder, item) {
                     _finalComponent.append(_title);
                 }
             }
-
             if (typeof (_text) === "string")
                 _finalComponent.append(_text);
             else
@@ -262,7 +261,7 @@ let ItemComponentBuilder = async function (component, itemFolder, item) {
                     break;
             }
             _finalComponent = document.createElement(_nodeType);
-            _finalComponent.innerText = component.content;
+            _finalComponent.append(await ItemComponentBuilder(component.content))
             break;
         case "note":
             _finalComponent = document.createElement("DIV");
@@ -272,7 +271,7 @@ let ItemComponentBuilder = async function (component, itemFolder, item) {
                 _title.innerText = component.title;
                 _finalComponent.appendChild(_title);
             }
-            _finalComponent.appendChild(await ItemComponentBuilder(component.content));
+            _finalComponent.append(await ItemComponentBuilder(component.content));
             break;
         case "list":
             let _type = component.ordered ? "ol" : "ul";
