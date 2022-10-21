@@ -1,28 +1,38 @@
 const COMPONENTS_VERSION = 1;
 
 // Item structure builder
-let ItemBuilder = function (item) {
-    let itemFolder = item.folder;
-    item.content.map(async function (component, componentIndex) {
-        if (component.resources) {
+let ItemBuilder = function (item, folder = item.folder, resourceItem) {
+    let itemFolder = folder;
+    let componentIndex = 0;
 
-            //converting into valid resources
-            let index = 0;
-            while (index < component.resources.length) {
+    for (component of item.content) {
+        if (typeof (component) === "object") {
+            if (component.resources || component.src) {
 
                 //converting into valid resources
-                let _validResource = ResourceConverter(component.resources[index], APP.itemFolder + itemFolder + APP.resourceFolder, component.id || componentIndex);
-                component.resources.splice(index, 1, ..._validResource);
-                index += _validResource.length;
+                let index = 0;
+                if (component.src)
+                    component.resources = [{ src: component.src, type: "image" }];
+
+                while (index < component.resources.length) {
+
+                    //converting into valid resources
+                    let _validResource = ResourceConverter(component.resources[index], APP.itemFolder + itemFolder + APP.resourceFolder, component.id || componentIndex);
+                    component.resources.splice(index, 1, ..._validResource);
+                    index += _validResource.length;
+                }
+            
+                //adding link into resource group
+                component.resourceGroupIndex = resourceItem.resources.length;
+
+                //adding into item resources list
+                resourceItem.resources.push(new ResourceGroup(component.resources));
             }
-
-            //adding link into resource group
-            component.resourceGroupIndex = item.resources.length;
-
-            //adding into item resources list
-            item.resources.push(new ResourceGroup(component.resources));
+            if (component.content)
+                ItemBuilder(component, itemFolder, resourceItem);
+            componentIndex++;
         }
-    });
+    };
 
     if (item.debug)
         console.log(item);
@@ -92,7 +102,6 @@ let ItemComponentBuilder = async function (component, itemFolder, item) {
                 for (content of _text)
                     _finalComponent.append(await ItemComponentBuilder(content, itemFolder, item));
             break;
-
         case "quote":
             _finalComponent = document.createElement("DIV");
             _finalComponent.className = "quote";
@@ -103,11 +112,10 @@ let ItemComponentBuilder = async function (component, itemFolder, item) {
 
             let _quoteAuthor = document.createElement("SPAN");
             _quoteAuthor.className = "font-base";
-            _quoteAuthor.innerHTML = component.author;
+            _quoteAuthor.innerHTML = component.author||"";
 
             _finalComponent.append(_quoteText, _quoteAuthor);
             break;
-
         case "gallery":
 
             _finalComponent = document.createElement("DIV");
@@ -161,7 +169,7 @@ let ItemComponentBuilder = async function (component, itemFolder, item) {
                     _displayImages[_resIndex] = component.resources[_resIndex];
             }
 
-            if (!_arg.hideControls && component.resources.length > 1) {
+            if (component.title && (!_arg.hideControls && component.resources.length > 1)) {
                 _finalComponent.innerHTML = "<div><b class='font-subtitle'>" + component.title + "</b></div>";
                 _finalComponent.classList.add("show-controls");
 
@@ -229,7 +237,6 @@ let ItemComponentBuilder = async function (component, itemFolder, item) {
                 _finalComponent.appendChild(_alt);
             }
             break;
-
         case "link":
             _finalComponent = document.createElement("A");
             _finalComponent.className = "link";
@@ -276,13 +283,25 @@ let ItemComponentBuilder = async function (component, itemFolder, item) {
         case "list":
             let _type = component.ordered ? "ol" : "ul";
             _finalComponent = document.createElement(_type);
-            for (item of component.items) {
+            for (item of component.content) {
                 let _itemNode = document.createElement("LI");
                 _itemNode.append(await ItemComponentBuilder(item));
                 _finalComponent.appendChild(_itemNode);
             }
             break;
+        case "image":
+            _finalComponent = document.createElement("IMG");
+            _finalComponent.alt = component.resources[0].props?.alt || "";
+            _finalComponent.src = component.resources[0].src;
+            _finalComponent.className = GLOBAL.loading;
+
+            ImageHelper(_finalComponent,
+                (img) => img.classList.remove(GLOBAL.loading),
+                (img) => img.classList.remove(GLOBAL.loading)
+            );
+            break;
     }
+    _finalComponent.style = component.style;
     component.node = _finalComponent;
     return _finalComponent;
 }

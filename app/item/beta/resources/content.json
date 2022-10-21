@@ -104,7 +104,7 @@
         },
         {
             "type":"list",
-            "items":
+            "content":
             [
                 "Light",
                 "Depth",

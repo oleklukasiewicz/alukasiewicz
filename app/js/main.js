@@ -414,7 +414,7 @@ let ItemController = (function () {
             });
 
             //building item structure
-            ItemBuilder(item);
+            ItemBuilder(item,item.folder,item);
 
             //indicating content is downloaded
             item.isContentCached = true;
@@ -863,7 +863,7 @@ let StorageResponseIndexer = function (response, depth = 1, limit = 3, startInde
     let _currentIndex = startIndex;
 
     let _addIntoResponse = function (entry) {
-        if (!entry) return;
+        if (!entry||entry.hidden) return;
         entry.isIndexed = true;
         //adding item into response
         _indexedItems.push({ index: _currentIndex, obj: entry, groupItemIndex: _groupItemIndex });

@@ -2,21 +2,75 @@
     "component_version": 1,
     "content": [
         {
-            "type":"gallery",
-            "resources": [
+            "type":"quote",
+            "content":"Healing and melee focused build"
+        },
+        {
+            "type": "section",
+            "content": ["Items focused for fast team healing, survivability and damage. ","Created in spooky/ nether theme for Luminous Night season."]
+        },
+        {
+            "type": "note",
+            "title": "Wither Armor",
+            "content": [
                 {
-                    "src": "/sparkler.webp",
                     "type": "image",
-                    "props": {
-                        "alt": "Airship"
-                    }
+                    "style": "margin:10px;width:60px;",
+                    "src": "/icons/wither_armor.webp"
+                },
+                {
+                    "type": "list",
+                    "style":"display:inline-table;vertical-align:top;",
+                    "content": [
+                        "30% damage reduction",
+                        "100% more soul gathering",
+                        "6% life steal aura"
+                    ]
                 }
             ]
         },
         {
-            "type":"note",
-            "title":"Build focused on healing na melee",
-            "content":"Items focused for fast team healing, survivability and damage"
+            "type": "note",
+            "title": "Fighter Bindings",
+            "content": [
+                {
+                    "type": "image",
+                    "style": "margin:10px;width:60px;",
+                    "src": "/icons/fighter_bindings.webp"
+                },
+                {
+                    "type": "list",
+                    "style":"display:inline-table;vertical-align:top;",
+                    "content": [
+                        "Power: 2.5",
+                        "Speed: 14",
+                        "Area: 1.5",
+                        "Turbo punches"
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "note",
+            "title": "Imploding Crossbow",
+            "content": [
+                {
+                    "type": "image",
+                    "style": "margin:10px;width:60px;",
+                    "src": "/icons/imploding_crossbow.webp"
+                },
+                {
+                    "type": "list",
+                    "style":"display:inline-table;vertical-align:top;",
+                    "content": [
+                        "Power: 12.3",
+                        "Speed: 1",
+                        "Area: 1",
+                        "Pulls in enemies",
+                        "Explodes on Impact"
+                    ]
+                }
+            ]
         }
     ]
 }
