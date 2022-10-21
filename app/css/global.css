@@ -878,6 +878,8 @@ u.dotted-separator{
 }
 .list-view > .item > span{
     margin: 12px 20px 0;
+    text-align: justify;
+    letter-spacing: .1px;
 }
 .list-view > .item > b{
     font-weight: 700;

@@ -279,7 +279,7 @@ let storageItems = () =>
             tile:
             {
                 image:"/sparkler.webp",
-                content:"Healing and melee focused build for Minecraft Dungeons"
+                content:"Healing and damage focused build for Minecraft Dungeons made in spooky theme."
             },
             createDate: {
                 day: 21,
