@@ -49,14 +49,13 @@
     display: inline-table;
     float: right;
 }
-ul
-{
+ul{
     padding-left: 20px;
 }
 ol{
     list-style: none;
     counter-reset: item;
-    padding-left: 0px;
+    padding-left: 0;
 }
 ol li{
     counter-increment: item;
@@ -66,8 +65,7 @@ ol li:before{
     margin-right: 4px;
     content: counter(item) ".";
 }
-.gallery.show-controls > .list
-{
+.gallery.show-controls > .list{
     margin-top: 24px;
 }
 .gallery > .list{
@@ -79,11 +77,13 @@ ol li:before{
     grid-template-columns: 1fr 1fr 1fr;
     grid-template-rows: 120px 40px 120px;
 }
-.gallery > .list > img.loading{
+#item-content img.loading{
     pointer-events: none;
     animation-name: Blink;
     animation-iteration-count: infinite;
     animation-duration: 1.2s;
+    background-color: var(--color-theme-hover);
+    border-radius: var(--border-radius);
 }
 .gallery > .list > img{
     background-color: var(--color-theme-A1);
