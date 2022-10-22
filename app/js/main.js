@@ -414,7 +414,7 @@ let ItemController = (function () {
             });
 
             //building item structure
-            ItemBuilder(item,item.folder,item);
+            ItemBuilder(item, item.folder, item);
 
             //indicating content is downloaded
             item.isContentCached = true;
@@ -455,6 +455,7 @@ let ItemController = (function () {
     return _controller;
 }());
 
+//views declarations
 const landingView = new View(VIEW.landing, APP.url.landing, { scrollY: -1, itemsLoaded: false }, {
     onNavigate: function () {
         if (this.data.scrollY >= 0)
@@ -510,29 +511,42 @@ const itemView = new View(VIEW.item, APP.url.item, { currentItem: null }, {
     onLoad: async function (arg) {
         this.rootNode.classList.add(GLOBAL.loading);
         if (ItemController.isItemsLoaded) {
-            //getting 
+            //getting item
             let item;
-            try {
-                item = await ItemController.getItemById(arg.routeArg[0]);
-            } catch (e) { console.error(e); return; }
-            if (!item || this.data.currentItem == item)
-                return;
-            if (item.isLink) {
-                window.open(item.isLink, '_blank').focus();
-                ViewController.navigateToDefaultView();
-                return;
+            //if item is loaded into view -> skip rendering 
+            //TODO: dynamic item content change
+            if (this.data.currentItem?.id != arg.routeArg[0]) {
+                try {
+                    item = await ItemController.getItemById(arg.routeArg[0]);
+                } catch (e) { console.error(e); return; }
+
+                //display error and return if item is not found
+                if (!item) {
+                    ViewController.invokeError("item_not_found");
+                    return;
+                }
+
+                //if it's link -> redirect into page
+                if (item.isLink) {
+                    window.open(item.isLink, '_blank').focus();
+                    ViewController.navigateToDefaultView();
+                    return;
+                }
+
+                //save into view cache
+                this.data.currentItem = item;
+
+                //preparing item info
+                document.title = item.title + " - " + APP.name;
+                this.data.iTitle.innerHTML = item.title;
+                this.data.iInfo.innerHTML = item.createDate.toHTMLString() + ((item.modifyDate) ? " <u class='dotted-separator'></u> Updated " + item.modifyDate.toHTMLString() : "");
+
+                //clear content
+                this.data.iContent.innerHTML = "";
+
+                //render item
+                this.data.iContent.append(await ItemComponentBuilder(item.content, item.folder, item));
             }
-            this.data.currentItem = item;
-
-            //preparing item info
-            document.title = item.title + " - " + APP.name;
-            this.data.iTitle.innerHTML = item.title;
-            this.data.iInfo.innerHTML = item.createDate.toHTMLString() + ((item.modifyDate) ? " <u class='dotted-separator'></u> Updated " + item.modifyDate.toHTMLString() : "");
-
-            //preparing content
-            this.data.iContent.innerHTML = "";
-
-            this.data.iContent.append(await ItemComponentBuilder(item.content, item.folder, item));
         } else
             ViewController.invokeError("item_load_error");
     },
@@ -856,6 +870,8 @@ let createGroupTile = function (node, group) {
     node.children[1].href = APP.url.group + "/" + group.id;
     return node;
 }
+
+//storage response display helpers
 let StorageResponseIndexer = function (response, depth = 1, limit = 3, startIndex = 0, limitOfDepth = 3) {
     let _indexedItems = [];
     let _groupItemIndex = 0;
@@ -863,7 +879,7 @@ let StorageResponseIndexer = function (response, depth = 1, limit = 3, startInde
     let _currentIndex = startIndex;
 
     let _addIntoResponse = function (entry) {
-        if (!entry||entry.hidden) return;
+        if (!entry || entry.hidden) return;
         entry.isIndexed = true;
         //adding item into response
         _indexedItems.push({ index: _currentIndex, obj: entry, groupItemIndex: _groupItemIndex });

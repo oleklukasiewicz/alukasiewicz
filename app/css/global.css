@@ -356,7 +356,7 @@ body.scroll-fix::-webkit-scrollbar-track{
 }
 #main-header-navigation{
     display: flex;
-    max-height: 120px;
+    max-height: 180px;
     gap: 8px;
 }
 #main-header-nav-button,

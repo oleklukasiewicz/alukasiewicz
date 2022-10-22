@@ -1,16 +1,21 @@
 const COMPONENTS_VERSION = 1;
 
-// Item structure builder
+// Item structure builder (recurence)
 let ItemBuilder = function (item, folder = item.folder, resourceItem) {
     let itemFolder = folder;
     let componentIndex = 0;
 
+    //search child components for resources
     for (component of item.content) {
+        
+        //ignore string and number childs
         if (typeof (component) === "object") {
             if (component.resources || component.src) {
 
                 //converting into valid resources
                 let index = 0;
+
+                //converting src prop into resource array
                 if (component.src)
                     component.resources = [{ src: component.src, type: "image" }];
 
@@ -28,17 +33,21 @@ let ItemBuilder = function (item, folder = item.folder, resourceItem) {
                 //adding into item resources list
                 resourceItem.resources.push(new ResourceGroup(component.resources));
             }
+            //if child component contains child elements 
+            // -> check for resources in child components
             if (component.content)
                 ItemBuilder(component, itemFolder, resourceItem);
+
             componentIndex++;
         }
     };
 
+    //debug
     if (item.debug)
         console.log(item);
 }
 
-//Converting components into valid resources for searching, indexing and more
+//Converting components into valid resources for searching, indexing and more (invoked from ItemBuilder)
 let ResourceConverter = function (component, targetFolder, componentId) {
     let resources = [];
 
@@ -71,7 +80,7 @@ let ResourceConverter = function (component, targetFolder, componentId) {
     return resources;
 }
 
-//Item component builder for basic content components
+//Item component builder for basic content components (recurence)
 let ItemComponentBuilder = async function (component, itemFolder, item) {
     if (typeof (component) === "string") return component;
     let _type = component.type;
