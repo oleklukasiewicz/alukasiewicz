@@ -83,7 +83,6 @@ ol li:before{
     animation-iteration-count: infinite;
     animation-duration: 1.2s;
     background-color: var(--color-theme-hover);
-    border-radius: var(--border-radius);
 }
 .gallery > .list > img{
     background-color: var(--color-theme-A1);

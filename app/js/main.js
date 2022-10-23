@@ -458,13 +458,18 @@ let ItemController = (function () {
 //views declarations
 const landingView = new View(VIEW.landing, APP.url.landing, { scrollY: -1, itemsLoaded: false }, {
     onNavigate: function () {
+        //restoring scroll
         if (this.data.scrollY >= 0)
             window.scroll(0, this.data.scrollY)
         document.title = APP.name;
+        
+        //error if items are not loaded before view is displayed
         if (!ItemController.isItemsLoaded)
             ViewController.invokeError("item_load_error");
     },
     onRegister: function () {
+        
+        //set "About me" button
         let _pButton = getById("profile-link-button");
         _pButton.href = APP.url.profile;
         _pButton.addEventListener("click", () => {
@@ -474,6 +479,7 @@ const landingView = new View(VIEW.landing, APP.url.landing, { scrollY: -1, items
         this.data.iList = getById("main-list");
     },
     onNavigateFrom: function () {
+        //save scroll
         this.data.scrollY = window.scrollY;
         this.rootNode.classList.remove(GLOBAL.error);
     },
@@ -483,6 +489,8 @@ const landingView = new View(VIEW.landing, APP.url.landing, { scrollY: -1, items
     },
     onLoad: async function () {
         this.rootNode.classList.add(GLOBAL.loading);
+        
+        //display items from landing group
         if (ItemController.isItemsLoaded && ItemController.isGroupsLoaded)
             StorageResponseBuilder(await ItemController.getGroupById("landing"), this.data.iList, 1, -1)
     },
@@ -503,7 +511,7 @@ const itemView = new View(VIEW.item, APP.url.item, { currentItem: null }, {
         this.rootNode.classList.remove(GLOBAL.error);
     },
     onRegister: function () {
-        //getting nodes
+        //getting children nodes
         this.data.iTitle = getById("item-title");
         this.data.iContent = getById("item-content");
         this.data.iInfo = getById("item-info");
@@ -560,6 +568,7 @@ const itemView = new View(VIEW.item, APP.url.item, { currentItem: null }, {
 }, VIEW.item, true, ViewController.loadingModes.always);
 const groupView = new View(VIEW.group, APP.url.group, { scrollY: -1 }, {
     onRegister: function () {
+        //get children nodes
         let _data = this.data;
         _data.groupData = getById("group-data")
         _data.groupList = getById("group-list");
@@ -568,6 +577,7 @@ const groupView = new View(VIEW.group, APP.url.group, { scrollY: -1 }, {
     },
     onNavigate: () => window.scroll(0, 0),
     onNavigateFrom: function () {
+        //set all group items into loading state
         Array.prototype.forEach.call(this.data.groupList.getElementsByClassName(GLOBAL.dataNode), (node) =>
             node.classList.add("loading", "no-data"));
         this.rootNode.classList.remove(GLOBAL.error);
@@ -637,6 +647,7 @@ const resourceView = new View(VIEW.resource, APP.url.resource, {},
             //adding event to slider
             this.data.resSlider.addEventListener("render", async function (res, index, resHistory, nextIndexRes, nextIndex, previousIndexRes, previousIndex, direction) {
 
+                //setting classes for items to render
                 let _resChilds = _resList.children;
                 let _currentChild = _resChilds[index];
 
@@ -673,6 +684,7 @@ const resourceView = new View(VIEW.resource, APP.url.resource, {},
                 _setButtonsDisplay(true);
             });
 
+            //adding gestures for navigation
             GestureBuilder(this.rootNode, {
                 right: this.data.resSlider.next,
                 left: this.data.resSlider.previous,
@@ -684,6 +696,8 @@ const resourceView = new View(VIEW.resource, APP.url.resource, {},
             //loading item and resource group
             this.data.currentItem = arg.currentItem || await ItemController.getItemById(arg.routeArg[0]);
             let resourceGroup = ItemController.findResourceByHash(this.data.currentItem.resources, arg.routeArg[1]);
+
+            //if resource group is mising -> display error
             if (!resourceGroup) {
                 ViewController.invokeError("image_not_found", false);
                 return;
@@ -710,12 +724,14 @@ ViewController.register(resourceView);
 
 //view controller events
 ViewController.addEventListener("historyEdit", (historyItem, view) => {
+    //preparing history
     if (historyItem.index == 0 || view.navigationArgs.noHistoryPush)
         history.replaceState(historyItem, '', view.navigationUrl);
     else
         history.pushState(historyItem, '', view.navigationUrl);
 });
 ViewController.addEventListener("navigateDefault", (arg) => {
+    //navigating to nearest landing page history index
     let _homeIndex = history.state.defaultViewHistoryIndex;
     let _indexDelta = _homeIndex - history.state.index;
     if (_homeIndex != -1 && _indexDelta != 0)

@@ -84,7 +84,7 @@ let ResourceConverter = function (component, targetFolder, componentId) {
 let ItemComponentBuilder = async function (component, itemFolder, item) {
     if (typeof (component) === "string") return component;
     let _type = component.type;
-    let _arg = component.props || {};
+    let _arg = component.props ||component.arg|| {};
     let _finalComponent;
     if (component.dontRender) _type = "none";
     //generating nodes
@@ -94,9 +94,11 @@ let ItemComponentBuilder = async function (component, itemFolder, item) {
             _finalComponent.className = "section";
 
             let _text;
+            //checking if component is string or array (content with multiple childs)
             if (typeof (component) === "string" || Array.isArray(component)) {
                 _text = component;
             } else {
+                //if not -> set target data to component content
                 _text = component.content;
                 if (component.title) {
                     let _title = document.createElement("DIV");
@@ -131,7 +133,10 @@ let ItemComponentBuilder = async function (component, itemFolder, item) {
             _finalComponent.className = "gallery";
 
             //setting up images order and count
+            
+            //promises array for images loading
             let _loadingPromises = [];
+            
             let _maxImagesCount = 5;
             let _displayImagesCount = (_arg.imagesCount && _arg.imagesCount <= _maxImagesCount) ? _arg.imagesCount : (component.resources.length < _maxImagesCount ? component.resources.length : _maxImagesCount);
             let _displayImages = new Array(_displayImagesCount);
@@ -178,6 +183,7 @@ let ItemComponentBuilder = async function (component, itemFolder, item) {
                     _displayImages[_resIndex] = component.resources[_resIndex];
             }
 
+            //display controls
             if (component.title && (!_arg.hideControls && component.resources.length > 1)) {
                 _finalComponent.innerHTML = "<div><b class='font-subtitle'>" + component.title + "</b></div>";
                 _finalComponent.classList.add("show-controls");
@@ -188,6 +194,7 @@ let ItemComponentBuilder = async function (component, itemFolder, item) {
                 _button.className = "button";
                 _button.href = "/" + APP.url.resource + "/" + item.id + "/" + _displayImages[0].hash;
 
+                //add action to navigate into resources view
                 _button.onclick = function (e) {
                     e.preventDefault();
                     ViewController.navigate(VIEW.resource, {
@@ -235,12 +242,14 @@ let ItemComponentBuilder = async function (component, itemFolder, item) {
                 res.props.node = _img;
             }
 
+            // resolve all promises
             Promise.all(_loadingPromises.map(async _promise => await _promise));
             _finalComponent.classList.add("items-count-" + _displayImagesCount);
 
-            if (component.props?.alt) {
+            //add alternative text
+            if (_arg.alt) {
                 let _alt = document.createElement("span");
-                let _altText = typeof (component.props.alt) === "boolean" ? component.resources[0].props.alt : component.props.alt;
+                let _altText = typeof (_arg.alt) === "boolean" ? component.resources[0].props.alt : _arg.alt;
                 _alt.innerHTML = _altText;
                 _alt.classList.add("img-alt");
                 _finalComponent.appendChild(_alt);
@@ -249,6 +258,7 @@ let ItemComponentBuilder = async function (component, itemFolder, item) {
         case "link":
             _finalComponent = document.createElement("A");
             _finalComponent.className = "link";
+           
             _finalComponent.innerHTML = component.content;
             _finalComponent.href = component.href;
             _finalComponent.target = component.target;
@@ -282,16 +292,19 @@ let ItemComponentBuilder = async function (component, itemFolder, item) {
         case "note":
             _finalComponent = document.createElement("DIV");
             _finalComponent.classList.add("note");
+            
             if (component.title) {
                 let _title = document.createElement("B");
                 _title.innerText = component.title;
                 _finalComponent.appendChild(_title);
             }
+
             _finalComponent.append(await ItemComponentBuilder(component.content));
             break;
         case "list":
             let _type = component.ordered ? "ol" : "ul";
             _finalComponent = document.createElement(_type);
+            
             for (item of component.content) {
                 let _itemNode = document.createElement("LI");
                 _itemNode.append(await ItemComponentBuilder(item));
