@@ -27,11 +27,24 @@ let Resource = function (src, type, hash = CREATE_HASH(src), props = {}) {
     return { src, type, hash, props }
 }
 let ResourceGroup = function (resourcesList = [], selectedResourceHash) {
-    return { resources: resourcesList, selected: selectedResourceHash }
+    this.addResource = function (resource) {
+        if (Array.isArray(resource))
+            resource.forEach(_res => resourcesList.push(_res));
+        else
+            resourcesList.push(resource);
+    }
+    this.resources = resourcesList;
+    this.selected = selectedResourceHash;
 }
+
 let ResourceDictionary = function (resourcesGroups = []) {
-    return resourcesGroups;
+    let _dictionary = this;
+    this.addGroup = (group) => _dictionary.push(group);
+    
+    resourcesGroups.forEach((item) => this.push(item));
 }
+ResourceDictionary.prototype = new Array;
+ResourceDictionary.constructor = ResourceDictionary;
 
 let View = function (id, url, data = {}, event = {}, rootNode = null, isRegisterDelayed = false, loadingMode = ViewController.loadingModes.single) {
     return {
@@ -310,7 +323,7 @@ let ItemController = (function () {
 
     let _downloadViaAJAX = async function (item) {
         return new Promise((resolve, reject) => {
-            let _xmlhttp = window._xmlhttpRequest ? new _xmlhttpRequest() : new ActiveXObject("Microsoft.xmlhttp");
+            let _xmlhttp = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject("Microsoft.XMLHTTP");
 
             //loading item content
             _xmlhttp.onreadystatechange = function () {
@@ -330,7 +343,7 @@ let ItemController = (function () {
             }
 
             //sending
-            _xmlhttp.open("GET", ITEM.folder + item.folder + ITEM.resourceFolder + "/"+ITEM.fileName, true);
+            _xmlhttp.open("GET", ITEM.folder + item.folder + ITEM.resourceFolder + "/" + ITEM.fileName, true);
             _xmlhttp.send();
         });
     }
@@ -406,17 +419,9 @@ let ItemController = (function () {
 
             //TODO: check content component version if newer -> download new version of item.css and js
 
-            //creating resource dictionary and adding content.json file into it
-            Object.assign(item, _content, {
-                resources: new ResourceDictionary([
-                    new ResourceGroup([
-                        new Resource("/"+ITEM.fileName, "item", null)])])
-            });
+            ItemStuctureBuilder(item, _content);
 
-            //building item structure
-            ItemBuilder(item, item.folder, item);
-
-            //indicating content is downloaded
+            //indicating content is cached
             item.isContentCached = true;
         }
         return item;
@@ -462,13 +467,13 @@ const landingView = new View(VIEW.landing, APP.url.landing, { scrollY: -1, items
         if (this.data.scrollY >= 0)
             window.scroll(0, this.data.scrollY)
         document.title = APP.name;
-        
+
         //error if items are not loaded before view is displayed
         if (!ItemController.isItemsLoaded)
             ViewController.invokeError("item_load_error");
     },
     onRegister: function () {
-        
+
         //set "About me" button
         let _pButton = getById("profile-link-button");
         _pButton.href = APP.url.profile;
@@ -489,7 +494,7 @@ const landingView = new View(VIEW.landing, APP.url.landing, { scrollY: -1, items
     },
     onLoad: async function () {
         this.rootNode.classList.add(GLOBAL.loading);
-        
+
         //display items from landing group
         if (ItemController.isItemsLoaded && ItemController.isGroupsLoaded)
             StorageResponseBuilder(await ItemController.getGroupById("landing"), this.data.iList, 1, -1)
@@ -695,7 +700,7 @@ const resourceView = new View(VIEW.resource, APP.url.resource, {},
         onLoad: async function (arg) {
             //loading item and resource group
             this.data.currentItem = arg.currentItem || await ItemController.getItemById(arg.routeArg[0]);
-            let resourceGroup = ItemController.findResourceByHash(this.data.currentItem.resources, arg.routeArg[1]);
+            let resourceGroup = ItemController.findResourceByHash(this.data.currentItem.resourcesDictionary, arg.routeArg[1]);
 
             //if resource group is mising -> display error
             if (!resourceGroup) {
@@ -827,14 +832,14 @@ let createItemTile = async function (node, item) {
     let nodeUpdateLabel = document.createElement("DIV");
     nodeUpdateLabel.classList.add("label", "font-caption");
     let nodeUpdateLabelIcon = document.createElement("I");
-    
+
     if (item.modifyDate)
         nodeUpdateLabelIcon.classList.add("mi", "mi-Update");
-    
-        nodeUpdateLabel.innerHTML = " &nbsp;&nbsp;" + date.toHTMLString();
+
+    nodeUpdateLabel.innerHTML = " &nbsp;&nbsp;" + date.toHTMLString();
     nodeUpdateLabel.insertBefore(nodeUpdateLabelIcon, nodeUpdateLabel.firstChild);
     nodeLabels.appendChild(nodeUpdateLabel);
-   
+
     node.appendChild(nodeImgContainer);
     node.appendChild(nodeTitle);
     node.appendChild(nodeContent);
@@ -901,7 +906,7 @@ let StorageResponseIndexer = function (response, depth = 1, limit = 3, startInde
     let _addIntoResponse = function (entry) {
         if (!entry || entry.hidden) return;
         entry.isIndexed = true;
-        
+
         //adding item into response
         _indexedItems.push({ index: _currentIndex, obj: entry, groupItemIndex: _groupItemIndex });
         _groupItemIndex += 1;

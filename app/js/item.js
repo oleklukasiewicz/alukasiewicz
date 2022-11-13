@@ -1,90 +1,10 @@
 const COMPONENTS_VERSION = 1;
 
-// Item structure builder (recurence)
-let ItemBuilder = function (item, folder = item.folder, resourceItem) {
-    let itemFolder = folder;
-    let componentIndex = 0;
-
-    //search child components for resources
-    for (component of item.content) {
-        
-        //ignore string and number childs
-        if (typeof (component) === "object") {
-            if (component.resources || component.src) {
-
-                //converting into valid resources
-                let index = 0;
-
-                //converting src prop into resource array
-                if (component.src)
-                    component.resources = [{ src: component.src, type: "image" }];
-
-                while (index < component.resources.length) {
-
-                    //converting into valid resources
-                    let _validResource = ResourceConverter(component.resources[index], ITEM.folder + itemFolder + ITEM.resourceFolder, component.id || componentIndex);
-                    component.resources.splice(index, 1, ..._validResource);
-                    index += _validResource.length;
-                }
-            
-                //adding link into resource group
-                component.resourceGroupIndex = resourceItem.resources.length;
-
-                //adding into item resources list
-                resourceItem.resources.push(new ResourceGroup(component.resources));
-            }
-            //if child component contains child elements 
-            // -> check for resources in child components
-            if (component.content)
-                ItemBuilder(component, itemFolder, resourceItem);
-
-            componentIndex++;
-        }
-    };
-
-    //debug
-    if (item.debug)
-        console.log(item);
-}
-
-//Converting components into valid resources for searching, indexing and more (invoked from ItemBuilder)
-let ResourceConverter = function (component, targetFolder, componentId) {
-    let resources = [];
-
-    let _pushItem = (item) =>
-        resources.push(new Resource(ITEM.folder + item.folder + item.tile.image, "image", createHash(ITEM.folder + item.folder + item.tile.image + componentId), component.props))
-    switch (component.type) {
-        case "group":
-            let group = ItemController.getGroupById(component.id);
-
-            //return if group don't exist
-            if (!group) return resources;
-
-            group.content.forEach((item) => {
-                //ignoring images if are just placeholders
-                if (!item.arg?.ignoreTileImageInGallery)
-                    _pushItem(item);
-            });
-            break;
-        case "image":
-            resources.push(new Resource(targetFolder + component.src, "image", createHash(targetFolder + component.src + componentId), component.props))
-            break;
-        case "item":
-            let item = ItemController.getItemSnapshotById(component.id);
-            _pushItem(item);
-            break;
-        default:
-            resources.push(component);
-            break;
-    }
-    return resources;
-}
-
 //Item component builder for basic content components (recurence)
 let ItemComponentBuilder = async function (component, itemFolder, item) {
     if (typeof (component) === "string") return component;
     let _type = component.type;
-    let _arg = component.props ||component.arg|| {};
+    let _arg = component.props || component.arg || {};
     let _finalComponent;
     if (component.dontRender) _type = "none";
     //generating nodes
@@ -123,7 +43,7 @@ let ItemComponentBuilder = async function (component, itemFolder, item) {
 
             let _quoteAuthor = document.createElement("SPAN");
             _quoteAuthor.className = "font-base";
-            _quoteAuthor.innerHTML = component.author||"";
+            _quoteAuthor.innerHTML = component.author || "";
 
             _finalComponent.append(_quoteText, _quoteAuthor);
             break;
@@ -133,10 +53,10 @@ let ItemComponentBuilder = async function (component, itemFolder, item) {
             _finalComponent.className = "gallery";
 
             //setting up images order and count
-            
+
             //promises array for images loading
             let _loadingPromises = [];
-            
+
             let _maxImagesCount = 5;
             let _displayImagesCount = (_arg.imagesCount && _arg.imagesCount <= _maxImagesCount) ? _arg.imagesCount : (component.resources.length < _maxImagesCount ? component.resources.length : _maxImagesCount);
             let _displayImages = new Array(_displayImagesCount);
@@ -258,7 +178,7 @@ let ItemComponentBuilder = async function (component, itemFolder, item) {
         case "link":
             _finalComponent = document.createElement("A");
             _finalComponent.className = "link";
-           
+
             _finalComponent.innerHTML = component.content;
             _finalComponent.href = component.href;
             _finalComponent.target = component.target;
@@ -292,7 +212,7 @@ let ItemComponentBuilder = async function (component, itemFolder, item) {
         case "note":
             _finalComponent = document.createElement("DIV");
             _finalComponent.classList.add("note");
-            
+
             if (component.title) {
                 let _title = document.createElement("B");
                 _title.innerText = component.title;
@@ -304,7 +224,7 @@ let ItemComponentBuilder = async function (component, itemFolder, item) {
         case "list":
             let _type = component.ordered ? "ol" : "ul";
             _finalComponent = document.createElement(_type);
-            
+
             for (item of component.content) {
                 let _itemNode = document.createElement("LI");
                 _itemNode.append(await ItemComponentBuilder(item));
@@ -326,4 +246,84 @@ let ItemComponentBuilder = async function (component, itemFolder, item) {
     _finalComponent.style = component.style;
     component.node = _finalComponent;
     return _finalComponent;
+}
+
+//item structure builder
+let ItemStuctureBuilder = function (item, content) {
+
+    //merging item and content
+    Object.assign(item, content);
+
+    //creating resource dictionary for item
+    item.resourcesDictionary = new ResourceDictionary(
+        [
+            new ResourceGroup(
+                [
+                    new Resource("/" + ITEM.fileName, "item", null)
+                ])
+        ]);
+
+    //converting json into proper components
+    ItemComponentConverter(item, item);
+}
+
+let ItemComponentConverter = function (component, item) {
+
+    if (typeof (component) !== "object")
+        return component;
+
+    //converting all child components and objects
+    if (Array.isArray(component.content))
+        for (_child of component.content)
+            ItemComponentConverter(_child, item);
+
+    let _resources = component.resources || component.src;
+    if (_resources)
+        ItemComponentResourceResolver(_resources, component, item);
+}
+
+let ItemComponentResourceResolver = function (resources, component, item) {
+
+    let _componentResourcesGroup = new ResourceGroup();
+    if (Array.isArray(resources)) {
+        for (_res of resources) {
+            _componentResourcesGroup.addResource(ItemComponentResourcesConverter(_res, component, item));
+        }
+    } else {
+        _componentResourcesGroup.addResource(ItemComponentResourcesConverter(resources, component, item));
+    }
+
+    let _groupIndex = item.resourcesDictionary.addGroup(_componentResourcesGroup);
+    component.resources = item.resourcesDictionary[_groupIndex - 1].resources;
+    component.resourceGroupIndex = _groupIndex;
+
+}
+
+let ItemComponentResourcesConverter = function (resource, component, item) {
+
+    let _resources = [];
+    let _itemFolder = item.folder;
+    let _resPath = ITEM.folder + _itemFolder + ITEM.resourceFolder + resource.src;
+
+    switch (resource.type) {
+        case "image":
+            _resources.push(new Resource(_resPath, "image", CREATE_HASH(_resPath + component.id), resource.props));
+            break;
+        case "group":
+            let group = ItemController.getGroupById(resource.id);
+
+            //return if group don't exist
+            if (!group) return resource;
+
+            group.content.forEach((_item) => {
+                //ignoring images if are just placeholders
+                if (!_item.arg?.ignoreTileImageInGallery)
+                    _resources.push(new Resource(ITEM.folder + _item.folder + _item.tile.image, "image", CREATE_HASH(ITEM.folder + _item.folder + _item.tile.image + component.id), component.props))
+            });
+            break;
+        default:
+            _resources.push(resource);
+            break;
+    }
+    return _resources;
 }
