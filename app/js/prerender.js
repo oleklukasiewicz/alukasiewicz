@@ -1,12 +1,3 @@
-//global views ids
-const VIEW = {
-    landing: "landing",
-    item: "item",
-    profile: "about",
-    group: "group",
-    resource: "resource"
-};
-
 //global app variables
 const APP = {
     name: "Olek Łukasiewicz",
@@ -18,23 +9,35 @@ const APP = {
         group: "group",
         resource: "image"
     },
-    itemFolder: "/item",
-    resourceFolder: "/resources",
-    itemContentFileName: "/content.json"
+    startUrl:(window.location.pathname + (window.location.pathname.substr(-1) == "/" ? "" : "/")).substring(1).split("/")
 };
 
-//global app classes
+//global views ids
+const VIEW = {
+    landing: "landing",
+    item: "item",
+    profile: "about",
+    group: "group",
+    resource: "resource"
+};
+
+//global item variables
+const ITEM=
+{
+    folder:"/item",
+    resourceFolder:"/resources",
+    fileName:"content.json"
+}
+
+//global css/app classes
 const GLOBAL = {
     item: "item",
     group: "group",
     loading: "loading",
-    hidden: "hidden",
     loaded: "loaded",
+    hidden: "hidden",
     error: "error",
     disabled: "disabled",
     activeView: "active-view",
     dataNode: "data-node"
 };
-
-//website start url
-const START_URL = (window.location.pathname + (window.location.pathname.substr(-1) == "/" ? "" : "/")).substring(1).split("/");

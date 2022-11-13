@@ -8,22 +8,22 @@ NodeList.prototype.remove = HTMLCollection.prototype.remove = function () {
 };
 
 //hashing algorythm
-const createHash = function (str, seed = 0) {
-    let h1 = 0xdeadbeef ^ seed;
-    let h2 = 0x41c6ce57 ^ seed;
+const CREATE_HASH = function (str, seed = 0) {
+    let _h1 = 0xdeadbeef ^ seed;
+    let _h2 = 0x41c6ce57 ^ seed;
     for (let i = 0, ch; i < str.length; i++) {
         ch = str.charCodeAt(i);
-        h1 = Math.imul(h1 ^ ch, 2654435761);
-        h2 = Math.imul(h2 ^ ch, 1597334677);
+        _h1 = Math.imul(_h1 ^ ch, 2654435761);
+        _h2 = Math.imul(_h2 ^ ch, 1597334677);
     }
-    h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^ Math.imul(h2 ^ (h2 >>> 13), 3266489909);
-    h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^ Math.imul(h1 ^ (h1 >>> 13), 3266489909);
-    let _s = 4294967296 * (2097151 & h2) + (h1 >>> 0);
+    _h1 = Math.imul(_h1 ^ (_h1 >>> 16), 2246822507) ^ Math.imul(_h2 ^ (_h2 >>> 13), 3266489909);
+    _h2 = Math.imul(_h2 ^ (_h2 >>> 16), 2246822507) ^ Math.imul(_h1 ^ (_h1 >>> 13), 3266489909);
+    let _s = 4294967296 * (2097151 & _h2) + (_h1 >>> 0);
     return _s;
 };
 
 //resource classes declaration
-let Resource = function (src, type, hash = createHash(src), props = {}) {
+let Resource = function (src, type, hash = CREATE_HASH(src), props = {}) {
     return { src, type, hash, props }
 }
 let ResourceGroup = function (resourcesList = [], selectedResourceHash) {
@@ -84,11 +84,11 @@ let ItemDate = function (day, month, year) {
         return this.year.toString() + (this.month < 10 ? '0' + this.month.toString() : this.month.toString()) + (this.day < 10 ? '0' + this.day.toString() : this.day.toString());
     }
     this.compare = function (date) {
-        let intDate = parseInt(date);
-        if (intDate > parseInt(this.toString()))
+        let _intDate = parseInt(date);
+        if (_intDate > parseInt(this.toString()))
             return -1;
         else
-            if (intDate < parseInt(this.toString()))
+            if (_intDate < parseInt(this.toString()))
                 return 1;
             else
                 return 0;
@@ -310,10 +310,10 @@ let ItemController = (function () {
 
     let _downloadViaAJAX = async function (item) {
         return new Promise((resolve, reject) => {
-            let xmlhttp = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject("Microsoft.XMLHTTP");
+            let _xmlhttp = window._xmlhttpRequest ? new _xmlhttpRequest() : new ActiveXObject("Microsoft.xmlhttp");
 
             //loading item content
-            xmlhttp.onreadystatechange = function () {
+            _xmlhttp.onreadystatechange = function () {
                 if (this.readyState == 4) {
                     if (this.status == 200) {
                         try {
@@ -330,8 +330,8 @@ let ItemController = (function () {
             }
 
             //sending
-            xmlhttp.open("GET", APP.itemFolder + item.folder + APP.resourceFolder + APP.itemContentFileName, true);
-            xmlhttp.send();
+            _xmlhttp.open("GET", ITEM.folder + item.folder + ITEM.resourceFolder + "/"+ITEM.fileName, true);
+            _xmlhttp.send();
         });
     }
 
@@ -410,7 +410,7 @@ let ItemController = (function () {
             Object.assign(item, _content, {
                 resources: new ResourceDictionary([
                     new ResourceGroup([
-                        new Resource(APP.itemContentFileName, "item", null)])])
+                        new Resource("/"+ITEM.fileName, "item", null)])])
             });
 
             //building item structure
@@ -781,7 +781,7 @@ window.addEventListener("load", async function () {
         ViewController.navigateFromHistory(history.state);
     else
         await ViewController.navigate(START_ROUTE.target, {
-            routeArg: START_URL.slice(1, START_URL.length - 1)
+            routeArg: APP.startUrl.slice(1, APP.startUrl.length - 1)
         });
     APP_NODE.classList.add(GLOBAL.loaded);
 });
@@ -795,13 +795,14 @@ let createItemTile = async function (node, item) {
         node = document.createElement("A");
         oldNode.parentElement.replaceChild(node, oldNode);
     }
-    let imageSrc = APP.itemFolder + item.folder + item.tile.image;
+    let imageSrc = ITEM.folder + item.folder + item.tile.image;
     node.className = "item " + GLOBAL.dataNode + " " + GLOBAL.loading + " index-" + item.responseIndex;
 
     node.innerHTML = "";
 
     let nodeImgContainer = document.createElement("DIV");
     nodeImgContainer.classList.add("img");
+
     let _iImage = document.createElement("IMG");
     _iImage.src = imageSrc;
     _iImage.alt = item.title;
@@ -826,11 +827,14 @@ let createItemTile = async function (node, item) {
     let nodeUpdateLabel = document.createElement("DIV");
     nodeUpdateLabel.classList.add("label", "font-caption");
     let nodeUpdateLabelIcon = document.createElement("I");
+    
     if (item.modifyDate)
         nodeUpdateLabelIcon.classList.add("mi", "mi-Update");
-    nodeUpdateLabel.innerHTML = " &nbsp;&nbsp;" + date.toHTMLString();
+    
+        nodeUpdateLabel.innerHTML = " &nbsp;&nbsp;" + date.toHTMLString();
     nodeUpdateLabel.insertBefore(nodeUpdateLabelIcon, nodeUpdateLabel.firstChild);
     nodeLabels.appendChild(nodeUpdateLabel);
+   
     node.appendChild(nodeImgContainer);
     node.appendChild(nodeTitle);
     node.appendChild(nodeContent);
@@ -897,6 +901,7 @@ let StorageResponseIndexer = function (response, depth = 1, limit = 3, startInde
     let _addIntoResponse = function (entry) {
         if (!entry || entry.hidden) return;
         entry.isIndexed = true;
+        
         //adding item into response
         _indexedItems.push({ index: _currentIndex, obj: entry, groupItemIndex: _groupItemIndex });
         _groupItemIndex += 1;

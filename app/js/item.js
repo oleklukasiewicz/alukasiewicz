@@ -22,7 +22,7 @@ let ItemBuilder = function (item, folder = item.folder, resourceItem) {
                 while (index < component.resources.length) {
 
                     //converting into valid resources
-                    let _validResource = ResourceConverter(component.resources[index], APP.itemFolder + itemFolder + APP.resourceFolder, component.id || componentIndex);
+                    let _validResource = ResourceConverter(component.resources[index], ITEM.folder + itemFolder + ITEM.resourceFolder, component.id || componentIndex);
                     component.resources.splice(index, 1, ..._validResource);
                     index += _validResource.length;
                 }
@@ -52,7 +52,7 @@ let ResourceConverter = function (component, targetFolder, componentId) {
     let resources = [];
 
     let _pushItem = (item) =>
-        resources.push(new Resource(APP.itemFolder + item.folder + item.tile.image, "image", createHash(APP.itemFolder + item.folder + item.tile.image + componentId), component.props))
+        resources.push(new Resource(ITEM.folder + item.folder + item.tile.image, "image", createHash(ITEM.folder + item.folder + item.tile.image + componentId), component.props))
     switch (component.type) {
         case "group":
             let group = ItemController.getGroupById(component.id);
