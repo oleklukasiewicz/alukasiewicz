@@ -130,5 +130,6 @@
         {
             "content": "Historically, Microsoft designers have valued product-level expertise, innovation, and experience. As a discipline, we've focused on building design culture, having a seat at the table, and working more closely alongside engineers to learn, to grow, to craft and build together. These engineering partnerships inspired us to think like a network as designers. And to wonder how we could build on the collective cross-disciplinary excellence of our Microsoft design and engineering community — a key component of Fluent."
         }
-    ]
+    ],
+    "debug":true
 }

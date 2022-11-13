@@ -39,8 +39,8 @@ let ResourceGroup = function (resourcesList = [], selectedResourceHash) {
 
 let ResourceDictionary = function (resourcesGroups = []) {
     let _dictionary = this;
-    this.addGroup = (group) => _dictionary.push(group);
-    
+    this.addGroup = (group) => (_dictionary.push(group) - 1);
+
     resourcesGroups.forEach((item) => this.push(item));
 }
 ResourceDictionary.prototype = new Array;

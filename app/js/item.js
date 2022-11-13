@@ -254,7 +254,7 @@ let ItemStuctureBuilder = function (item, content) {
     //merging item and content
     Object.assign(item, content);
 
-    //creating resource dictionary for item
+    //creating resource dictionary for item resources
     item.resourcesDictionary = new ResourceDictionary(
         [
             new ResourceGroup(
@@ -264,44 +264,51 @@ let ItemStuctureBuilder = function (item, content) {
         ]);
 
     //converting json into proper components
-    ItemComponentConverter(item, item);
+    ComponentConverter(item, item);
+    
+    if (item.debug)
+        console.log(item);
 }
 
-let ItemComponentConverter = function (component, item) {
+let ComponentConverter = function (component, item) {
 
+    //skip if not object
     if (typeof (component) !== "object")
         return component;
 
     //converting all child components and objects
     if (Array.isArray(component.content))
         for (_child of component.content)
-            ItemComponentConverter(_child, item);
+            ComponentConverter(_child, item);
 
     let _resources = component.resources || component.src;
     if (_resources)
-        ItemComponentResourceResolver(_resources, component, item);
+        ResourceResolver(_resources, component, item);
 }
 
-let ItemComponentResourceResolver = function (resources, component, item) {
+let ResourceResolver = function (resources, component, item) {
 
     let _componentResourcesGroup = new ResourceGroup();
+
     if (Array.isArray(resources)) {
-        for (_res of resources) {
-            _componentResourcesGroup.addResource(ItemComponentResourcesConverter(_res, component, item));
-        }
+        for (_res of resources)
+            _componentResourcesGroup.addResource(ResourcesConverter(_res, component, item));
     } else {
-        _componentResourcesGroup.addResource(ItemComponentResourcesConverter(resources, component, item));
+        _componentResourcesGroup.addResource(ResourcesConverter(resources, component, item));
     }
 
+    //adding group into resources dictionary of item -> linking into local resources prop
     let _groupIndex = item.resourcesDictionary.addGroup(_componentResourcesGroup);
-    component.resources = item.resourcesDictionary[_groupIndex - 1].resources;
+    component.resources = item.resourcesDictionary[_groupIndex].resources;
     component.resourceGroupIndex = _groupIndex;
 
 }
 
-let ItemComponentResourcesConverter = function (resource, component, item) {
+let ResourcesConverter = function (resource, component, item) {
 
+    //returns array cause group -> (multiple resources)
     let _resources = [];
+
     let _itemFolder = item.folder;
     let _resPath = ITEM.folder + _itemFolder + ITEM.resourceFolder + resource.src;
 
