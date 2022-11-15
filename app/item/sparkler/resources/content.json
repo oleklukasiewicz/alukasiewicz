@@ -16,7 +16,7 @@
                 {
                     "type": "image",
                     "style": "margin:10px;width:60px;min-height:60px;",
-                    "src": "/icons/wither_armor.webp"
+                    "src": {"type":"image","src":"/icons/wither_armor.webp"}
                 },
                 {
                     "type": "list",
@@ -36,7 +36,7 @@
                 {
                     "type": "image",
                     "style": "margin:10px;width:60px;min-height:60px;",
-                    "src": "/icons/fighter_bindings.webp"
+                    "src": {"type":"image","src":"/icons/fighter_bindings.webp"}
                 },
                 {
                     "type": "list",
@@ -57,7 +57,7 @@
                 {
                     "type": "image",
                     "style": "margin:10px;width:60px;min-height:60px;",
-                    "src": "/icons/imploding_crossbow.webp"
+                    "src": {"type":"image","src":"/icons/imploding_crossbow.webp"}
                 },
                 {
                     "type": "list",

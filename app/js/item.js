@@ -282,6 +282,7 @@ let ComponentConverter = function (component, item) {
             ComponentConverter(_child, item);
 
     let _resources = component.resources || component.src;
+    console.log(_resources)
     if (_resources)
         ResourceResolver(_resources, component, item);
 }
