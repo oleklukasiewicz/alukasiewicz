@@ -322,14 +322,13 @@ let ItemController = (function () {
     ViewController.addError(new ErrorClass("item_not_fetched", "Item cannot be loaded", "Check your internet connection"));
 
     let _downloadItemContent = async function (item) {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve, reject) =>
             fetch(ITEM.folder + item.folder + ITEM.resourceFolder + "/" + ITEM.fileName)
                 .then(respond => {
                     resolve(respond.json())
                 }).catch(err => {
-                    reject(err+"sd");
-                })
-        })
+                    reject(err);
+                }))
     }
 
     let _generateId = (id) => encodeURIComponent(id.toLowerCase().replaceAll(" ", "-"));
@@ -515,9 +514,10 @@ const itemView = new View(VIEW.item, APP.url.item, { currentItem: null }, {
             if (this.data.currentItem?.id != arg.routeArg[0]) {
                 try {
                     item = await ItemController.getItemById(arg.routeArg[0]);
-                } catch (e) { 
+                } catch (e) {
                     ViewController.invokeError("item_not_fetched", false);
-                    console.error(e); return; }
+                    console.error(e); return;
+                }
 
                 //display error and return if item is not found
                 if (!item) {
