@@ -1197,7 +1197,7 @@ u.dotted-separator{
         flex-direction: column;
         text-align: center;
         padding-top: 50px;
-        padding-bottom: 40px;
+        padding-bottom: 50px;
     }
     #profile-image{
         margin-left: auto;
@@ -1277,6 +1277,13 @@ u.dotted-separator{
         left: 0;
         transition: opacity var(--time);
         opacity: 1;
+    }
+    #profile-header
+    {
+        background-color: transparent;
+        box-shadow: none;
+        border: 0px;
+        margin: 12px 0;
     }
 }
 @media only screen and (max-width:320px){
