@@ -321,31 +321,14 @@ let ItemController = (function () {
     ]));
     ViewController.addError(new ErrorClass("item_not_fetched", "Item cannot be loaded", "Check your internet connection"));
 
-    let _downloadViaAJAX = async function (item) {
-        return new Promise((resolve, reject) => {
-            let _xmlhttp = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject("Microsoft.XMLHTTP");
-
-            //loading item content
-            _xmlhttp.onreadystatechange = function () {
-                if (this.readyState == 4) {
-                    if (this.status == 200) {
-                        try {
-                            resolve(JSON.parse(this.responseText));
-                        } catch (e) {
-                            console.error("JSON parse error: " + path);
-                        }
-                    }
-                    else {
-                        ViewController.invokeError("item_not_fetched", false);
-                        reject("Error in AJAX request" + item.id);
-                    }
-                }
-            }
-
-            //sending
-            _xmlhttp.open("GET", ITEM.folder + item.folder + ITEM.resourceFolder + "/" + ITEM.fileName, true);
-            _xmlhttp.send();
-        });
+    let _downloadItemContent = async function (item) {
+        return new Promise((resolve, reject) =>
+            fetch(ITEM.folder + item.folder + ITEM.resourceFolder + "/" + ITEM.fileName)
+                .then(respond => {
+                    resolve(respond.json())
+                }).catch(err => {
+                    reject(err);
+                }))
     }
 
     let _generateId = (id) => encodeURIComponent(id.toLowerCase().replaceAll(" ", "-"));
@@ -415,7 +398,7 @@ let ItemController = (function () {
         //TODO: check if item.js and item.css are downloaded if not -> download
         if (!item.isLink && !item.isContentCached) {
             //getting item content
-            let _content = await _downloadViaAJAX(item, item.folder);
+            let _content = await _downloadItemContent(item, item.folder);
 
             //TODO: check content component version if newer -> download new version of item.css and js
 
@@ -531,7 +514,10 @@ const itemView = new View(VIEW.item, APP.url.item, { currentItem: null }, {
             if (this.data.currentItem?.id != arg.routeArg[0]) {
                 try {
                     item = await ItemController.getItemById(arg.routeArg[0]);
-                } catch (e) { console.error(e); return; }
+                } catch (e) {
+                    ViewController.invokeError("item_not_fetched", false);
+                    console.error(e); return;
+                }
 
                 //display error and return if item is not found
                 if (!item) {
