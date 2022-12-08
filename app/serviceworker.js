@@ -1,5 +1,5 @@
-const cacheName = "2.2.2.2";
-const serviceWorkerVersion = "11-10-22-v1";
+const cacheName = "2.2.2.3";
+const serviceWorkerVersion = "08-12-22-v1";
 
 const networkOnlyResources =
     [
@@ -9,22 +9,35 @@ const alwaysFreshResources =
     [
         "/item/"
     ];
-const staticResources =
+
+const cacheListApp =
     [
         "/",
         "/index.html",
-        "/firebase.js",
         "/serviceworker.js",
-        "/manifest.webmanifest",
+        "/manifest.webmanifest"
+    ];
+const cacheListCSS =
+    [
         "/css/global.css",
-        "/css/item.css",
+        "/css/item.css"
+    ];
+const cacheListJS =
+    [
         "/item/storage.js",
         "/js/item.js",
         "/js/prerender.js",
         "/js/postrender.js",
-        "/js/main.js",
+        "/js/main.js"
+    ];
+const cacheListIcons =
+    [
         "/font/micon_nb.svg",
         "/font/micon_nb.woff2",
+        "/icon/favicon-32x32.png"
+    ];
+const cacheListImages =
+    [
         "/img/image_error.webp",
         "/img/dark/landing-banner/bg1-d.webp",
         "/img/dark/landing-banner/profile-picture.webp",
@@ -42,8 +55,9 @@ const staticResources =
         "/img/light/about-banner/stars-l1.webp",
         "/img/light/about-banner/stars-l2.webp",
         "/img/light/about-banner/tree-l1.webp",
-        "/icon/favicon-32x32.png"
     ];
+
+const cacheList = cacheListApp.concat(cacheListCSS, cacheListJS, cacheListIcons, cacheListImages);
 
 const isAlwaysFreshResource = (req) => alwaysFreshResources.find((resource) => req.includes(resource));
 const isNetworkOnlyResource = (req) => networkOnlyResources.find((resource) => req.includes(resource));
@@ -91,7 +105,7 @@ const fetchNetworkFailToCacheIfCached = function (event) {
 
 self.addEventListener('install', event => {
     console.log("Service Worker installed");
-    caches.open(cacheName).then((cache) => cache.addAll(staticResources));
+    caches.open(cacheName).then((cache) => cache.addAll(cacheList));
 });
 self.addEventListener('fetch', function (event) {
     if (isNetworkOnlyResource(event.request.url)) {
