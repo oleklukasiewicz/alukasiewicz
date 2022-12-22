@@ -308,7 +308,6 @@ let ItemController = (function () {
     }
 
     EventController.call(_controller, ["fetchGroup", "fetchGroupFinish", "fetchItem", "fetchItemFinish"]);
-
     //adding error types for item and group not errors
     ViewController.addError(new ErrorClass("item_not_found", "Item don't exist", "We don't have what you're looking for", [
         "item_outdated",
@@ -694,7 +693,15 @@ const resourceView = new View(VIEW.resource, APP.url.resource, {},
                 return;
             }
             //loading resources to slider
-            await this.data.resSlider.loadResources(resourceGroup.resources, resourceGroup.selected, false);
+            let _currentIndex = await this.data.resSlider.loadResources(resourceGroup.resources, resourceGroup.selected, false);
+
+            if (FLAGS.connectedAnimation && arg.currentAnimation?.state == "prepared") {
+                let _currentImage = this.data.resList.children[_currentIndex];
+               
+                _currentImage.classList.add("no-animation");
+                await arg.currentAnimation.start(_currentImage.children[0]);
+                _currentImage?.classList.remove("no-animation");
+            }
         },
         onNavigateFrom: function () {
             this.rootNode.classList.remove(GLOBAL.error);
@@ -995,6 +1002,7 @@ let ResourceSlider = function () {
         await Promise.all(_res.map(async (res, index) => await _sender.invokeEvent("load", [res.resource, index])));
         await _renderIndex(current ? _res.findIndex((res) => res.resource.hash == current.hash) : 0, 0);
         await this.invokeEvent("loadFinish", [_res]);
+        return _currentIndex;
     }
     this.close = async () => {
         _currentIndex = -1;

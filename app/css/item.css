@@ -251,3 +251,11 @@ ol li:before{
         grid-row: 3;
     }
 }
+.connected-animation-temp{
+
+    position: fixed;
+    z-index: 10;
+    transition-timing-function: cubic-bezier(.16,1,.29,.99);
+    transition-duration: var(--time);
+    object-fit: cover;
+}

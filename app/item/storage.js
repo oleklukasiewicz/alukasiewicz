@@ -68,6 +68,23 @@ let storageGroups = () =>
 let storageItems = () =>
     [
         {
+            id: "ancient-temple",
+            folder: "/temple",
+            isLink: false,
+            title: "Ancient Times",
+            tile:
+            {
+                image: "/temple-alt.webp",
+                content: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ac mauris non justo dictum ullamcorper vel in ante."
+            },
+            createDate:
+            {
+                day: 21,
+                month: 12,
+                year: 2022
+            }
+        },
+        {
             id: "adventure",
             folder: "/adventure",
             isLink: "https://www.instagram.com/p/CCmAJKGBWeb/",
@@ -273,13 +290,13 @@ let storageItems = () =>
             }
         },
         {
-            id:"sparkler-build",
-            folder:"/sparkler",
-            title:"The Sparkler",
+            id: "sparkler-build",
+            folder: "/sparkler",
+            title: "The Sparkler",
             tile:
             {
-                image:"/sparkler.webp",
-                content:"Healing and damage focused build for Minecraft Dungeons made in spooky theme."
+                image: "/sparkler.webp",
+                content: "Healing and damage focused build for Minecraft Dungeons made in spooky theme."
             },
             createDate: {
                 day: 21,

@@ -704,6 +704,9 @@ body.scroll-fix::-webkit-scrollbar-track{
     margin: 12px var(--size-margin-base) 40px;
     box-sizing: border-box;
 }
+#image-viewer-list > .img.no-animation{
+    animation-duration:0s !important;
+}
 #resource #image-viewer-list > .img.active-view.loading{
     animation-name: Blink;
     animation-iteration-count: infinite;
@@ -1278,11 +1281,10 @@ u.dotted-separator{
         transition: opacity var(--time);
         opacity: 1;
     }
-    #profile-header
-    {
+    #profile-header{
         background-color: transparent;
         box-shadow: none;
-        border: 0px;
+        border: 0;
         margin: 12px 0;
     }
 }

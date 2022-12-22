@@ -151,6 +151,7 @@ let ItemComponentBuilder = async function (component, itemFolder, item) {
                                     item.id,
                                     res.hash
                                 ],
+                                ...(FLAGS.connectedAnimation) && { currentAnimation: new ConnectedAnimation(_img, undefined, true) },
                                 currentItem: item
                             })
                         }
@@ -243,7 +244,11 @@ let ItemComponentBuilder = async function (component, itemFolder, item) {
             );
             break;
     }
+
     _finalComponent.style = component.style;
+    _finalComponent.class = component.class;
+    _finalComponent.id = component.id;
+
     component.node = _finalComponent;
     return _finalComponent;
 }
@@ -265,7 +270,7 @@ let ItemStuctureBuilder = function (item, content) {
 
     //converting json into proper components
     ComponentConverter(item, item);
-    
+
     if (item.debug)
         console.log(item);
 }
@@ -333,4 +338,64 @@ let ResourcesConverter = function (resource, component, item) {
             break;
     }
     return _resources;
+}
+
+//experiment
+let ConnectedAnimation = function (source, target, prepare = false) {
+    let _source = source;
+    let _target = target;
+    let _clone;
+
+    let _cancel = function () {
+        _clone.remove();
+        _state = _STATES.unset;
+    }
+
+    const _STATES = {
+        finished: "finished",
+        prepared: "prepared",
+        started: "started",
+        unset: "unset"
+    }
+    let _state = _STATES.unset;
+
+    let _copyProps = function (s, t) {
+        let _bounds = s.getBoundingClientRect();
+
+        t.style.width = _bounds.width + "px";
+        t.style.height = _bounds.height + "px";
+        t.style.top = _bounds.top + "px";
+        t.style.left = _bounds.left + "px";
+    }
+
+    this.prepare = function (source = _source,hide=true) {
+        _clone = source.cloneNode(true);
+
+        _copyProps(source, _clone);
+        _clone.classList.add("connected-animation-temp",(hide)?GLOBAL.hidden:"");
+
+        document.body.append(_clone);
+        _state = _STATES.prepared;
+
+    }
+    this.start = async function (target = _target, duration = 600) {
+        _clone.classList.remove(GLOBAL.hidden);
+        _copyProps(target, _clone);
+        _state = _STATES.started;
+
+        await new Promise(resolve => setTimeout(function () {
+            _cancel();
+            resolve();
+        }, duration));
+    }
+
+    Object.defineProperty(this, "state",
+        {
+            get: () => _state
+        });
+
+    this.cancel = _cancel;
+
+    if (prepare)
+        this.prepare(_source);
 }

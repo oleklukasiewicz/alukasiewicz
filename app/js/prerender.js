@@ -9,7 +9,7 @@ const APP = {
         group: "group",
         resource: "image"
     },
-    startUrl:(window.location.pathname + (window.location.pathname.substr(-1) == "/" ? "" : "/")).substring(1).split("/")
+    startUrl: (window.location.pathname + (window.location.pathname.substr(-1) == "/" ? "" : "/")).substring(1).split("/")
 };
 
 //global views ids
@@ -22,11 +22,11 @@ const VIEW = {
 };
 
 //global item variables
-const ITEM=
+const ITEM =
 {
-    folder:"/item",
-    resourceFolder:"/resources",
-    fileName:"content.json"
+    folder: "/item",
+    resourceFolder: "/resources",
+    fileName: "content.json"
 }
 
 //global css/app classes
@@ -40,4 +40,10 @@ const GLOBAL = {
     disabled: "disabled",
     activeView: "active-view",
     dataNode: "data-node"
+};
+
+//experimental flags
+const FLAGS =
+{
+    connectedAnimation: true
 };
