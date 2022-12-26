@@ -1,3 +1,6 @@
+if ('scrollRestoration' in history)
+    history.scrollRestoration = 'manual';
+
 //features for nodes, nodes lists and objects
 Element.prototype.remove = function () {
     this.parentElement.removeChild(this);
@@ -141,6 +144,8 @@ let ViewController = (function () {
 
     let _previousView;
 
+    let _backTempNavigationArgs = {};
+
     EventController.call(_controller, ["navigateToView", "navigationRequest", "navigateFromView", "navigateDefault", "historyEdit"]);
     //integrated error controller
     let _errors = [];
@@ -194,16 +199,16 @@ let ViewController = (function () {
         }
         return view;
     }
-    let _invokeLoadFinishEvent = async function (view) {
+    let _invokeLoadFinishEvent = async function (view, arg) {
         if (view.isLoading && !view.isLoaded) {
             view.isLoading = false;
             view.isLoaded = true;
-            await view.event.onLoadFinish?.call(view);
+            await view.event.onLoadFinish?.call(view, arg);
         }
     }
     _controller.navigate = async function (id, arg = {}) {
 
-        _controller.invokeEvent("navigationRequest", [id, _currentView]);
+        await _controller.invokeEvent("navigationRequest", [id, _currentView]);
         let _previousViewArgs = _currentView?.navigationArgs?.routeArg || [];
 
         //canceling navigation when is navigating to the same view with the same routeArg
@@ -215,14 +220,14 @@ let ViewController = (function () {
 
         //unloading old view if exist
         if (_currentView) {
+
             //finishing loading view if needed, unloading and generating node if needed
             _invokeLoadFinishEvent(_currentView);
             _unLoadView(_currentView);
-            _generateRootNode(_currentView);
 
             //navigating
             _currentView.event.onNavigateFrom?.call(_currentView, arg);
-            _controller.invokeEvent("navigateFromView", [_currentView, arg]);
+            await _controller.invokeEvent("navigateFromView", [_currentView, arg]);
             _previousView = _currentView;
 
         }
@@ -252,13 +257,13 @@ let ViewController = (function () {
         );
 
         //registering and invoking navigate event
-        await _registerDelayedView(_currentView);
-        _controller.invokeEvent("navigateToView", [_currentView, _previousView, arg]);
+        await _registerDelayedView(_currentView);        
+        await _controller.invokeEvent("navigateToView", [_currentView, _previousView, arg]);
         await _currentView.event.onNavigate?.call(_currentView, arg);
 
         //loading view if needed
         if (_currentView.loadingMode != _controller.loadingModes.never)
-            await _invokeLoadEvent(_currentView, arg).then((view) => _invokeLoadFinishEvent(view))
+            await _invokeLoadEvent(_currentView, arg).then((view) => _invokeLoadFinishEvent(view, arg))
     }
     _controller.register = async function (view, isDefault = false) {
         _views.push(view);
@@ -266,11 +271,24 @@ let ViewController = (function () {
             view.event.onRegister?.call(view);
         if (isDefault) _defaultView = view;
     }
-    _controller.navigateToDefaultView = function (arg) {
-        if (_currentView != _defaultView)
-            _controller.invokeEvent("navigateDefault", [arg]);
+    _controller.navigateToDefaultView = async function (arg) {
+        if (_currentView == _defaultView)
+            return;
+
+        await _controller.invokeEvent("navigateDefault", [arg]);
+
+        //navigating to nearest landing page history index
+        let _homeIndex = history.state.defaultViewHistoryIndex;
+        let _indexDelta = _homeIndex - history.state.index;
+        if (_homeIndex != -1 && _indexDelta != 0)
+            history.go(_indexDelta);
+        else
+            ViewController.navigate(null, arg);
+
     }
-    _controller.back = function () {
+    _controller.back = function (arg = {}) {
+        _backTempNavigationArgs = arg;
+
         if (history.state.index == 0)
             _controller.navigateToDefaultView();
         else
@@ -281,12 +299,18 @@ let ViewController = (function () {
         always: "always",
         never: "never"
     }
-    _controller.navigateFromHistory = function (historyItem) {
+    _controller.navigateFromHistory = function (historyItem, arg = _backTempNavigationArgs) {
+
         _currentHistoryIndex = historyItem.index;
         _defaultViewHistoryIndex = historyItem.defaultViewHistoryIndex;
-        _controller.navigate(historyItem.id, Object.assign({
+
+        let _args = Object.assign({
             noHistoryPush: true
-        }, historyItem.arg));
+        }, historyItem.arg, arg);
+
+        _controller.navigate(historyItem.id, _args);
+
+        _backTempNavigationArgs = {};
     }
     return _controller;
 }());
@@ -544,11 +568,12 @@ const itemView = new View(VIEW.item, APP.url.item, { currentItem: null }, {
 
                 //render item
                 this.data.iContent.append(await ItemComponentBuilder(item.content, item.folder, item));
+
             }
         } else
             ViewController.invokeError("item_load_error");
     },
-    onLoadFinish: function () {
+    onLoadFinish: function (arg) {
         this.rootNode.classList.remove(GLOBAL.loading);
     },
     onError: function (err) {
@@ -629,6 +654,7 @@ const resourceView = new View(VIEW.resource, APP.url.resource, {},
 
             //adding close button
             getById("image-viewer-close").addEventListener("click", ViewController.back);
+
             let _setButtonsDisplay = function (isHidden) {
                 _nextBtn.classList.toggle(GLOBAL.hidden, isHidden);
                 _prevBtn.classList.toggle(GLOBAL.hidden, isHidden);
@@ -692,16 +718,9 @@ const resourceView = new View(VIEW.resource, APP.url.resource, {},
                 ViewController.invokeError("image_not_found", false);
                 return;
             }
+
             //loading resources to slider
             let _currentIndex = await this.data.resSlider.loadResources(resourceGroup.resources, resourceGroup.selected, false);
-
-            if (FLAGS.connectedAnimation && arg.currentAnimation?.state == "prepared") {
-                let _currentImage = this.data.resList.children[_currentIndex];
-               
-                _currentImage.classList.add("no-animation");
-                await arg.currentAnimation.start(_currentImage.children[0]);
-                _currentImage?.classList.remove("no-animation");
-            }
         },
         onNavigateFrom: function () {
             this.rootNode.classList.remove(GLOBAL.error);
@@ -728,22 +747,18 @@ ViewController.addEventListener("historyEdit", (historyItem, view) => {
     else
         history.pushState(historyItem, '', view.navigationUrl);
 });
-ViewController.addEventListener("navigateDefault", (arg) => {
-    //navigating to nearest landing page history index
-    let _homeIndex = history.state.defaultViewHistoryIndex;
-    let _indexDelta = _homeIndex - history.state.index;
-    if (_homeIndex != -1 && _indexDelta != 0)
-        history.go(_indexDelta);
-    else
-        ViewController.navigate(null, arg);
-});
+
 ViewController.addEventListener("navigateToView", (view, lastView) => {
+    view.rootNode.classList.remove("closing");
     view.rootNode.classList.add(GLOBAL.activeView);
     APP_NODE.classList.replace(lastView?.id, view.id);
     document.body.classList.toggle("scroll-fix", !isScrollbarVisible());
     setNavigationState(false);
 });
-ViewController.addEventListener("navigateFromView", (lastView) => lastView.rootNode.classList.remove(GLOBAL.activeView));
+ViewController.addEventListener("navigateFromView",async (lastView) =>{ 
+    await PlayViewUnLoadingAnimation(lastView)
+    lastView.rootNode.classList.remove(GLOBAL.activeView);
+});
 ViewController.addEventListener("navigationRequest", () => closeNavigation());
 
 //DOM events
@@ -1133,3 +1148,11 @@ let ImageHelper = function (image, onload = () => { }, onerror = () => { }, onfi
 
 //check if scrollbar is visible
 let isScrollbarVisible = (element = document.body) => element.scrollHeight > element.clientHeight;
+
+//views unloading animation
+let PlayViewUnLoadingAnimation = async function (view) {
+    view.rootNode.classList.add("closing");
+
+    //awaiting for animation to end
+    await new Promise(resolve => setTimeout(resolve, 300));
+}

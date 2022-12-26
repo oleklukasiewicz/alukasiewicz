@@ -123,6 +123,9 @@ a.link:hover{
 .hidden{
     display: none!important;
 }
+.hidden-opacity{
+    opacity: 0!important;
+}
 @font-face{
     font-family: micon_nb;
     font-style: normal;
@@ -323,6 +326,22 @@ a.link:hover{
         transform: none;
     }
 }
+@keyframes FadeIn{
+    0%{
+        opacity: 0;
+    }
+    100%{
+        opacity: 1;
+    }
+}
+@keyframes FadeOut{
+    0%{
+        opacity: 1;
+    }
+    100%{
+        opacity: 0;
+    }
+}
 body{
     margin: 0;
     background-color: var(--color-theme);
@@ -417,6 +436,17 @@ body.scroll-fix::-webkit-scrollbar-track{
 }
 .view.active-view{
     display: table;
+    animation-name: FadeIn;
+    animation-fill-mode: forwards;
+    animation-timing-function: cubic-bezier(.16,1,.29,.99);
+    animation-duration: var(--time-A1);
+}
+.view.active-view.closing{
+    display: table;
+    animation-name: FadeOut;
+    animation-fill-mode: forwards;
+    animation-timing-function: cubic-bezier(.16,1,.29,.99);
+    animation-duration: var(--time);
 }
 #about,
 #item{
@@ -705,7 +735,7 @@ body.scroll-fix::-webkit-scrollbar-track{
     box-sizing: border-box;
 }
 #image-viewer-list > .img.no-animation{
-    animation-duration:0s !important;
+    animation-duration: 0s!important;
 }
 #resource #image-viewer-list > .img.active-view.loading{
     animation-name: Blink;

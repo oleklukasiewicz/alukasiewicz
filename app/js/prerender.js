@@ -36,14 +36,9 @@ const GLOBAL = {
     loading: "loading",
     loaded: "loaded",
     hidden: "hidden",
+    hiddenOpacity:"hidden-opacity",
     error: "error",
     disabled: "disabled",
     activeView: "active-view",
     dataNode: "data-node"
-};
-
-//experimental flags
-const FLAGS =
-{
-    connectedAnimation: true
 };

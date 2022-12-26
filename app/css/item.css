@@ -87,7 +87,7 @@ ol li:before{
 .gallery > .list > img{
     background-color: var(--color-theme-A1);
     border-radius: var(--border-radius);
-    transition: box-shadow var(--time-A1) cubic-bezier(.16,1,.29,.99),transform var(--time-A1) cubic-bezier(.16,1,.29,.99),opacity var(--time),border-color var(--time),background-color var(--time);
+    transition: box-shadow var(--time-A1) cubic-bezier(.16,1,.29,.99),transform var(--time-A1) cubic-bezier(.16,1,.29,.99),border-color var(--time),background-color var(--time);
     height: 100%;
     width: 100%;
     display: block;
@@ -250,12 +250,4 @@ ol li:before{
         grid-column-end: 3;
         grid-row: 3;
     }
-}
-.connected-animation-temp{
-
-    position: fixed;
-    z-index: 10;
-    transition-timing-function: cubic-bezier(.16,1,.29,.99);
-    transition-duration: var(--time);
-    object-fit: cover;
 }
