@@ -20,7 +20,7 @@ let RouteController = (function () {
         _defaultRoute = isDefault ? route : _defaultRoute;
     }
     _controller.resolve = (arg) => _routesList.find((route) => route.source == arg) || _defaultRoute;
-    
+
     return _controller;
 }());
 
@@ -36,6 +36,10 @@ const START_ROUTE = RouteController.resolve(APP.startUrl[0]);
 
 //main app node declaration
 const APP_NODE = getById("app");
+
+// content node
+
+const CONTENT_NODE = getById("content");
 
 //navigation node
 const NAV_NODE = getById("main-header-base");

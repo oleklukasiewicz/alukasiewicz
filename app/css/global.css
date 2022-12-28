@@ -350,8 +350,6 @@ body{
     transition: var(--transition-bg-only);
     will-change: background-color;
     overflow-y: scroll;
-    display: grid;
-    grid-template-rows: 1fr auto;
     max-height: 100vh;
     height: 100vh;
 }
@@ -399,6 +397,21 @@ body.scroll-fix::-webkit-scrollbar-track{
     display: inline-flex;
     gap: 4px;
 }
+#content{
+    display: grid;
+    grid-template-rows: 1fr auto;
+    min-height: 100vh;
+    animation-name: FadeIn;
+    animation-fill-mode: forwards;
+    animation-timing-function: cubic-bezier(.16,1,.29,.99);
+    animation-duration: var(--time-A1);
+}
+#content.closing{
+    animation-name: FadeOut;
+    animation-fill-mode: forwards;
+    animation-timing-function: cubic-bezier(.16,1,.29,.99);
+    animation-duration: var(--time);
+}
 #footer{
     display: block;
     text-align: center;
@@ -436,17 +449,6 @@ body.scroll-fix::-webkit-scrollbar-track{
 }
 .view.active-view{
     display: table;
-    animation-name: FadeIn;
-    animation-fill-mode: forwards;
-    animation-timing-function: cubic-bezier(.16,1,.29,.99);
-    animation-duration: var(--time-A1);
-}
-.view.active-view.closing{
-    display: table;
-    animation-name: FadeOut;
-    animation-fill-mode: forwards;
-    animation-timing-function: cubic-bezier(.16,1,.29,.99);
-    animation-duration: var(--time);
 }
 #about,
 #item{

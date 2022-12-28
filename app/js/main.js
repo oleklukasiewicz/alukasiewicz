@@ -749,14 +749,14 @@ ViewController.addEventListener("historyEdit", (historyItem, view) => {
 });
 
 ViewController.addEventListener("navigateToView", (view, lastView) => {
-    view.rootNode.classList.remove("closing");
+    CONTENT_NODE.classList.remove("closing");
     view.rootNode.classList.add(GLOBAL.activeView);
     APP_NODE.classList.replace(lastView?.id, view.id);
     document.body.classList.toggle("scroll-fix", !isScrollbarVisible());
     setNavigationState(false);
 });
 ViewController.addEventListener("navigateFromView",async (lastView) =>{ 
-    await PlayViewUnLoadingAnimation(lastView)
+    await PlayViewUnLoadingAnimation()
     lastView.rootNode.classList.remove(GLOBAL.activeView);
 });
 ViewController.addEventListener("navigationRequest", () => closeNavigation());
@@ -1150,8 +1150,8 @@ let ImageHelper = function (image, onload = () => { }, onerror = () => { }, onfi
 let isScrollbarVisible = (element = document.body) => element.scrollHeight > element.clientHeight;
 
 //views unloading animation
-let PlayViewUnLoadingAnimation = async function (view) {
-    view.rootNode.classList.add("closing");
+let PlayViewUnLoadingAnimation = async function () {
+    CONTENT_NODE.classList.add("closing");
 
     //awaiting for animation to end
     await new Promise(resolve => setTimeout(resolve, 300));
