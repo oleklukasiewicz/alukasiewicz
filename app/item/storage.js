@@ -70,7 +70,7 @@ let storageItems = () =>
         {
             id: "ancient-temple",
             folder: "/temple",
-            isLink: false,
+            isLink: true,
             title: "Ancient Times",
             tile:
             {

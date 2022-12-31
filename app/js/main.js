@@ -265,7 +265,7 @@ let ViewController = (function () {
         if (_currentView.loadingMode != _controller.loadingModes.never)
             await _invokeLoadEvent(_currentView, arg).then((view) => _invokeLoadFinishEvent(view, arg))
     }
-    _controller.register = async function (view, isDefault = false) {
+    _controller.register = function (view, isDefault = false) {
         _views.push(view);
         if (!view.isRegisterDelayed)
             view.event.onRegister?.call(view);
@@ -686,7 +686,7 @@ const resourceView = new View(VIEW.resource, APP.url.resource, {},
                     _currentChild.classList.remove(GLOBAL.loading);
                 });
             });
-            this.data.resSlider.addEventListener("load", async function () {
+            this.data.resSlider.addEventListener("load",function () {
                 let _container = document.createElement("DIV");
                 _container.classList.add(GLOBAL.loading, "img");
                 let _img = document.createElement("IMG");
