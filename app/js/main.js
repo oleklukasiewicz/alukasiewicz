@@ -753,7 +753,6 @@ ViewController.addEventListener("navigateToView", (view, lastView) => {
     view.rootNode.classList.add(GLOBAL.activeView);
     APP_NODE.classList.replace(lastView?.id, view.id);
     document.body.classList.toggle("scroll-fix", !isScrollbarVisible());
-    setNavigationState(false);
 });
 ViewController.addEventListener("navigateFromView",async (lastView) =>{ 
     await PlayViewUnLoadingAnimation()
