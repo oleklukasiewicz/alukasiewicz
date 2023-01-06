@@ -1,4 +1,9 @@
-#item-content > .section > .section-title{
+#item-content > .section{
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+#item-content .section > .section-title{
     font-weight: 700;
     margin-bottom: 24px;
     margin-top: 8px;
@@ -27,8 +32,7 @@
     color: var(--color-theme-A5);
     display: table;
 }
-.gallery.show-controls
-{
+.gallery.show-controls{
     margin-top: 8px;
 }
 .gallery > div{
@@ -45,8 +49,26 @@
     display: inline-table;
     float: right;
 }
-.gallery > .list{
+ul{
+    padding-left: 20px;
+}
+ol{
+    list-style: none;
+    counter-reset: item;
+    padding-left: 0;
+}
+ol li{
+    counter-increment: item;
+    margin-bottom: 5px;
+}
+ol li:before{
+    margin-right: 4px;
+    content: counter(item) ".";
+}
+.gallery.show-controls > .list{
     margin-top: 24px;
+}
+.gallery > .list{
     display: grid;
     gap: 6px;
     width: 100%;
@@ -55,16 +77,17 @@
     grid-template-columns: 1fr 1fr 1fr;
     grid-template-rows: 120px 40px 120px;
 }
-.gallery > .list > img.loading{
+#item-content img.loading{
     pointer-events: none;
     animation-name: Blink;
     animation-iteration-count: infinite;
     animation-duration: 1.2s;
+    background-color: var(--color-theme-hover);
 }
 .gallery > .list > img{
     background-color: var(--color-theme-A1);
     border-radius: var(--border-radius);
-    transition: box-shadow var(--time-A1) cubic-bezier(.16,1,.29,.99),transform var(--time-A1) cubic-bezier(.16,1,.29,.99),opacity var(--time),border-color var(--time),background-color var(--time);
+    transition: box-shadow var(--time-A1) cubic-bezier(.16,1,.29,.99),transform var(--time-A1) cubic-bezier(.16,1,.29,.99),border-color var(--time),background-color var(--time);
     height: 100%;
     width: 100%;
     display: block;
@@ -157,6 +180,20 @@
     grid-column: 3;
     grid-row-start: 1;
     grid-row-end: 3;
+}
+#item-content .note{
+    background-color: var(--color-theme-A1);
+    padding: 24px;
+    box-sizing: border-box;
+}
+#item-content .note > b{
+    display: table;
+    width: 100%;
+    margin-bottom: 16px;
+    font-size: var(--size-font-subtitle);
+}
+#item-content .bold{
+    font-weight: 700;
 }
 @media only screen and (max-width:430px){
     .gallery.items-count-5 > .list{

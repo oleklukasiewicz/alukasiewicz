@@ -13,13 +13,14 @@
     --color-font-disabled: #aaaaaa;
     --color-logo: #5f5f5f;
     --color-logo-A1: #404040;
-    --src-profile-image: url(\/img\/light\/profile.webp);
-    --src-about-banner-l1:url(\/img\/light\/about-banner\/bg-l1.webp);
-    --src-about-banner-l2:url(\/img\/light\/about-banner\/bg-l2.webp);
-    --src-about-banner-l3:url(\/img\/light\/about-banner\/bg-l3.webp);
-    --src-about-banner-l4:url(\/img\/light\/about-banner\/stars-l1.webp);
-    --src-about-banner-l5:url(\/img\/light\/about-banner\/stars-l2.webp);
-    --src-about-banner-l6:url(\/img\/light\/about-banner\/tree-l1.webp);
+    --src-profile-image-l1: url(\/img\/light\/landing-banner\/bg1-l.webp);
+    --src-profile-image-l2: url(\/img\/light\/landing-banner\/profile-picture.webp);
+    --src-about-banner-l1: url(\/img\/light\/about-banner\/bg-l1.webp);
+    --src-about-banner-l2: url(\/img\/light\/about-banner\/bg-l2.webp);
+    --src-about-banner-l3: url(\/img\/light\/about-banner\/bg-l3.webp);
+    --src-about-banner-l4: url(\/img\/light\/about-banner\/stars-l1.webp);
+    --src-about-banner-l5: url(\/img\/light\/about-banner\/stars-l2.webp);
+    --src-about-banner-l6: url(\/img\/light\/about-banner\/tree-l1.webp);
     --logo-anim-delay: 0.5s;
     --acrylic: blur(60px) saturate(150%);
     --logo-height: 14px;
@@ -67,13 +68,14 @@
         --color-font-disabled: #aaaaaa;
         --color-logo: #d0d0d0;
         --color-logo-A1: #a0a0a0;
-        --src-profile-image: url(\/img\/dark\/profile\.webp);
-        --src-about-banner-l1:url(\/img\/dark\/about-banner\/bg-l1.webp);
-        --src-about-banner-l2:url(\/img\/dark\/about-banner\/bg-l2.webp);
-        --src-about-banner-l3:url(\/img\/dark\/about-banner\/bg-l3.webp);
-        --src-about-banner-l4:url(\/img\/dark\/about-banner\/stars-l1.webp);
-        --src-about-banner-l5:url(\/img\/dark\/about-banner\/stars-l2.webp);
-        --src-about-banner-l6:url(\/img\/dark\/about-banner\/tree-l1.webp);
+        --src-profile-image-l1: url(\/img\/dark\/landing-banner\/bg1-d.webp);
+        --src-profile-image-l2: url(\/img\/dark\/landing-banner\/profile-picture.webp);
+        --src-about-banner-l1: url(\/img\/dark\/about-banner\/bg-l1.webp);
+        --src-about-banner-l2: url(\/img\/dark\/about-banner\/bg-l2.webp);
+        --src-about-banner-l3: url(\/img\/dark\/about-banner\/bg-l3.webp);
+        --src-about-banner-l4: url(\/img\/dark\/about-banner\/stars-l1.webp);
+        --src-about-banner-l5: url(\/img\/dark\/about-banner\/stars-l2.webp);
+        --src-about-banner-l6: url(\/img\/dark\/about-banner\/tree-l1.webp);
     }
 }
 .font-base{
@@ -120,6 +122,9 @@ a.link:hover{
 }
 .hidden{
     display: none!important;
+}
+.hidden-opacity{
+    opacity: 0!important;
 }
 @font-face{
     font-family: micon_nb;
@@ -321,6 +326,22 @@ a.link:hover{
         transform: none;
     }
 }
+@keyframes FadeIn{
+    0%{
+        opacity: 0;
+    }
+    100%{
+        opacity: 1;
+    }
+}
+@keyframes FadeOut{
+    0%{
+        opacity: 1;
+    }
+    100%{
+        opacity: 0;
+    }
+}
 body{
     margin: 0;
     background-color: var(--color-theme);
@@ -329,8 +350,6 @@ body{
     transition: var(--transition-bg-only);
     will-change: background-color;
     overflow-y: scroll;
-    display: grid;
-    grid-template-rows: 1fr auto;
     max-height: 100vh;
     height: 100vh;
 }
@@ -354,7 +373,7 @@ body.scroll-fix::-webkit-scrollbar-track{
 }
 #main-header-navigation{
     display: flex;
-    max-height: 120px;
+    max-height: 180px;
     gap: 8px;
 }
 #main-header-nav-button,
@@ -377,6 +396,21 @@ body.scroll-fix::-webkit-scrollbar-track{
 #main-header-icons-left{
     display: inline-flex;
     gap: 4px;
+}
+#content{
+    display: grid;
+    grid-template-rows: 1fr auto;
+    min-height: 100vh;
+    animation-name: FadeIn;
+    animation-fill-mode: forwards;
+    animation-timing-function: cubic-bezier(.16,1,.29,.99);
+    animation-duration: var(--time-A1);
+}
+#content.closing{
+    animation-name: FadeOut;
+    animation-fill-mode: forwards;
+    animation-timing-function: cubic-bezier(.16,1,.29,.99);
+    animation-duration: var(--time);
 }
 #footer{
     display: block;
@@ -403,7 +437,7 @@ body.scroll-fix::-webkit-scrollbar-track{
     transform: translateY(1px);
     display: inline-block;
     max-width: var(--size-font-caption);
-    margin: 0px 2px;
+    margin: 0 2px;
     fill: var(--color-theme-A6);
 }
 .view{
@@ -438,6 +472,8 @@ body.scroll-fix::-webkit-scrollbar-track{
 #profile-header > div{
     display: inline-table;
     box-sizing: border-box;
+}
+#profile-data{
     padding: 6px 0 0 50px;
 }
 #profile-header > div > b{
@@ -468,8 +504,7 @@ body.scroll-fix::-webkit-scrollbar-track{
     display: block;
     flex: 1;
 }
-#app #about-img
-{
+#app #about-img{
     animation-name: Blink;
     animation-iteration-count: infinite;
     animation-duration: 1.2s;
@@ -478,45 +513,43 @@ body.scroll-fix::-webkit-scrollbar-track{
     box-shadow: none;
     pointer-events: none;
 }
-#app.loaded #about-img
-{
+#app.loaded #about-img{
     animation: none;
 }
-#app #about-img >*
-{
+#app #about-img > *{
     opacity: 0;
 }
 #app.loaded #about-img > *{
     animation-name: FadeInUp;
-    animation-duration: 0.9s;
+    animation-duration: .9s;
     animation-timing-function: cubic-bezier(.16,1,.29,.99);
     opacity: 0;
     animation-fill-mode: forwards;
     background-size: cover;
     background-position: center;
 }
-#app.loaded #about-img > *:nth-child(1){
+#app.loaded #about-img > :nth-child(1){
     opacity: 1;
     animation: none;
     background-image: var(--src-about-banner-l1);
 }
-#about-img > *:nth-child(2){
+#about-img > :nth-child(2){
     animation-delay: .1s;
     background-image: var(--src-about-banner-l2);
 }
-#about-img > *:nth-child(3){
+#about-img > :nth-child(3){
     animation-delay: .2s;
     background-image: var(--src-about-banner-l3);
 }
-#about-img > *:nth-child(4){
+#about-img > :nth-child(4){
     animation-delay: .4s;
     background-image: var(--src-about-banner-l4);
 }
-#about-img > *:nth-child(5){
+#about-img > :nth-child(5){
     animation-delay: .5s;
     background-image: var(--src-about-banner-l5);
 }
-#about-img > *:nth-child(6){
+#about-img > :nth-child(6){
     animation-delay: .7s;
     background-image: var(--src-about-banner-l6);
 }
@@ -685,29 +718,32 @@ body.scroll-fix::-webkit-scrollbar-track{
     overflow: hidden;
     height: 100%;
     max-width: 100%;
+    width: 100%;
+    margin: 12px 0 30px;
     box-sizing: border-box;
-}
-#resource.loading #image-viewer-list{
-    animation-name: Blink;
-    margin: 12px var(--size-margin-base) 30px;
-    animation-iteration-count: infinite;
-    animation-duration: 1.2s;
-    background-color: var(--color-theme-A1);
 }
 #resource.loading #image-viewer-next,
 #resource.loading #image-viewer-prev{
     display: none;
 }
 #image-viewer-list > .img{
-    margin: 0;
     max-width: 100%;
     max-height: 100%;
     opacity: 0;
     position: absolute;
     border-radius: var(--border-radius);
     display: flex;
-    padding: 12px var(--size-margin-base) 40px;
+    margin: 12px var(--size-margin-base) 40px;
     box-sizing: border-box;
+}
+#image-viewer-list > .img.no-animation{
+    animation-duration: 0s!important;
+}
+#resource #image-viewer-list > .img.active-view.loading{
+    animation-name: Blink;
+    animation-iteration-count: infinite;
+    animation-duration: 1.2s;
+    background-color: var(--color-theme-A1);
 }
 #image-viewer-list > .img > img{
     width: auto;
@@ -717,15 +753,13 @@ body.scroll-fix::-webkit-scrollbar-track{
     box-shadow: 0 12px 30px 0 rgba(0,0,0,.13);
     margin: auto auto;
 }
-#image-viewer-list > .img.active-view{
-    width: 100%;
-    height: 100%;
+#image-viewer-list > .img.active-view,
+#image-viewer-list > .img.old{
+    width: calc(100% - (2 * var(--size-margin-base)));
+    height: calc(100% - 52px);
     z-index: 5;
-    opacity: 0;
 }
 #image-viewer-list > .img.old{
-    width: 100%;
-    height: 100%;
     z-index: 0;
 }
 #image-viewer-list > .img.active-view.next{
@@ -879,6 +913,8 @@ u.dotted-separator{
 }
 .list-view > .item > span{
     margin: 12px 20px 0;
+    text-align: justify;
+    letter-spacing: .1px;
 }
 .list-view > .item > b{
     font-weight: 700;
@@ -970,7 +1006,7 @@ u.dotted-separator{
     white-space: nowrap;
     width: calc(100% - 82px);
     flex: 1;
-    margin-right: 10px;
+    margin-right: 24px;
 }
 .list-view > .group > .button{
     float: right;
@@ -1178,7 +1214,7 @@ u.dotted-separator{
     }
     #about{
         flex-direction: column;
-        gap:10px;
+        gap: 10px;
     }
     #about-img-area{
         aspect-ratio: 3/2;
@@ -1196,15 +1232,18 @@ u.dotted-separator{
         flex-direction: column;
         text-align: center;
         padding-top: 50px;
-        padding-bottom: 40px;
+        padding-bottom: 50px;
     }
     #profile-image{
         margin-left: auto;
         margin-right: auto;
     }
-    #profile-header > div{
+    #profile-data{
         padding-left: 0;
         padding-top: 0;
+    }
+    #profile-image{
+        margin-bottom: 30px;
     }
     #profile-header > div > .button{
         width: 100%;
@@ -1273,6 +1312,12 @@ u.dotted-separator{
         left: 0;
         transition: opacity var(--time);
         opacity: 1;
+    }
+    #profile-header{
+        background-color: transparent;
+        box-shadow: none;
+        border: 0;
+        margin: 12px 0;
     }
 }
 @media only screen and (max-width:320px){
