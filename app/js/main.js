@@ -257,7 +257,7 @@ let ViewController = (function () {
         );
 
         //registering and invoking navigate event
-        await _registerDelayedView(_currentView);        
+        await _registerDelayedView(_currentView);
         await _controller.invokeEvent("navigateToView", [_currentView, _previousView, arg]);
         await _currentView.event.onNavigate?.call(_currentView, arg);
 
@@ -529,49 +529,52 @@ const itemView = new View(VIEW.item, APP.url.item, { currentItem: null }, {
     },
     onLoad: async function (arg) {
         this.rootNode.classList.add(GLOBAL.loading);
-        if (ItemController.isItemsLoaded) {
-            //getting item
-            let item;
-            //if item is loaded into view -> skip rendering 
-            //TODO: dynamic item content change
-            if (this.data.currentItem?.id != arg.routeArg[0]) {
-                try {
-                    item = await ItemController.getItemById(arg.routeArg[0]);
-                } catch (e) {
-                    ViewController.invokeError("item_not_fetched", false);
-                    console.error(e); return;
-                }
 
-                //display error and return if item is not found
-                if (!item) {
-                    ViewController.invokeError("item_not_found");
-                    return;
-                }
-
-                //if it's link -> redirect into page
-                if (item.isLink) {
-                    window.open(item.isLink, '_blank').focus();
-                    ViewController.navigateToDefaultView();
-                    return;
-                }
-
-                //save into view cache
-                this.data.currentItem = item;
-
-                //preparing item info
-                document.title = item.title + " - " + APP.name;
-                this.data.iTitle.innerHTML = item.title;
-                this.data.iInfo.innerHTML = item.createDate.toHTMLString() + ((item.modifyDate) ? " <u class='dotted-separator'></u> Updated " + item.modifyDate.toHTMLString() : "");
-
-                //clear content
-                this.data.iContent.innerHTML = "";
-
-                //render item
-                this.data.iContent.append(await ItemComponentBuilder(item.content, item.folder, item));
-
-            }
-        } else
+        if (!ItemController.isItemsLoaded) {
             ViewController.invokeError("item_load_error");
+            return;
+        }
+
+        //getting item
+        let item;
+        //if item is loaded into view -> skip rendering 
+        //TODO: dynamic item content change
+        if (this.data.currentItem?.id == arg.routeArg[0])
+            return;
+            
+        try {
+            item = await ItemController.getItemById(arg.routeArg[0]);
+        } catch (e) {
+            ViewController.invokeError("item_not_fetched", false);
+            console.error(e); return;
+        }
+
+        //display error and return if item is not found
+        if (!item) {
+            ViewController.invokeError("item_not_found");
+            return;
+        }
+
+        //if it's link -> redirect into page
+        if (item.isLink) {
+            window.open(item.isLink, '_blank').focus();
+            ViewController.navigateToDefaultView();
+            return;
+        }
+
+        //save into view cache
+        this.data.currentItem = item;
+
+        //preparing item info
+        document.title = item.title + " - " + APP.name;
+        this.data.iTitle.innerHTML = item.title;
+        this.data.iInfo.innerHTML = item.createDate.toHTMLString() + ((item.modifyDate) ? " <u class='dotted-separator'></u> Updated " + item.modifyDate.toHTMLString() : "");
+
+        //clear content
+        this.data.iContent.innerHTML = "";
+
+        //render item
+        this.data.iContent.append(await ItemComponentBuilder(item.content, item.folder, item));
     },
     onLoadFinish: function (arg) {
         this.rootNode.classList.remove(GLOBAL.loading);
@@ -686,7 +689,7 @@ const resourceView = new View(VIEW.resource, APP.url.resource, {},
                     _currentChild.classList.remove(GLOBAL.loading);
                 });
             });
-            this.data.resSlider.addEventListener("load",function () {
+            this.data.resSlider.addEventListener("load", function () {
                 let _container = document.createElement("DIV");
                 _container.classList.add(GLOBAL.loading, "img");
                 let _img = document.createElement("IMG");
@@ -720,7 +723,7 @@ const resourceView = new View(VIEW.resource, APP.url.resource, {},
             }
 
             //loading resources to slider
-            let _currentIndex = await this.data.resSlider.loadResources(resourceGroup.resources, resourceGroup.selected, false);
+            await this.data.resSlider.loadResources(resourceGroup.resources, resourceGroup.selected, false);
         },
         onNavigateFrom: function () {
             this.rootNode.classList.remove(GLOBAL.error);
@@ -754,7 +757,7 @@ ViewController.addEventListener("navigateToView", (view, lastView) => {
     APP_NODE.classList.replace(lastView?.id, view.id);
     document.body.classList.toggle("scroll-fix", !isScrollbarVisible());
 });
-ViewController.addEventListener("navigateFromView",async (lastView) =>{ 
+ViewController.addEventListener("navigateFromView", async (lastView) => {
     await PlayViewUnLoadingAnimation()
     lastView.rootNode.classList.remove(GLOBAL.activeView);
 });
@@ -853,9 +856,9 @@ let createItemTile = async function (node, item) {
     node.appendChild(nodeLabels);
 
     //loading image of tile
-    await new ImageHelper(_iImage, () => {
+    await new ImageHelper(_iImage, function () {
         _iImage.style = item.arg?.tileImageStyle || "";
-    }, () => {
+    }, function () {
         item.isTileImageNotLoaded = true;
         removeResourceFromCache(imageSrc);
     });
@@ -864,9 +867,9 @@ let createItemTile = async function (node, item) {
     node.classList.replace(GLOBAL.loading, GLOBAL.loaded);
     node.onclick = function () {
         event.preventDefault();
-        item.isLink ?
+        if (item.isLink)
             window.open(item.isLink, '_blank').focus()
-            :
+        else
             ViewController.navigate(VIEW.item, { routeArg: [item.id] });
     };
     node.href = item.isLink || APP.url.item + "/" + item.id;
@@ -911,7 +914,8 @@ let StorageResponseIndexer = function (response, depth = 1, limit = 3, startInde
     let _currentIndex = startIndex;
 
     let _addIntoResponse = function (entry) {
-        if (!entry || entry.hidden) return;
+        if (!entry || entry.hidden)
+            return;
         entry.isIndexed = true;
 
         //adding item into response
@@ -922,7 +926,8 @@ let StorageResponseIndexer = function (response, depth = 1, limit = 3, startInde
         _currentIndex += 1;
     }
     let _addGroupIntoResponse = function (entry) {
-        if (!entry) return;
+        if (!entry)
+            return;
         _groupItemIndex = 0;
         _groupIndex += 1;
         entry.isIndexed = true;
@@ -945,11 +950,11 @@ let StorageResponseIndexer = function (response, depth = 1, limit = 3, startInde
         if (entry.type == GLOBAL.group) {
             if (!entry.isIndexed)
                 _addGroupIntoResponse(entry);
-        } else {
-            //checking is item count in group display limit, getting only not indexed items or required to fill group
-            if (((limit > 0) && (!entry.isIndexed || (response.content.length - index) <= limit)) || limit == -1)
-                _addIntoResponse(entry);
+            return;
         }
+        //checking is item count in group display limit, getting only not indexed items or required to fill group
+        if (((limit > 0) && (!entry.isIndexed || (response.content.length - index) <= limit)) || limit == -1)
+            _addIntoResponse(entry);
     });
     return _indexedItems;
 }
@@ -989,7 +994,6 @@ let ResourceSlider = function () {
                 _sender.previous();
                 break;
         }
-
     });
 
     let _renderIndex = async function (index, direction) {
@@ -1120,9 +1124,11 @@ let createButton = function (icon, label, tagName = "A", rightLabel = false) {
     let _buttonContent = document.createElement("SPAN");
     _buttonContent.innerHTML = label;
 
-    if (!rightLabel) _button.appendChild(_buttonIcon);
+    if (!rightLabel)
+        _button.appendChild(_buttonIcon);
     _button.appendChild(_buttonContent);
-    if (rightLabel) _button.appendChild(_buttonIcon);
+    if (rightLabel)
+        _button.appendChild(_buttonIcon);
     return _button;
 }
 //Image helper for images
