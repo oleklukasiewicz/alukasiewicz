@@ -54,16 +54,16 @@
 }
 @media(prefers-color-scheme:dark){
     :root{
-        --color-theme: #282828;
-        --color-theme-A1: #2d2d2d;
-        --color-theme-A2: #3a3a3a;
-        --color-theme-A3: #4a4a4a;
-        --color-theme-A4: #6a6a6a;
-        --color-theme-A5: #8a8a8a;
-        --color-theme-A6: #afafaf;
-        --color-theme-hover: rgba(250,250,250,0.1);
-        --color-theme-active: rgba(250,250,250,0.2);
-        --color-theme-acrylic: rgba(40,40,40,0.8);
+        --color-theme: #161b22;
+        --color-theme-A1: #21262d;
+        --color-theme-A2: #30363d;
+        --color-theme-A3: rgb(72, 79, 88);
+        --color-theme-A4: #6e7681;
+        --color-theme-A5: #8b949e;
+        --color-theme-A6: #b1bac4;
+        --color-theme-hover: rgba(72, 79, 88,0.4);
+        --color-theme-active: rgba(72, 79, 88,0.2);
+        --color-theme-acrylic: rgba(22, 27, 34,0.8);
         --color-font: #e5e5e5;
         --color-font-disabled: #aaaaaa;
         --color-logo: #d0d0d0;
