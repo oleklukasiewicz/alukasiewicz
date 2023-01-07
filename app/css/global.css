@@ -1128,7 +1128,7 @@ u.dotted-separator{
     background-color: var(--color-theme-A3);
 }
 .button:active{
-    background-color: var(--color-theme-A5);
+    background-color: var(--color-theme-A4);
 }
 .button.github,
 .button.instagram,
