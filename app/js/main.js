@@ -539,9 +539,11 @@ const itemView = new View(VIEW.item, APP.url.item, { currentItem: null }, {
         let item;
         //if item is loaded into view -> skip rendering 
         //TODO: dynamic item content change
-        if (this.data.currentItem?.id == arg.routeArg[0])
+        if (this.data.currentItem?.id == arg.routeArg[0]) {
+            document.title = this.data.currentItem.title + " - " + APP.name;
             return;
-            
+        }
+
         try {
             item = await ItemController.getItemById(arg.routeArg[0]);
         } catch (e) {
