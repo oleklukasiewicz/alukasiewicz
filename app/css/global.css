@@ -6,8 +6,8 @@
     --color-theme-A4: hsl(215, 11%, 74%);
     --color-theme-A5: hsl(215, 8%, 65%);
     --color-theme-A6: hsl(215, 5%, 54%);
-    --color-theme-hover: rgba(60,60,60,0.1);
-    --color-theme-active: rgba(60,60,60,0.2);
+    --color-theme-hover: hsla(216, 21%, 24%, 0.1);
+    --color-theme-active: hsla(216, 21%, 24%, 0.2);
     --color-theme-acrylic: hsl(215, 21%, 95%, 0.3);
     --shadow-profile-header: 0 2px 12px rgba(0,0,0,.04);
     --color-font: #4f4f4f;
@@ -505,22 +505,7 @@ body.scroll-fix::-webkit-scrollbar-track{
     display: block;
     flex: 1;
 }
-#app #about-img{
-    animation-name: Blink;
-    animation-iteration-count: infinite;
-    animation-duration: 1.2s;
-    transform: none;
-    background-color: var(--color-theme-A1);
-    box-shadow: none;
-    pointer-events: none;
-}
-#app.loaded #about-img{
-    animation: none;
-}
-#app #about-img > *{
-    opacity: 0;
-}
-#app.loaded #about-img > *{
+#app.loaded #about-img.multi-layer-img > *{
     animation-name: FadeInUp;
     animation-duration: .9s;
     animation-timing-function: cubic-bezier(.16,1,.29,.99);
@@ -529,9 +514,9 @@ body.scroll-fix::-webkit-scrollbar-track{
     background-size: cover;
     background-position: center;
 }
-#app.loaded #about-img > :nth-child(1){
+#app.loaded #about-img.multi-layer-img > :nth-child(1){
+    animation: none!important;
     opacity: 1;
-    animation: none;
     background-image: var(--src-about-banner-l1);
 }
 #about-img > :nth-child(2){
@@ -625,14 +610,14 @@ body.scroll-fix::-webkit-scrollbar-track{
     width: 30%;
     font-size: 0;
     min-width: 200px;
-    background-color: var(--color-theme-A1);
+    background-color: var(--color-theme-hover);
 }
 #item.loading #item-info{
     height: 20px;
     width: 20%;
     font-size: 0;
     min-width: 100px;
-    background-color: var(--color-theme-A1);
+    background-color: var(--color-theme-hover);
 }
 #item.loading #item-info > *{
     background-color: transparent;
@@ -644,7 +629,7 @@ body.scroll-fix::-webkit-scrollbar-track{
     margin-bottom: 20px;
     margin-top: 30px;
     min-width: 50px;
-    background-color: var(--color-theme-A1);
+    background-color: var(--color-theme-hover);
 }
 #item.loading #item-content-loading > div.ghost{
     height: 250px;
@@ -652,15 +637,15 @@ body.scroll-fix::-webkit-scrollbar-track{
     width: 100%;
     margin-bottom: 20px;
     margin-top: 30px;
-    background-color: var(--color-theme-A1);
+    background-color: var(--color-theme-hover);
 }
 #item.loading #item-content-loading > span.ghost{
     height: 10px;
     margin-top: 2px;
     display: table;
     width: 100%;
-    border-top: 14px solid var(--color-theme-A1);
-    border-bottom: 14px solid var(--color-theme-A1);
+    border-top: 14px solid var(--color-theme-hover);
+    border-bottom: 14px solid var(--color-theme-hover);
 }
 #group-list{
     margin-top: 0;
@@ -686,11 +671,11 @@ body.scroll-fix::-webkit-scrollbar-track{
     text-align: right;
 }
 #group-data.loading #group-title{
-    background-color: var(--color-theme-A1);
+    background-color: var(--color-theme-hover);
     font-size: 0;
 }
 #group-data.loading #group-info{
-    background-color: var(--color-theme-A1);
+    background-color: var(--color-theme-hover);
     width: 20%;
     font-size: 0;
 }
@@ -744,7 +729,7 @@ body.scroll-fix::-webkit-scrollbar-track{
     animation-name: Blink;
     animation-iteration-count: infinite;
     animation-duration: 1.2s;
-    background-color: var(--color-theme-A1);
+    background-color: var(--color-theme-hover);
 }
 #image-viewer-list > .img > img{
     width: auto;
@@ -893,7 +878,7 @@ u.dotted-separator{
 }
 .list-view > .item > .img{
     width: 100%;
-    background-color: var(--color-theme-A1);
+    background-color: var(--color-theme-hover);
     transition: var(--transition-bg-only);
     position: relative;
 }
@@ -964,18 +949,18 @@ u.dotted-separator{
 }
 .list-view > .item.loading > b{
     height: 28px;
-    background-color: var(--color-theme-A1);
+    background-color: var(--color-theme-hover);
 }
 .list-view > .item.loading > span{
     height: 36px;
     margin-top: 14px;
     margin-bottom: 22px;
-    border-top: 16px solid var(--color-theme-A1);
-    border-bottom: 16px solid var(--color-theme-A1);
+    border-top: 16px solid var(--color-theme-hover);
+    border-bottom: 16px solid var(--color-theme-hover);
     box-sizing: border-box;
 }
 .list-view > .item.loading > .labels > .button{
-    background-color: var(--color-theme-A1);
+    background-color: var(--color-theme-hover);
     height: 34px;
     margin-right: 10px;
 }
@@ -983,7 +968,7 @@ u.dotted-separator{
     font-size: 0;
 }
 .list-view > .item.loading > .labels > .label{
-    background-color: var(--color-theme-A1);
+    background-color: var(--color-theme-hover);
     max-width: 90px;
     margin: 4px 0 4px auto;
 }
@@ -1024,13 +1009,14 @@ u.dotted-separator{
 }
 .list-view > .group.loading > span{
     height: 28px;
-    background-color: var(--color-theme-A1);
+    background-color: var(--color-theme-hover);
     margin-right: 20%;
     margin-top: 2px;
 }
 .list-view > .group.loading > .button{
     color: transparent;
-    background-color: var(--color-theme-A1);
+    width: 94px;
+    background-color: var(--color-theme-hover);
 }
 .list-view.error > .data-node{
     display: none;
@@ -1050,17 +1036,24 @@ u.dotted-separator{
     object-fit: cover;
     display: table;
 }
-.multi-layer-img.loading{
+#app .multi-layer-img{
     animation-name: Blink;
     animation-iteration-count: infinite;
     animation-duration: 1.2s;
     transform: none;
-    background-color: var(--color-theme-A1);
+    background-color: var(--color-theme-hover);
     box-shadow: none;
     pointer-events: none;
 }
-.multi-layer-img.loading > *{
+#app.loaded .multi-layer-img{
+    animation: none;
+}
+#app .multi-layer-img > *{
+    transition: opacity var(--time);
     opacity: 0;
+}
+#app.loaded .multi-layer-img > *{
+    opacity: 1;
 }
 .button,
 .icon-button{
