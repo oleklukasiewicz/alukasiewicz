@@ -1,11 +1,11 @@
 :root{
-    --color-theme: hsl(216, 20%, 95%);
+    --color-theme: hsl(216, 21%, 95%);
     --color-theme-A1: hsl(215, 21%, 97%);
-    --color-theme-A2: hsl(215, 21%, 90%);
-    --color-theme-A3: hsl(215, 21%, 83%);
-    --color-theme-A4: hsl(215, 21%, 74%);
-    --color-theme-A5: hsl(215, 21%, 65%);
-    --color-theme-A6: hsl(215, 21%, 54%);
+    --color-theme-A2: hsl(215, 18%, 90%);
+    --color-theme-A3: hsl(215, 15%, 83%);
+    --color-theme-A4: hsl(215, 11%, 74%);
+    --color-theme-A5: hsl(215, 8%, 65%);
+    --color-theme-A6: hsl(215, 5%, 54%);
     --color-theme-hover: rgba(60,60,60,0.1);
     --color-theme-active: rgba(60,60,60,0.2);
     --color-theme-acrylic: hsl(215, 21%, 95%, 0.3);
