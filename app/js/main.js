@@ -3,6 +3,7 @@ if ('scrollRestoration' in history)
 
 let darkThemeMatcher = window.matchMedia("(prefers-color-scheme:dark)");
 
+
 //features for nodes, nodes lists and objects
 Element.prototype.remove = function () {
     this.parentElement.removeChild(this);
@@ -834,7 +835,9 @@ window.addEventListener("load", async function () {
         await ViewController.navigate(START_ROUTE.target, {
             routeArg: APP.startUrl.slice(1, APP.startUrl.length - 1)
         });
-    APP_NODE.classList.add(GLOBAL.loaded);
+    this.setTimeout(function () {
+        APP_NODE.classList.replace("first-view", GLOBAL.loaded);
+    }, 600);
 });
 window.addEventListener("popstate", (event) => ViewController.navigateFromHistory(event.state));
 window.onresize = () => document.body.classList.toggle("scroll-fix", !isScrollbarVisible());
@@ -1167,6 +1170,18 @@ let createButton = function (icon, label, tagName = "A", rightLabel = false) {
         _button.appendChild(_buttonIcon);
     return _button;
 }
+
+//check if scrollbar is visible
+let isScrollbarVisible = (element = document.body) => element.scrollHeight > element.clientHeight;
+
+//views unloading animation
+let PlayViewUnLoadingAnimation = async function () {
+    CONTENT_NODE.classList.add("closing");
+
+    //awaiting for animation to end
+    await new Promise(resolve => setTimeout(resolve, 300));
+}
+
 //Image helper for images
 let ImageHelper = function (image, onload = () => { }, onerror = () => { }, onfinish = () => { }) {
     if (!image.src)
@@ -1219,15 +1234,4 @@ let MultipleImagesRenderer = async function (imagesList, targetNode) {
         function () {
             targetNode.classList.replace(GLOBAL.loading, GLOBAL.error);
         });
-}
-
-//check if scrollbar is visible
-let isScrollbarVisible = (element = document.body) => element.scrollHeight > element.clientHeight;
-
-//views unloading animation
-let PlayViewUnLoadingAnimation = async function () {
-    CONTENT_NODE.classList.add("closing");
-
-    //awaiting for animation to end
-    await new Promise(resolve => setTimeout(resolve, 300));
 }

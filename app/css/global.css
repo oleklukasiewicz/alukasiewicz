@@ -391,6 +391,9 @@ body.scroll-fix::-webkit-scrollbar-track{
     animation-timing-function: cubic-bezier(.16,1,.29,.99);
     animation-duration: var(--time-A1);
 }
+#app.first-view #content{
+    animation-duration: 0s!important;
+}
 #content.closing{
     animation-name: FadeOut;
     animation-fill-mode: forwards;
