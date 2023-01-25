@@ -15,22 +15,11 @@
     <script src="/item/storage.js" defer></script>
     <link rel="preload" href="/css/global.css" as="style" type="text/css" />
     <link rel="stylesheet" href="/css/global.css" media="screen" />
-    <link rel="prefetch" href="/img/dark/about-banner/bg-l1.webp" as="image" type="image/webp" />
-    <link rel="prefetch" href="/img/dark/about-banner/bg-l2.webp" as="image" type="image/webp" />
-    <link rel="prefetch" href="/img/dark/about-banner/bg-l3.webp" as="image" type="image/webp" />
-    <link rel="prefetch" href="/img/dark/about-banner/stars-l1.webp" as="image" type="image/webp" />
-    <link rel="prefetch" href="/img/dark/about-banner/stars-l2.webp" as="image" type="image/webp" />
-    <link rel="prefetch" href="/img/dark/about-banner/tree-l1.webp" as="image" type="image/webp" />
-    <link rel="preload" href="/img/dark/landing-banner/bg1-d.webp" as="image" type="image/webp" />
-    <link rel="preload" href="/img/dark/landing-banner/profile-picture.webp" as="image" type="image/webp" />
 
-    <link rel="prefetch" href="/img/light/about-banner/bg-l1.webp" as="image" type="image/webp" />
-    <link rel="prefetch" href="/img/light/about-banner/bg-l2.webp" as="image" type="image/webp" />
-    <link rel="prefetch" href="/img/light/about-banner/bg-l3.webp" as="image" type="image/webp" />
-    <link rel="prefetch" href="/img/light/about-banner/stars-l1.webp" as="image" type="image/webp" />
-    <link rel="prefetch" href="/img/light/about-banner/stars-l2.webp" as="image" type="image/webp" />
-    <link rel="prefetch" href="/img/light/about-banner/tree-l1.webp" as="image" type="image/webp" />
-    <link rel="preload" href="/img/light/landing-banner/bg1-l.webp" as="image" type="image/webp" />
+    <link rel="preload" href="/img/dark/landing-banner/bg1.webp" as="image" type="image/webp" />
+    <link rel="preload" href="/img/dark/landing-banner/profile-picture.webp" as="image" type="image/webp" />
+    
+    <link rel="preload" href="/img/light/landing-banner/bg1.webp" as="image" type="image/webp" />
     <link rel="preload" href="/img/light/landing-banner/profile-picture.webp" as="image" type="image/webp" />
 
     <script src="/js/main.js" async></script>
@@ -71,12 +60,8 @@
         <main id="views" style="margin-top:50px ;">
             <div id="landing" class="view">
                 <div id="profile-header">
-                    <div id="profile-image" class="multi-layer-img loaded" style="width: 160px;min-width: 160px;
-                height: 160px;border-radius: 160px;">
-                        <div style="background-image: var(--src-profile-image-l1);"></div>
-                        <div style="background-image: var(--src-profile-image-l2); background-position:bottom;
-                    background-size: 100%;"></div>
-                    </div>
+                    <div id="profile-image" class="multi-layer-img loading" style="width: 160px;min-width: 160px;
+                height: 160px;border-radius: 160px;"></div>
                     <div id="profile-data">
                         <b class="font-subheader">Hi, I'm Aleksander!</b>
                         <span class="font-subtitle"> Web and C# developer </br> Beginning pixel art artist
@@ -180,13 +165,7 @@
             </div>
             <div id="about" class="view">
                 <div id="about-img-area">
-                    <div id="about-img" class="multi-layer-img loaded">
-                        <div></div>
-                        <div></div>
-                        <div></div>
-                        <div></div>
-                        <div></div>
-                        <div></div>
+                    <div id="about-img" class="multi-layer-img loading">
                     </div>
                 </div>
                 <div id="about-data">

@@ -39,7 +39,7 @@ const cacheListIcons =
 const cacheListImages =
     [
         "/img/image_error.webp",
-        "/img/dark/landing-banner/bg1-d.webp",
+        "/img/dark/landing-banner/bg1.webp",
         "/img/dark/landing-banner/profile-picture.webp",
         "/img/dark/about-banner/bg-l1.webp",
         "/img/dark/about-banner/bg-l2.webp",
@@ -47,7 +47,7 @@ const cacheListImages =
         "/img/dark/about-banner/stars-l1.webp",
         "/img/dark/about-banner/stars-l2.webp",
         "/img/dark/about-banner/tree-l1.webp",
-        "/img/light/landing-banner/bg1-l.webp",
+        "/img/light/landing-banner/bg1.webp",
         "/img/light/landing-banner/profile-picture.webp",
         "/img/light/about-banner/bg-l1.webp",
         "/img/light/about-banner/bg-l2.webp",

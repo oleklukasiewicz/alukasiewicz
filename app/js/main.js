@@ -1,6 +1,8 @@
 if ('scrollRestoration' in history)
     history.scrollRestoration = 'manual';
 
+let darkThemeMatcher = window.matchMedia("(prefers-color-scheme:dark)");
+
 //features for nodes, nodes lists and objects
 Element.prototype.remove = function () {
     this.parentElement.removeChild(this);
@@ -479,6 +481,19 @@ const landingView = new View(VIEW.landing, APP.url.landing, { scrollY: -1, items
             ViewController.invokeError("item_load_error");
     },
     onRegister: function () {
+        let profileImage = getById("profile-image");
+
+        let renderProfileImage = async function (isDark = false, targetNode) {
+            let imagesList = [
+                "/bg1.webp",
+                "/profile-picture.webp",
+            ];
+            let folder = isDark ? "/img/dark/landing-banner" : "/img/light/landing-banner";
+
+            await MultipleImagesRenderer(imagesList.map((img) => folder + img), targetNode);
+        }
+        darkThemeMatcher.addEventListener("change", (e) => renderProfileImage(e.matches, profileImage));
+        renderProfileImage(darkThemeMatcher.matches, profileImage)
 
         //set "About me" button
         let _pButton = getById("profile-link-button");
@@ -514,6 +529,25 @@ const profileView = new View(VIEW.profile, APP.url.profile, {}, {
     onNavigate: () => {
         window.scroll(0, 0);
         document.title = "About me - " + APP.name
+    },
+    onRegister: function () {
+        let profileImage = getById("about-img");
+
+        let renderProfileImage = async function (isDark = false, targetNode) {
+            let imagesList = [
+                "/bg-l1.webp",
+                "/bg-l2.webp",
+                "/bg-l3.webp",
+                "/stars-l1.webp",
+                "/stars-l2.webp",
+                "/tree-l1.webp",
+            ];
+            let folder = isDark ? "/img/dark/about-banner" : "/img/light/about-banner";
+
+            await MultipleImagesRenderer(imagesList.map((img) => folder + img), targetNode);
+        }
+        darkThemeMatcher.addEventListener("change", (e) => renderProfileImage(e.matches, profileImage));
+        renderProfileImage(darkThemeMatcher.matches, profileImage)
     }
 }, VIEW.profile, true, ViewController.loadingModes.never);
 const itemView = new View(VIEW.item, APP.url.item, { currentItem: null }, {
@@ -1147,10 +1181,44 @@ let ImageHelper = function (image, onload = () => { }, onerror = () => { }, onfi
         onload(image);
         onfinish(image);
     }
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
         image.onload = () => resolve(imageLoaded());
-        image.onerror = () => resolve(imageIsNotLoaded());
+        image.onerror = () => { imageIsNotLoaded(); reject(); }
     });
+}
+let MultipleImagesHelper = function (images, onload = () => { }, onerror = () => { }, onfinish = () => { }, onloadsingle = () => { }, onerrorsingle = () => { }, onfinishsingle = () => { }) {
+    let promises = images.map((img) => new ImageHelper(img, onloadsingle, onerrorsingle, onfinishsingle));
+
+    return new Promise(async (resolve, reject) => {
+        let result = await Promise.allSettled([Promise.all(promises)]);
+        onfinish();
+        if (result[0].status == "rejected") {
+            onerror();
+            reject();
+        }
+        else {
+            onload();
+            resolve();
+        }
+    })
+}
+let MultipleImagesRenderer = async function (imagesList, targetNode) {
+    targetNode.innerHTML = "";
+
+    let nodes = imagesList.map(image => {
+        let imgNode = document.createElement("IMG");
+        imgNode.src = image;
+        targetNode.appendChild(imgNode);
+        return imgNode;
+    });
+
+    await MultipleImagesHelper(nodes,
+        function () {
+            targetNode.classList.replace(GLOBAL.loading, GLOBAL.loaded);
+        },
+        function () {
+            targetNode.classList.replace(GLOBAL.loading, GLOBAL.error);
+        });
 }
 
 //check if scrollbar is visible

@@ -14,14 +14,6 @@
     --color-font-disabled: #aaaaaa;
     --color-logo: #5f5f5f;
     --color-logo-A1: #404040;
-    --src-profile-image-l1: url(\/img\/light\/landing-banner\/bg1-l.webp);
-    --src-profile-image-l2: url(\/img\/light\/landing-banner\/profile-picture.webp);
-    --src-about-banner-l1: url(\/img\/light\/about-banner\/bg-l1.webp);
-    --src-about-banner-l2: url(\/img\/light\/about-banner\/bg-l2.webp);
-    --src-about-banner-l3: url(\/img\/light\/about-banner\/bg-l3.webp);
-    --src-about-banner-l4: url(\/img\/light\/about-banner\/stars-l1.webp);
-    --src-about-banner-l5: url(\/img\/light\/about-banner\/stars-l2.webp);
-    --src-about-banner-l6: url(\/img\/light\/about-banner\/tree-l1.webp);
     --logo-anim-delay: 0.5s;
     --acrylic: blur(60px) saturate(150%);
     --logo-height: 14px;
@@ -69,14 +61,6 @@
         --color-font-disabled: #aaaaaa;
         --color-logo: #d0d0d0;
         --color-logo-A1: #a0a0a0;
-        --src-profile-image-l1: url(\/img\/dark\/landing-banner\/bg1-d.webp);
-        --src-profile-image-l2: url(\/img\/dark\/landing-banner\/profile-picture.webp);
-        --src-about-banner-l1: url(\/img\/dark\/about-banner\/bg-l1.webp);
-        --src-about-banner-l2: url(\/img\/dark\/about-banner\/bg-l2.webp);
-        --src-about-banner-l3: url(\/img\/dark\/about-banner\/bg-l3.webp);
-        --src-about-banner-l4: url(\/img\/dark\/about-banner\/stars-l1.webp);
-        --src-about-banner-l5: url(\/img\/dark\/about-banner\/stars-l2.webp);
-        --src-about-banner-l6: url(\/img\/dark\/about-banner\/tree-l1.webp);
     }
 }
 .font-base{
@@ -463,7 +447,6 @@ body.scroll-fix::-webkit-scrollbar-track{
     border: 1px solid rgba(128,128,128,.08);
     box-shadow: var(--shadow-profile-header);
     margin: 12px var(--size-margin-base) 0;
-    transition: var(--transition-border);
     box-sizing: border-box;
     display: flex;
     padding: 40px 50px 30px;
@@ -505,16 +488,18 @@ body.scroll-fix::-webkit-scrollbar-track{
     display: block;
     flex: 1;
 }
-#app.loaded #about-img.multi-layer-img > *{
+#about-img.multi-layer-img > *{
+    opacity: 0;
+}
+#about-img.multi-layer-img.loaded > *{
     animation-name: FadeInUp;
     animation-duration: .9s;
     animation-timing-function: cubic-bezier(.16,1,.29,.99);
-    opacity: 0;
     animation-fill-mode: forwards;
     background-size: cover;
     background-position: center;
 }
-#app.loaded #about-img.multi-layer-img > :nth-child(1){
+#about-img.multi-layer-img > :nth-child(1){
     animation: none!important;
     opacity: 1;
     background-image: var(--src-about-banner-l1);
@@ -1029,14 +1014,7 @@ u.dotted-separator{
     height: 100%;
     border-radius: var(--border-radius);
 }
-.multi-layer-img > *{
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: table;
-}
-#app .multi-layer-img{
+.multi-layer-img.loading{
     animation-name: Blink;
     animation-iteration-count: infinite;
     animation-duration: 1.2s;
@@ -1045,14 +1023,19 @@ u.dotted-separator{
     box-shadow: none;
     pointer-events: none;
 }
-#app.loaded .multi-layer-img{
+.multi-layer-img.loaded{
     animation: none;
 }
-#app .multi-layer-img > *{
-    transition: opacity var(--time);
+.multi-layer-img > *{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: table;
     opacity: 0;
+    transition: opacity var(--time);
 }
-#app.loaded .multi-layer-img > *{
+.multi-layer-img.loaded > *{
     opacity: 1;
 }
 .button,
