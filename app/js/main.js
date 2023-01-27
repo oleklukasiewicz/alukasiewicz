@@ -631,13 +631,12 @@ const groupView = new View(VIEW.group, APP.url.group, { scrollY: -1 }, {
         _data.groupInfo = getById("group-info");
     },
     onNavigate: () => window.scroll(0, 0),
-    onNavigateFrom: function () {
+    onLoad: async function (arg) {
         //set all group items into loading state
         Array.prototype.forEach.call(this.data.groupList.getElementsByClassName(GLOBAL.dataNode), (node) =>
             node.classList.add("loading", "no-data"));
         this.rootNode.classList.remove(GLOBAL.error);
-    },
-    onLoad: async function (arg) {
+
         this.rootNode.classList.add(GLOBAL.loading);
         this.data.groupData.classList.add(GLOBAL.loading);
         if (!ItemController.isItemsLoaded)
