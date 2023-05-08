@@ -4,9 +4,9 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content="Olek Łukasiewicz's porfolio website" />
-    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#fbfbfb">
-    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#282828">
+    <meta name="description" content="Aleksander Łukasiewicz's porfolio website" />
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f0f2f5">
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#161b22">
     <title>Olek Łukasiewicz</title>
     <link rel="preload" href="/js/prerender.js" as="script" type="text/javascript" />
     <script src="/js/prerender.js"></script>
@@ -15,22 +15,11 @@
     <script src="/item/storage.js" defer></script>
     <link rel="preload" href="/css/global.css" as="style" type="text/css" />
     <link rel="stylesheet" href="/css/global.css" media="screen" />
-    <link rel="prefetch" href="/img/dark/about-banner/bg-l1.webp" as="image" type="image/webp" />
-    <link rel="prefetch" href="/img/dark/about-banner/bg-l2.webp" as="image" type="image/webp" />
-    <link rel="prefetch" href="/img/dark/about-banner/bg-l3.webp" as="image" type="image/webp" />
-    <link rel="prefetch" href="/img/dark/about-banner/stars-l1.webp" as="image" type="image/webp" />
-    <link rel="prefetch" href="/img/dark/about-banner/stars-l2.webp" as="image" type="image/webp" />
-    <link rel="prefetch" href="/img/dark/about-banner/tree-l1.webp" as="image" type="image/webp" />
-    <link rel="preload" href="/img/dark/landing-banner/bg1-d.webp" as="image" type="image/webp" />
-    <link rel="preload" href="/img/dark/landing-banner/profile-picture.webp" as="image" type="image/webp" />
 
-    <link rel="prefetch" href="/img/light/about-banner/bg-l1.webp" as="image" type="image/webp" />
-    <link rel="prefetch" href="/img/light/about-banner/bg-l2.webp" as="image" type="image/webp" />
-    <link rel="prefetch" href="/img/light/about-banner/bg-l3.webp" as="image" type="image/webp" />
-    <link rel="prefetch" href="/img/light/about-banner/stars-l1.webp" as="image" type="image/webp" />
-    <link rel="prefetch" href="/img/light/about-banner/stars-l2.webp" as="image" type="image/webp" />
-    <link rel="prefetch" href="/img/light/about-banner/tree-l1.webp" as="image" type="image/webp" />
-    <link rel="preload" href="/img/light/landing-banner/bg1-l.webp" as="image" type="image/webp" />
+    <link rel="preload" href="/img/dark/landing-banner/bg1.webp" as="image" type="image/webp" />
+    <link rel="preload" href="/img/dark/landing-banner/profile-picture.webp" as="image" type="image/webp" />
+    
+    <link rel="preload" href="/img/light/landing-banner/bg1.webp" as="image" type="image/webp" />
     <link rel="preload" href="/img/light/landing-banner/profile-picture.webp" as="image" type="image/webp" />
 
     <script src="/js/main.js" async></script>
@@ -44,7 +33,7 @@
     <link rel="apple-touch-icon" href="/icon/apple-touch-icon.png" />
 </head>
 
-<body id="app" class="scroll-fix">
+<body id="app" class="scroll-fix first-view">
     <div id="main-header-base" class="closed" style="height: 50px;position: fixed;top: 0px;display:table;z-index:11;">
         <div id="main-header" style="width:100%;position: relative;z-index: 12;">
             <div id="main-header-icons-left" style="float: left;">
@@ -71,12 +60,8 @@
         <main id="views" style="margin-top:50px ;">
             <div id="landing" class="view">
                 <div id="profile-header">
-                    <div id="profile-image" class="multi-layer-img loaded" style="width: 160px;min-width: 160px;
-                height: 160px;border-radius: 160px;">
-                        <div style="background-image: var(--src-profile-image-l1);"></div>
-                        <div style="background-image: var(--src-profile-image-l2); background-position:bottom;
-                    background-size: 100%;"></div>
-                    </div>
+                    <div id="profile-image" class="multi-layer-img loading" style="width: 160px;min-width: 160px;
+                height: 160px;border-radius: 160px;"></div>
                     <div id="profile-data">
                         <b class="font-subheader">Hi, I'm Aleksander!</b>
                         <span class="font-subtitle"> Web and C# developer </br> Beginning pixel art artist
@@ -180,13 +165,7 @@
             </div>
             <div id="about" class="view">
                 <div id="about-img-area">
-                    <div id="about-img" class="multi-layer-img loaded">
-                        <div></div>
-                        <div></div>
-                        <div></div>
-                        <div></div>
-                        <div></div>
-                        <div></div>
+                    <div id="about-img" class="multi-layer-img loading">
                     </div>
                 </div>
                 <div id="about-data">
