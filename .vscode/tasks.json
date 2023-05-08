@@ -1,0 +1,43 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "DebugStartTask",
+            "dependsOn": [
+                "StartServer"
+            ]
+        },
+        {
+            "label": "MochaRunAllTests",
+            "type": "process",
+            "command": "${input:mochaRunAllTest}"
+        },
+        {
+            "label": "StartServer",
+            "type": "process",
+            "command": "${input:startServer}"
+        },
+        {
+            "label": "StopServer",
+            "type": "process",
+            "command": "${input:stopServer}"
+        }
+    ],
+    "inputs": [
+        {
+            "id": "startServer",
+            "type": "command",
+            "command": "extension.liveServer.goOnline"
+        },
+        {
+            "id": "mochaRunAllTest",
+            "type": "command",
+            "command": "mocha.runAllTests"
+        },
+        {
+            "id": "stopServer",
+            "type": "command",
+            "command": "extension.liveServer.goOffline"
+        }
+    ]
+}
