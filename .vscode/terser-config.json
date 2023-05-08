@@ -1,0 +1,19 @@
+{
+    "parse": {},
+    "compress": {},
+    "format": {},
+    "mangle": {
+        "properties":
+        {
+            "keep_quoted":true
+        }
+    },
+    "ecma": 2015,
+    "keep_classnames": false,
+    "keep_fnames": false,
+    "ie8": false,
+    "module": false,
+    "nameCache": null,
+    "safari10": false,
+    "toplevel": false
+}
