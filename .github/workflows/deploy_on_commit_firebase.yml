@@ -14,9 +14,9 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@master
     - name: Run script
-      shell: cmd
       run: |
         ./.vscode/to-production.bat
+      shell: cmd
     - name: Upload artifact
       uses: actions/upload-artifact@v2
       with:
