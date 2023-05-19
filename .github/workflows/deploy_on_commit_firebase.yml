@@ -13,6 +13,8 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@master
+    - name: Install Terser
+      run: npm install -g terser
     - name: Run script
       run: |
         ./.vscode/to-production.bat
