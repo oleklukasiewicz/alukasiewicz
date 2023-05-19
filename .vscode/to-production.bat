@@ -1,14 +1,8 @@
-@echo off
-set HOME=./app
+terser ./app/js/prerender.js --config-file ./.vscode/terser-config.json --name-cache ./.vscode/terser-map.json  -o ./app/js/prerender.js
+terser ./app/js/postrender.js --config-file ./.vscode/terser-config.json --name-cache ./.vscode/terser-map.json  -o ./app/js/postrender.js
+terser ./app/js/main.js --config-file ./.vscode/terser-config.json --name-cache ./.vscode/terser-map.json  -o ./app/js/main.js
+terser ./app/js/item.js --config-file ./.vscode/terser-config.json --name-cache ./.vscode/terser-map.json  -o ./app/js/item.js
 
-set "HERE=%cd%"
-set VSCODE=%HERE%/.vscode
+terser ./app/serviceworker.js -o ./app/serviceworker.js
 
-terser %HOME%/js/prerender.js --config-file ./.vscode/terser-config.json --name-cache ./.vscode/terser-map.json  -o %HOME%/js/prerender.js
-terser %HOME%/js/postrender.js --config-file ./.vscode/terser-config.json --name-cache ./.vscode/terser-map.json  -o %HOME%/js/postrender.js
-terser %HOME%/js/main.js --config-file ./.vscode/terser-config.json --name-cache ./.vscode/terser-map.json  -o %HOME%/js/main.js
-terser %HOME%/js/item.js --config-file ./.vscode/terser-config.json --name-cache ./.vscode/terser-map.json  -o %HOME%/js/item.js
-
-terser %HOME%/serviceworker.js -o %HOME%/serviceworker.js
-
-terser %HOME%/item/storage.js --config-file ./.vscode/terser-config.json --name-cache ./.vscode/terser-map.json -o %HOME%/item/storage.js
+terser ./app/item/storage.js --config-file ./.vscode/terser-config.json --name-cache ./.vscode/terser-map.json -o ./app/item/storage.js
