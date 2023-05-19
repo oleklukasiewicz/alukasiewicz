@@ -4,8 +4,6 @@ set HOME=.\app
 set "HERE=%cd%"
 set VSCODE=%HERE%\.vscode
 
-for /f "delims=" %%a in ('git rev-parse --abbrev-ref HEAD') do @set BRANCH=%%a
-if %BRANCH%==production (
 call git checkout master .firebaserc
 call git checkout master .gitignore
 call git checkout master .github
@@ -20,9 +18,3 @@ call terser %HOME%\serviceworker.js -o %HOME%\serviceworker.js
 
 
 call terser %HOME%\item\storage.js --config-file .\.vscode\terser-config.json --name-cache .\.vscode\terser-map.json -o %HOME%\item\storage.js
-
-) ELSE (
-    echo Wrong branch
-)
-
-PAUSE
