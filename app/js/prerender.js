@@ -42,3 +42,5 @@ const GLOBAL = {
     activeView: "active-view",
     dataNode: "data-node"
 };
+
+const DEVELOPMENT = false;

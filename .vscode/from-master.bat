@@ -18,7 +18,6 @@ call terser %HOME%\js\item.js --config-file .\.vscode\terser-config.json --name-
 
 call terser %HOME%\serviceworker.js -o %HOME%\serviceworker.js
 
-xcopy .production\item %HOME%\item /s /e /y /v
 
 call terser %HOME%\item\storage.js --config-file .\.vscode\terser-config.json --name-cache .\.vscode\terser-map.json -o %HOME%\item\storage.js
 
