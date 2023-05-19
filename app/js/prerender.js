@@ -43,4 +43,4 @@ const GLOBAL = {
     dataNode: "data-node"
 };
 
-const DEVELOPMENT = false;
+const DEVELOPMENT = true;

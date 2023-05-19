@@ -13,11 +13,6 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@master
-    - name: Install Terser
-      run: npm install -g terser
-    - name: Run script
-      run: |
-        ./.vscode/to-production.bat
     - name: Upload artifact
       uses: actions/upload-artifact@v2
       with:
