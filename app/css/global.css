@@ -1,27 +1,19 @@
 :root{
-    --color-theme: #f9f9f9;
-    --color-theme-A1: #F0f0f0;
-    --color-theme-A2: #E7E7E7;
+    --color-theme: #fbfbfb;
+    --color-theme-A1: #F4f4f4;
+    --color-theme-A2: #E8E8E8;
     --color-theme-A3: #D8D8D8;
     --color-theme-A4: #c8c8c8;
     --color-theme-A5: #a8a8a8;
     --color-theme-A6: #606060;
     --color-theme-hover: rgba(60,60,60,0.1);
     --color-theme-active: rgba(60,60,60,0.2);
-    --color-theme-acrylic: rgba(251,251,251,0.3);
+    --color-theme-acrylic: rgba(251,251,251,0.8);
     --color-font: #4f4f4f;
     --color-font-disabled: #aaaaaa;
     --color-logo: #5f5f5f;
     --color-logo-A1: #404040;
-    --src-profile-image-l1: url(\/img\/light\/landing-banner\/bg1-l.webp);
-    --src-profile-image-l2: url(\/img\/light\/landing-banner\/profile-picture.webp);
-    --src-about-banner-l1: url(\/img\/light\/about-banner\/bg-l1.webp);
-    --src-about-banner-l2: url(\/img\/light\/about-banner\/bg-l2.webp);
-    --src-about-banner-l3: url(\/img\/light\/about-banner\/bg-l3.webp);
-    --src-about-banner-l4: url(\/img\/light\/about-banner\/stars-l1.webp);
-    --src-about-banner-l5: url(\/img\/light\/about-banner\/stars-l2.webp);
-    --src-about-banner-l6: url(\/img\/light\/about-banner\/tree-l1.webp);
-    --logo-anim-delay: 0.5s;
+    --profile-image-src: url(\/img\/profile\.webp);
     --acrylic: blur(60px) saturate(150%);
     --logo-height: 14px;
     --skew: 23deg;
@@ -54,28 +46,21 @@
 }
 @media(prefers-color-scheme:dark){
     :root{
-        --color-theme: #282828;
-        --color-theme-A1: #2d2d2d;
-        --color-theme-A2: #3a3a3a;
-        --color-theme-A3: #4a4a4a;
-        --color-theme-A4: #6a6a6a;
-        --color-theme-A5: #8a8a8a;
-        --color-theme-A6: #afafaf;
-        --color-theme-hover: rgba(250,250,250,0.1);
-        --color-theme-active: rgba(250,250,250,0.2);
-        --color-theme-acrylic: rgba(40,40,40,0.8);
+        --color-theme: hsl(215, 21%, 11%);
+        --color-theme-A1: hsl(215, 15%, 15%);
+        --color-theme-A2: hsl(215, 12%, 21%);
+        --color-theme-A3: hsl(215, 10%, 27%);
+        --color-theme-A4: hsl(215, 8%, 34%);
+        --color-theme-A5: hsl(215, 6%, 42%);
+        --color-theme-A6: hsl(215, 4%, 56%);
+        --color-theme-hover: rgba(72, 79, 88,0.4);
+        --color-theme-active: rgba(72, 79, 88,0.2);
+        --color-theme-acrylic: rgba(22, 27, 34,0.8);
         --color-font: #e5e5e5;
         --color-font-disabled: #aaaaaa;
         --color-logo: #d0d0d0;
         --color-logo-A1: #a0a0a0;
-        --src-profile-image-l1: url(\/img\/dark\/landing-banner\/bg1-d.webp);
-        --src-profile-image-l2: url(\/img\/dark\/landing-banner\/profile-picture.webp);
-        --src-about-banner-l1: url(\/img\/dark\/about-banner\/bg-l1.webp);
-        --src-about-banner-l2: url(\/img\/dark\/about-banner\/bg-l2.webp);
-        --src-about-banner-l3: url(\/img\/dark\/about-banner\/bg-l3.webp);
-        --src-about-banner-l4: url(\/img\/dark\/about-banner\/stars-l1.webp);
-        --src-about-banner-l5: url(\/img\/dark\/about-banner\/stars-l2.webp);
-        --src-about-banner-l6: url(\/img\/dark\/about-banner\/tree-l1.webp);
+        --profile-image-src: url(\/img\/profile-dark\.webp);
     }
 }
 .font-base{
@@ -397,21 +382,6 @@ body.scroll-fix::-webkit-scrollbar-track{
     display: inline-flex;
     gap: 4px;
 }
-#content{
-    display: grid;
-    grid-template-rows: 1fr auto;
-    min-height: 100vh;
-    animation-name: FadeIn;
-    animation-fill-mode: forwards;
-    animation-timing-function: cubic-bezier(.16,1,.29,.99);
-    animation-duration: var(--time-A1);
-}
-#content.closing{
-    animation-name: FadeOut;
-    animation-fill-mode: forwards;
-    animation-timing-function: cubic-bezier(.16,1,.29,.99);
-    animation-duration: var(--time);
-}
 #footer{
     display: block;
     text-align: center;
@@ -460,9 +430,8 @@ body.scroll-fix::-webkit-scrollbar-track{
 #profile-header{
     background-color: var(--color-theme-A1);
     border: 1px solid rgba(128,128,128,.08);
-    box-shadow: 0 2px 8px rgba(0,0,0,.08);
+    box-shadow: var(--shadow-profile-header);
     margin: 12px var(--size-margin-base) 0;
-    transition: var(--transition-border);
     box-sizing: border-box;
     display: flex;
     padding: 40px 50px 30px;
@@ -503,55 +472,6 @@ body.scroll-fix::-webkit-scrollbar-track{
 #about > div{
     display: block;
     flex: 1;
-}
-#app #about-img{
-    animation-name: Blink;
-    animation-iteration-count: infinite;
-    animation-duration: 1.2s;
-    transform: none;
-    background-color: var(--color-theme-A1);
-    box-shadow: none;
-    pointer-events: none;
-}
-#app.loaded #about-img{
-    animation: none;
-}
-#app #about-img > *{
-    opacity: 0;
-}
-#app.loaded #about-img > *{
-    animation-name: FadeInUp;
-    animation-duration: .9s;
-    animation-timing-function: cubic-bezier(.16,1,.29,.99);
-    opacity: 0;
-    animation-fill-mode: forwards;
-    background-size: cover;
-    background-position: center;
-}
-#app.loaded #about-img > :nth-child(1){
-    opacity: 1;
-    animation: none;
-    background-image: var(--src-about-banner-l1);
-}
-#about-img > :nth-child(2){
-    animation-delay: .1s;
-    background-image: var(--src-about-banner-l2);
-}
-#about-img > :nth-child(3){
-    animation-delay: .2s;
-    background-image: var(--src-about-banner-l3);
-}
-#about-img > :nth-child(4){
-    animation-delay: .4s;
-    background-image: var(--src-about-banner-l4);
-}
-#about-img > :nth-child(5){
-    animation-delay: .5s;
-    background-image: var(--src-about-banner-l5);
-}
-#about-img > :nth-child(6){
-    animation-delay: .7s;
-    background-image: var(--src-about-banner-l6);
 }
 #about-data{
     margin: 0 auto;
@@ -624,14 +544,14 @@ body.scroll-fix::-webkit-scrollbar-track{
     width: 30%;
     font-size: 0;
     min-width: 200px;
-    background-color: var(--color-theme-A1);
+    background-color: var(--color-theme-hover);
 }
 #item.loading #item-info{
     height: 20px;
     width: 20%;
     font-size: 0;
     min-width: 100px;
-    background-color: var(--color-theme-A1);
+    background-color: var(--color-theme-hover);
 }
 #item.loading #item-info > *{
     background-color: transparent;
@@ -643,7 +563,7 @@ body.scroll-fix::-webkit-scrollbar-track{
     margin-bottom: 20px;
     margin-top: 30px;
     min-width: 50px;
-    background-color: var(--color-theme-A1);
+    background-color: var(--color-theme-hover);
 }
 #item.loading #item-content-loading > div.ghost{
     height: 250px;
@@ -651,15 +571,15 @@ body.scroll-fix::-webkit-scrollbar-track{
     width: 100%;
     margin-bottom: 20px;
     margin-top: 30px;
-    background-color: var(--color-theme-A1);
+    background-color: var(--color-theme-hover);
 }
 #item.loading #item-content-loading > span.ghost{
     height: 10px;
     margin-top: 2px;
     display: table;
     width: 100%;
-    border-top: 14px solid var(--color-theme-A1);
-    border-bottom: 14px solid var(--color-theme-A1);
+    border-top: 14px solid var(--color-theme-hover);
+    border-bottom: 14px solid var(--color-theme-hover);
 }
 #group-list{
     margin-top: 0;
@@ -685,11 +605,11 @@ body.scroll-fix::-webkit-scrollbar-track{
     text-align: right;
 }
 #group-data.loading #group-title{
-    background-color: var(--color-theme-A1);
+    background-color: var(--color-theme-hover);
     font-size: 0;
 }
 #group-data.loading #group-info{
-    background-color: var(--color-theme-A1);
+    background-color: var(--color-theme-hover);
     width: 20%;
     font-size: 0;
 }
@@ -729,26 +649,6 @@ body.scroll-fix::-webkit-scrollbar-track{
 #image-viewer-list > .img{
     max-width: 100%;
     max-height: 100%;
-    opacity: 0;
-    position: absolute;
-    border-radius: var(--border-radius);
-    display: flex;
-    margin: 12px var(--size-margin-base) 40px;
-    box-sizing: border-box;
-}
-#image-viewer-list > .img.no-animation{
-    animation-duration: 0s!important;
-}
-#resource #image-viewer-list > .img.active-view.loading{
-    animation-name: Blink;
-    animation-iteration-count: infinite;
-    animation-duration: 1.2s;
-    background-color: var(--color-theme-A1);
-}
-#image-viewer-list > .img > img{
-    width: auto;
-    max-height: 100%;
-    max-width: 100%;
     object-fit: contain;
     box-shadow: 0 12px 30px 0 rgba(0,0,0,.13);
     margin: auto auto;
@@ -892,7 +792,7 @@ u.dotted-separator{
 }
 .list-view > .item > .img{
     width: 100%;
-    background-color: var(--color-theme-A1);
+    background-color: var(--color-theme-hover);
     transition: var(--transition-bg-only);
     position: relative;
 }
@@ -963,28 +863,21 @@ u.dotted-separator{
 }
 .list-view > .item.loading > b{
     height: 28px;
-    background-color: var(--color-theme-A1);
+    background-color: var(--color-theme-hover);
 }
 .list-view > .item.loading > span{
     height: 36px;
     margin-top: 14px;
     margin-bottom: 22px;
-    border-top: 16px solid var(--color-theme-A1);
-    border-bottom: 16px solid var(--color-theme-A1);
+    border-top: 16px solid var(--color-theme-hover);
+    border-bottom: 16px solid var(--color-theme-hover);
     box-sizing: border-box;
 }
 .list-view > .item.loading > .labels > .button{
     background-color: var(--color-theme-A1);
-    height: 34px;
-    margin-right: 10px;
 }
 .list-view > .item.loading *{
     font-size: 0;
-}
-.list-view > .item.loading > .labels > .label{
-    background-color: var(--color-theme-A1);
-    max-width: 90px;
-    margin: 4px 0 4px auto;
 }
 .list-view > .item.loaded > .img > img{
     opacity: 1;
@@ -1023,43 +916,17 @@ u.dotted-separator{
 }
 .list-view > .group.loading > span{
     height: 28px;
-    background-color: var(--color-theme-A1);
+    background-color: var(--color-theme-hover);
     margin-right: 20%;
     margin-top: 2px;
 }
 .list-view > .group.loading > .button{
     color: transparent;
-    background-color: var(--color-theme-A1);
+    width: 94px;
+    background-color: var(--color-theme-hover);
 }
 .list-view.error > .data-node{
     display: none;
-}
-.multi-layer-img{
-    display: block;
-    position: relative;
-    overflow: hidden;
-    width: 100%;
-    height: 100%;
-    border-radius: var(--border-radius);
-}
-.multi-layer-img > *{
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: table;
-}
-.multi-layer-img.loading{
-    animation-name: Blink;
-    animation-iteration-count: infinite;
-    animation-duration: 1.2s;
-    transform: none;
-    background-color: var(--color-theme-A1);
-    box-shadow: none;
-    pointer-events: none;
-}
-.multi-layer-img.loading > *{
-    opacity: 0;
 }
 .button,
 .icon-button{
@@ -1128,7 +995,7 @@ u.dotted-separator{
     background-color: var(--color-theme-A3);
 }
 .button:active{
-    background-color: var(--color-theme-A5);
+    background-color: var(--color-theme-A4);
 }
 .button.github,
 .button.instagram,

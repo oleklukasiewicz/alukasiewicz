@@ -29,6 +29,9 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: alukasiewicz-artifact
+      - name: Run script
+        run: |
+          .vscode/from-master.bat
       - name: Deploy to Firebase
         uses: FirebaseExtended/action-hosting-deploy@v0
         with:

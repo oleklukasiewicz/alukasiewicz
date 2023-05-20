@@ -1,1 +1,275 @@
-let storageGroups=()=>[{id:"home"},{id:"featured",title:"Featured art",ct:{m:5,h:11,er:2021},G:["home"],j:{Zt:["orchid","lighthouse","lily"],$t:["featured","all"]}},{id:"organic-group",title:"Organic collection"},{id:"all",L:["work","landing"],title:"All projects",G:["home"],F:!0}],storageItems=()=>[{id:"adventure",W:"/adventure",Qt:"https://www.instagram.com/p/CCmAJKGBWeb/",title:"Let the journey begin!",P:{content:"Don't wait for the adventure's start - begin it by yourself!",B:"/adventure.webp"},ct:{m:13,h:7,C:2020}},{id:"airship",W:"/airship",Qt:"https://www.instagram.com/p/CMXFzXihSGw/",title:"Ocean of Clouds",P:{content:"The great adventure does not have to take place at sea. Now with new frame and improved clouds!",B:"/airship-v2.webp"},ct:{m:27,h:10,C:2020},Xe:{m:13,h:3,C:2021}},{id:"crocus",W:"/crocus",Qt:"https://www.instagram.com/p/CdqCxFOq1fh/",title:"The Crocus",P:{content:"One of the first signs of spring - crocus, also know as the source of one of the most expensive spice.",B:"/crocus-base.webp"},G:["featured","organic-group"],ct:{m:17,h:5,C:2022}},{id:"isometric-castle",W:"/isometric",Qt:"https://www.instagram.com/p/CLEOiDiBDey/",title:"Procedural World",P:{content:"The world is full of patterns. Here it is represented as a set of tiles.",B:"/isometric_castle.webp"},G:["featured"],ct:{m:9,h:2,C:2021}},{id:"lighthouse",W:"/lighthouse",Qt:"https://www.instagram.com/p/CcIPscSKKyE/",title:"Lighthouse",P:{content:"Alone lighthouse on the night sea with a sky full of stars.",B:"/lighthouse.webp"},G:["featured"],ct:{m:16,h:3,C:2022}},{id:"lily",W:"/lily",Qt:"https://www.instagram.com/p/CXlcDShooxu/",title:"Water Lily",P:{content:"Mandatory element in every organic picture of river or lake.",B:"/lily-blank.webp"},G:["featured","organic-group"],ct:{m:10,h:12,C:2021}},{id:"orchid",W:"/orchid",Qt:"https://www.instagram.com/p/Cd3DiBBqvOR/",title:"The Orchid",P:{content:"A flower considered a symbol of beauty and love that grows on trees or between rocks rather than directly in the ground.",B:"/orchid.webp"},G:["featured","organic-group"],ct:{m:22,h:5,C:2022}},{id:"person-practise",W:"/person",Qt:"https://www.instagram.com/p/COAYwduB3jc/",title:"Character practise",P:{content:"The first result of learning to draw pixel characters. Based on tutorial by Slynyrd.",B:"/person_practise.webp"},ct:{m:23,h:4,C:2021}},{id:"rose",W:"/rose",Qt:"https://www.instagram.com/p/CMZkmJaBhd1/",title:"The digital blossom",P:{content:"A simple red rose. Slightly improved with new colours and details.",B:"/rose_plant.webp"},G:["organic-group"],ct:{m:9,h:12,C:2020},Xe:{m:14,h:3,C:2021}},{id:"tree",W:"/tree-on-rock",Qt:"https://www.instagram.com/p/CPSx-X8hdVM/",title:"Organic pixels",P:{content:"One of the most iconic plants on the planet - a tree! Here growing on a giant rock.",B:"/tree-on-rock.webp"},G:["featured","organic-group"],ct:{m:23,h:5,C:2021}}];
+let storageGroups = () => [
+  {
+    id: "home",
+    aliases: ["landing"],
+    arg: {
+      groupsOrder: ["featured", "organic-group", "all"],
+    },
+  },
+  {
+    id: "featured",
+    title: "Featured art",
+    createDate: {
+      day: 5,
+      month: 11,
+      year: 2021,
+    },
+    groups: ["home"],
+    arg: {
+      itemsOrder: ["orchid", "lighthouse", "lily"],
+    },
+  },
+  {
+    id: "organic-group",
+    title: "Organic collection",
+    groups: ["home"],
+    arg: {
+      itemsOrder: ["crocus", "lily", "tree"],
+    },
+  },
+  {
+    id: "all",
+    aliases: ["work"],
+    title: "All projects",
+    groups: ["home"],
+    isDefault: true,
+  },
+  {
+    id: "dungeons-builds",
+    aliases: ["builds"],
+    dev: true,
+    title: "Minecraft Dungeons Builds",
+  },
+];
+let storageItems = () => [
+  {
+    id: "ancient-temple",
+    folder: "/temple",
+    dev: true,
+    isLink: true,
+    title: "Ancient Times",
+    tile: {
+      image: "/temple-alt.webp",
+      content:
+        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ac mauris non justo dictum ullamcorper vel in ante.",
+    },
+    createDate: {
+      day: 21,
+      month: 12,
+      year: 2022,
+    },
+  },
+  {
+    id: "adventure",
+    folder: "/adventure",
+    isLink: "https://www.instagram.com/p/CCmAJKGBWeb/",
+    title: "Let the journey begin",
+    tile: {
+      content: "Don't wait for the adventure's start - begin it by yourself!",
+      image: "/adventure.webp",
+    },
+    createDate: {
+      day: 13,
+      month: 7,
+      year: 2020,
+    },
+  },
+  {
+    id: "airship",
+    folder: "/airship",
+    isLink: "https://www.instagram.com/p/CMXFzXihSGw/",
+    title: "Ocean of Clouds",
+    tile: {
+      content:
+        "The great adventure does not have to take place at sea. Now with new frame and improved clouds!",
+      image: "/airship-v2.webp",
+    },
+    createDate: {
+      day: 27,
+      month: 10,
+      year: 2020,
+    },
+    modifyDate: {
+      day: 13,
+      month: 3,
+      year: 2021,
+    },
+  },
+  {
+    id: "crocus",
+    folder: "/crocus",
+    isLink: "https://www.instagram.com/p/CdqCxFOq1fh/",
+    title: "The Crocus",
+    tile: {
+      content:
+        "One of the first signs of spring - crocus, also know as the source of one of the most expensive spice.",
+      image: "/crocus-base.webp",
+    },
+    groups: ["featured", "organic-group"],
+    createDate: {
+      day: 17,
+      month: 5,
+      year: 2022,
+    },
+  },
+  {
+    id: "isometric-castle",
+    folder: "/isometric",
+    isLink: "https://www.instagram.com/p/CLEOiDiBDey/",
+    title: "Procedural World",
+    tile: {
+      content:
+        "The world is full of patterns. Here it is represented as a set of tiles.",
+      image: "/isometric_castle.webp",
+    },
+    groups: ["featured"],
+    createDate: {
+      day: 9,
+      month: 2,
+      year: 2021,
+    },
+  },
+  {
+    id: "lighthouse",
+    folder: "/lighthouse",
+    isLink: "https://www.instagram.com/p/CcIPscSKKyE/",
+    title: "Lighthouse",
+    tile: {
+      content: "Alone lighthouse on the night sea with a sky full of stars.",
+      image: "/lighthouse.webp",
+    },
+    groups: ["featured"],
+    createDate: {
+      day: 16,
+      month: 3,
+      year: 2022,
+    },
+  },
+  {
+    id: "lily",
+    folder: "/lily",
+    isLink: "https://www.instagram.com/p/CXlcDShooxu/",
+    title: "Water Lily",
+    tile: {
+      content:
+        "Mandatory element in almost every organic picture of river or lake.",
+      image: "/lily-blank.webp",
+    },
+    groups: ["featured", "organic-group"],
+    createDate: {
+      day: 10,
+      month: 12,
+      year: 2021,
+    },
+  },
+  {
+    id: "orchid",
+    folder: "/orchid",
+    isLink: "https://www.instagram.com/p/Cd3DiBBqvOR/",
+    title: "The Orchid",
+    tile: {
+      content:
+        "A flower considered a symbol of beauty and love that grows on trees or between rocks rather than directly in the ground.",
+      image: "/orchid.webp",
+    },
+    groups: ["featured", "organic-group"],
+    createDate: {
+      day: 22,
+      month: 5,
+      year: 2022,
+    },
+  },
+  {
+    id: "person-practise",
+    folder: "/person",
+    isLink: "https://www.instagram.com/p/COAYwduB3jc/",
+    title: "Character practise",
+    tile: {
+      content:
+        "The first result of learning to draw pixel characters. Based on tutorial by Slynyrd.",
+      image: "/person_practise.webp",
+    },
+    createDate: {
+      day: 23,
+      month: 4,
+      year: 2021,
+    },
+  },
+  {
+    id: "rose",
+    folder: "/rose",
+    isLink: "https://www.instagram.com/p/CMZkmJaBhd1/",
+    title: "The digital blossom",
+    tile: {
+      content:
+        "A simple red rose. Slightly improved with new colours and details.",
+      image: "/rose_plant.webp",
+    },
+    groups: ["organic-group"],
+    createDate: {
+      day: 9,
+      month: 12,
+      year: 2020,
+    },
+    modifyDate: {
+      day: 14,
+      month: 3,
+      year: 2021,
+    },
+  },
+  {
+    id: "tree",
+    folder: "/tree-on-rock",
+    isLink: "https://www.instagram.com/p/CPSx-X8hdVM/",
+    title: "Organic pixels",
+    tile: {
+      content:
+        "One of the most iconic plants on the planet - a tree! Here growing on a giant rock.",
+      image: "/tree-on-rock.webp",
+    },
+    groups: ["featured", "organic-group"],
+    createDate: {
+      day: 23,
+      month: 5,
+      year: 2021,
+    },
+  },
+  {
+    id: "fluent-design-system",
+    folder: "/beta",
+    dev: true,
+    title: "Fluent Design System",
+    tile: {
+      image: "/fluent.webp",
+      content:
+        "Reflections on our design history, the progression, and the potential of how we collectively design for the future.",
+    },
+    createDate: {
+      day: 27,
+      month: 10,
+      year: 2020,
+    },
+    modifyDate: {
+      day: 23,
+      month: 5,
+      year: 2022,
+    },
+  },
+  {
+    id: "sparkler-build",
+    dev: true,
+    folder: "/sparkler",
+    title: "The Sparkler",
+    tile: {
+      image: "/sparkler.webp",
+      content:
+        "Healing and damage focused build for Minecraft Dungeons made in spooky theme.",
+    },
+    createDate: {
+      day: 21,
+      month: 10,
+      year: 2022,
+    },
+    groups: ["builds"],
+  },
+];
