@@ -1,20 +1,19 @@
 :root{
-    --color-theme: hsl(216, 21%, 95%);
-    --color-theme-A1: hsl(215, 21%, 97%);
-    --color-theme-A2: hsl(215, 18%, 90%);
-    --color-theme-A3: hsl(215, 15%, 83%);
-    --color-theme-A4: hsl(215, 11%, 74%);
-    --color-theme-A5: hsl(215, 8%, 65%);
-    --color-theme-A6: hsl(215, 5%, 54%);
-    --color-theme-hover: hsla(216, 21%, 24%, 0.1);
-    --color-theme-active: hsla(216, 21%, 24%, 0.2);
-    --color-theme-acrylic: hsl(215, 21%, 95%, 0.3);
-    --shadow-profile-header: 0 2px 12px rgba(0,0,0,.04);
+    --color-theme: #fbfbfb;
+    --color-theme-A1: #F4f4f4;
+    --color-theme-A2: #E8E8E8;
+    --color-theme-A3: #D8D8D8;
+    --color-theme-A4: #c8c8c8;
+    --color-theme-A5: #a8a8a8;
+    --color-theme-A6: #606060;
+    --color-theme-hover: rgba(60,60,60,0.1);
+    --color-theme-active: rgba(60,60,60,0.2);
+    --color-theme-acrylic: rgba(251,251,251,0.8);
     --color-font: #4f4f4f;
     --color-font-disabled: #aaaaaa;
     --color-logo: #5f5f5f;
     --color-logo-A1: #404040;
-    --logo-anim-delay: 0.5s;
+    --profile-image-src: url(\/img\/profile\.webp);
     --acrylic: blur(60px) saturate(150%);
     --logo-height: 14px;
     --skew: 23deg;
@@ -61,6 +60,7 @@
         --color-font-disabled: #aaaaaa;
         --color-logo: #d0d0d0;
         --color-logo-A1: #a0a0a0;
+        --profile-image-src: url(\/img\/profile-dark\.webp);
     }
 }
 .font-base{
@@ -396,24 +396,6 @@ body.scroll-fix::-webkit-scrollbar-track{
     display: inline-flex;
     gap: 4px;
 }
-#content{
-    display: grid;
-    grid-template-rows: 1fr auto;
-    min-height: 100vh;
-    animation-name: FadeIn;
-    animation-fill-mode: forwards;
-    animation-timing-function: cubic-bezier(.16,1,.29,.99);
-    animation-duration: var(--time-A1);
-}
-#app.first-view #content{
-    animation-duration: 0s!important;
-}
-#content.closing{
-    animation-name: FadeOut;
-    animation-fill-mode: forwards;
-    animation-timing-function: cubic-bezier(.16,1,.29,.99);
-    animation-duration: var(--time);
-}
 #footer{
     display: block;
     text-align: center;
@@ -504,42 +486,6 @@ body.scroll-fix::-webkit-scrollbar-track{
 #about > div{
     display: block;
     flex: 1;
-}
-#about-img.multi-layer-img > *{
-    opacity: 0;
-}
-#about-img.multi-layer-img.loaded > *{
-    animation-name: FadeInUp;
-    animation-duration: .9s;
-    animation-timing-function: cubic-bezier(.16,1,.29,.99);
-    animation-fill-mode: forwards;
-    background-size: cover;
-    background-position: center;
-}
-#about-img.multi-layer-img > :nth-child(1){
-    animation: none!important;
-    opacity: 1;
-    background-image: var(--src-about-banner-l1);
-}
-#about-img > :nth-child(2){
-    animation-delay: .1s;
-    background-image: var(--src-about-banner-l2);
-}
-#about-img > :nth-child(3){
-    animation-delay: .2s;
-    background-image: var(--src-about-banner-l3);
-}
-#about-img > :nth-child(4){
-    animation-delay: .4s;
-    background-image: var(--src-about-banner-l4);
-}
-#about-img > :nth-child(5){
-    animation-delay: .5s;
-    background-image: var(--src-about-banner-l5);
-}
-#about-img > :nth-child(6){
-    animation-delay: .7s;
-    background-image: var(--src-about-banner-l6);
 }
 #about-data{
     margin: 0 auto;
@@ -717,26 +663,6 @@ body.scroll-fix::-webkit-scrollbar-track{
 #image-viewer-list > .img{
     max-width: 100%;
     max-height: 100%;
-    opacity: 0;
-    position: absolute;
-    border-radius: var(--border-radius);
-    display: flex;
-    margin: 12px var(--size-margin-base) 40px;
-    box-sizing: border-box;
-}
-#image-viewer-list > .img.no-animation{
-    animation-duration: 0s!important;
-}
-#resource #image-viewer-list > .img.active-view.loading{
-    animation-name: Blink;
-    animation-iteration-count: infinite;
-    animation-duration: 1.2s;
-    background-color: var(--color-theme-hover);
-}
-#image-viewer-list > .img > img{
-    width: auto;
-    max-height: 100%;
-    max-width: 100%;
     object-fit: contain;
     box-shadow: 0 12px 30px 0 rgba(0,0,0,.13);
     margin: auto auto;
@@ -962,17 +888,10 @@ u.dotted-separator{
     box-sizing: border-box;
 }
 .list-view > .item.loading > .labels > .button{
-    background-color: var(--color-theme-hover);
-    height: 34px;
-    margin-right: 10px;
+    background-color: var(--color-theme-A1);
 }
 .list-view > .item.loading *{
     font-size: 0;
-}
-.list-view > .item.loading > .labels > .label{
-    background-color: var(--color-theme-hover);
-    max-width: 90px;
-    margin: 4px 0 4px auto;
 }
 .list-view > .item.loaded > .img > img{
     opacity: 1;
@@ -1022,38 +941,6 @@ u.dotted-separator{
 }
 .list-view.error > .data-node{
     display: none;
-}
-.multi-layer-img{
-    display: block;
-    position: relative;
-    overflow: hidden;
-    width: 100%;
-    height: 100%;
-    border-radius: var(--border-radius);
-}
-.multi-layer-img.loading{
-    animation-name: Blink;
-    animation-iteration-count: infinite;
-    animation-duration: 1.2s;
-    transform: none;
-    background-color: var(--color-theme-hover);
-    box-shadow: none;
-    pointer-events: none;
-}
-.multi-layer-img.loaded{
-    animation: none;
-}
-.multi-layer-img > *{
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: table;
-    opacity: 0;
-    transition: opacity var(--time);
-}
-.multi-layer-img.loaded > *{
-    opacity: 1;
 }
 .button,
 .icon-button{
