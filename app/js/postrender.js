@@ -36,6 +36,8 @@ const START_ROUTE = RouteController.resolve(APP.startUrl[0]);
 
 //main app node declaration
 const APP_NODE = getById("app");
+if(DEVELOPMENT)
+    APP_NODE.classList.add("dev");
 
 // content node
 

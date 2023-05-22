@@ -356,6 +356,20 @@ body.scroll-fix::-webkit-scrollbar-track{
     box-sizing: border-box;
     user-select: none;
 }
+#app.dev #dev-bange
+{
+    background-color: var(--color-accent);
+    border-radius: 2px;
+    font-size: var(--size-font-caption);
+    margin: 5px 2px;
+    padding: 4px 8px;
+    font-weight: bold;
+    display: inline-block;
+}
+#dev-bange{
+    display: none;
+}
+
 #main-header-navigation{
     display: flex;
     max-height: 180px;
