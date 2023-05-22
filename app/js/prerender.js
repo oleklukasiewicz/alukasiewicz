@@ -43,5 +43,4 @@ const GLOBAL = {
     dataNode: "data-node"
 };
 
-const DEVELOPMENT = false;
-console.log(process.env.ENVIROMENT,process);
+const DEVELOPMENT = window.location.hostname.includes("vercel.app");
