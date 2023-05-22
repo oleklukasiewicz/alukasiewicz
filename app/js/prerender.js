@@ -44,4 +44,3 @@ const GLOBAL = {
 };
 
 const DEVELOPMENT = false;
-console.log(process.env.ENVIROMENT);
