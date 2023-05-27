@@ -1,6 +1,4 @@
 {
-  "routes": [
-    { "src": "/(.*)", "dest": "/app/index.html" }
-  ],
+  
   "cleanUrls": true
 }
