@@ -1,5 +1,5 @@
-const cacheName = "2.2.2.3";
-const serviceWorkerVersion = "08-12-22-v1";
+const cacheName = "2.2.2.4";
+const serviceWorkerVersion = "27-05-23-v1";
 
 const networkOnlyResources =
     [
@@ -55,6 +55,12 @@ const cacheListImages =
         "/img/light/about-banner/stars-l1.webp",
         "/img/light/about-banner/stars-l2.webp",
         "/img/light/about-banner/tree-l1.webp",
+        "/img/logo/firebse.svg",
+        "/img/logo/svelte.svg",
+        "/img/logo/typescript.svg",
+        "/img/logo/vs2022.svg",
+        "/img/logo/vscode.svg",
+        "/img/logo/vue.svg",
     ];
 
 const cacheList = cacheListApp.concat(cacheListCSS, cacheListJS, cacheListIcons, cacheListImages);

@@ -311,6 +311,16 @@ a.link:hover{
         transform: none;
     }
 }
+@keyframes FadeInLeftSubtle{
+    0%{
+        opacity: 0;
+        transform: translateX(12px);
+    }
+    100%{
+        opacity: 1;
+        transform: none;
+    }
+}
 @keyframes FadeIn{
     0%{
         opacity: 0;
@@ -402,6 +412,7 @@ body.scroll-fix::-webkit-scrollbar-track{
 }
 #app.dev #dev-bange{
     background-color: var(--color-accent);
+    color:var(--color-font-accent);
     border-radius: 2px;
     font-size: var(--size-font-caption);
     margin: 5px 2px;
@@ -543,6 +554,16 @@ body.scroll-fix::-webkit-scrollbar-track{
     margin: 0 auto;
     max-width: var(--size-max-width);
 }
+.lang-logo
+{
+    margin: 10px 2px 8px;
+    padding: 10px;
+    box-sizing: border-box;
+    height: 40px;
+    width: 40px;
+    transition: var(--time) background-color;
+}
+
 #about-content{
     text-align: justify;
     word-spacing: -1px;
