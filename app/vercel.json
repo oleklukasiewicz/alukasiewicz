@@ -1,6 +1,6 @@
 {
   "rewrites": [
-    { "source": "/:path(.*)", "destination": "/index.html" }
+    { "source": "/about", "destination": "/index.html" }
   ],
   "outputDirectory": "/app",
   "cleanUrls": true
