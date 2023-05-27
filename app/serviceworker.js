@@ -1,5 +1,5 @@
 const cacheName = "2.2.2.4";
-const serviceWorkerVersion = "27-05-23-v1";
+const serviceWorkerVersion = "27-05-23-v2";
 
 const networkOnlyResources =
     [
@@ -55,7 +55,7 @@ const cacheListImages =
         "/img/light/about-banner/stars-l1.webp",
         "/img/light/about-banner/stars-l2.webp",
         "/img/light/about-banner/tree-l1.webp",
-        "/img/logo/firebse.svg",
+        "/img/logo/firebase.svg",
         "/img/logo/svelte.svg",
         "/img/logo/typescript.svg",
         "/img/logo/vs2022.svg",
