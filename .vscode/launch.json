@@ -5,13 +5,22 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "type": "pwa-msedge",
+            "type": "msedge",
+            "version": "stable",
             "request": "launch",
-            "name": "Launch Edge against localhost",
+            "name": "Launch App",
             "url": "https://127.0.0.1:5128",
             "webRoot": "${workspaceFolder}",
             "preLaunchTask": "DebugStartTask",
             "postDebugTask": "StopServer"
+        },
+        {
+            "type": "msedge",
+            "version": "stable",
+            "request": "launch",
+            "name": "Launch App without LiveServer",
+            "url": "https://127.0.0.1:5130",
+            "webRoot": "${workspaceFolder}",
         }
     ]
 }
