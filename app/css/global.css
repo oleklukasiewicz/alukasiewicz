@@ -412,7 +412,7 @@ body.scroll-fix::-webkit-scrollbar-track{
 }
 #app.dev #dev-bange{
     background-color: var(--color-accent);
-    color:var(--color-font-accent);
+    color: var(--color-font-accent);
     border-radius: 2px;
     font-size: var(--size-font-caption);
     margin: 5px 2px;
@@ -554,27 +554,28 @@ body.scroll-fix::-webkit-scrollbar-track{
     margin: 0 auto;
     max-width: var(--size-max-width);
 }
-.lang-logo
-{
+#langs{
+    margin: 10px 0;
+}
+.lang-logo{
     margin: 10px 2px 8px;
     display: inline-block;
     box-sizing: border-box;
     cursor: pointer;
     max-height: 40px;
     max-width: 40px;
-    transition: var(--time) background-color;
+    transition: var(--time) background-color,var(--time) filter;
+    filter: grayscale(100%);
 }
-.lang-logo>img
-{
+.lang-logo > img{
     margin: 10px;
     height: 20px;
     width: 20px;
 }
-.lang-logo:hover
-{
+.lang-logo:hover{
     background-color: var(--color-theme-hover);
+    filter: none;
 }
-
 #about-content{
     text-align: justify;
     word-spacing: -1px;
