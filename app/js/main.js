@@ -450,7 +450,7 @@ let ItemController = (function () {
   let _fetchGroups = async function (groups) {
     await Promise.all(
       groups.map(async (group) => {
-        if ((group.dev === true && !DEVELOPMENT)) return;
+        if (group.dev === true && !DEVELOPMENT) return;
         _generateGroup(group);
         _storage.push(group);
         group.aliases?.forEach((source) =>
@@ -479,7 +479,7 @@ let ItemController = (function () {
     items.sort(sortingMethod);
     await Promise.all(
       items.map(async (item) => {
-        if ((item.dev === true && !DEVELOPMENT)) return;
+        if (item.dev === true && !DEVELOPMENT) return;
         _defaultGroup.content.push(item);
         item.aliases?.forEach((source) =>
           _routes.push(new Route(source, item))
@@ -586,6 +586,7 @@ const landingView = new View(
 
       //set "About me" button
       let _pButton = getById("profile-link-button");
+      _pButton.classList.remove(GLOBAL.disabled);
       _pButton.href = APP.url.profile;
       _pButton.addEventListener("click", () => {
         event.preventDefault();
@@ -1029,6 +1030,9 @@ window.addEventListener("load", async function () {
     e.preventDefault();
     ViewController.navigateToDefaultView();
   });
+  
+  getById("main-header-icons").classList.remove(GLOBAL.disabled);
+
   getById("main-header-about-button").addEventListener("click", (e) => {
     e.preventDefault();
     ViewController.navigate(VIEW.profile);

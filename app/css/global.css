@@ -92,6 +92,13 @@
     font-size: var(--size-font-caption);
     line-height: 14px;
 }
+.font-bold-header{
+    font-size: var(--size-font-base);
+    line-height: 20px;
+    font-weight: 700;
+    display: block;
+    margin-bottom: 8px;
+}
 a.link{
     color: var(--color-accent-A2);
     transition: color var(--time);
@@ -554,18 +561,21 @@ body.scroll-fix::-webkit-scrollbar-track{
     margin: 0 auto;
     max-width: var(--size-max-width);
 }
+#about-links,
 #langs{
-    margin: 10px 0;
+    margin-top: 8px;
+}
+#about-links > *,
+#langs > *{
+    margin: auto 6px auto 0;
 }
 .lang-logo{
-    margin: 10px 2px 8px;
     display: inline-block;
     box-sizing: border-box;
     cursor: pointer;
     max-height: 40px;
     max-width: 40px;
     transition: var(--time) background-color,var(--time) filter;
-    filter: grayscale(100%);
 }
 .lang-logo > img{
     margin: 10px;
