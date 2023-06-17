@@ -1516,6 +1516,7 @@ let ImageHelper = function (
     onfinish(image);
   };
   let imageLoaded = function () {
+    image.classList.add(GLOBAL.loaded);
     onload(image);
     onfinish(image);
   };
