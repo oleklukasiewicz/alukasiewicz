@@ -33,8 +33,9 @@
     <link rel="apple-touch-icon" href="/icon/apple-touch-icon.png" />
 </head>
 
-<body id="app" class="scroll-fix first-view">
-    <div id="main-header-base" class="closed" style="height: 50px;position: fixed;top: 0px;display:table;z-index:11;">
+<body id="app" class="scroll-fix first-view nav-bottom">
+    <div id="main-header-base" class="closed" style="display:table;z-index:11;">
+        <div id="main-header-navigation-close-space"></div>
         <div id="main-header" style="width:100%;position: relative;z-index: 12;">
             <div id="main-header-icons-left" style="float: left;">
                 <a class="al-logo anim" id="home-button" title="Home page" href="/">
@@ -57,10 +58,10 @@
                 </div>
             </div>
         </div>
-        <div id="main-header-navigation-close-space"></div>
+        
     </div>
     <div id="content">
-        <main id="views" style="margin-top:50px ;">
+        <main id="views">
             <div id="landing" class="view">
                 <div id="profile-header">
                     <div id="profile-image" class="multi-layer-img loading" style="width: 160px;min-width: 160px;
