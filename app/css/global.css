@@ -1266,8 +1266,8 @@ u.dotted-separator{
 }
 @media only screen and (max-width:540px){
     #main-header{
-        backdrop-filter: var(--acrylic);
-        background-color: var(--color-theme-acrylic);
+        backdrop-filter: none;
+        background-color: var(--color-theme);
     }
     #profile-header{
         flex-direction: column;
