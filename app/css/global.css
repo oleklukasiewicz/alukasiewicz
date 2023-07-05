@@ -118,9 +118,6 @@ a.link:hover{
 .hidden-opacity{
     opacity: 0!important;
 }
-.spacer{
-    flex: 1;
-}
 @font-face{
     font-family: micon_nb;
     font-style: normal;
@@ -1330,21 +1327,12 @@ u.dotted-separator{
         padding: 14px 16px;
     }
     #main-header-base.closed #main-header-navigation{
+        max-height: 0;
         padding-bottom: 0;
         border-bottom: 1px solid transparent;
-        transform: translateY(100%);
-    }
-    #app.nav-bottom #main-header-base #main-header-icons-left{
-        width: 100%;
-        padding: 8px;
-        box-sizing: border-box;
-        background-color: var(--color-theme);
-    }
-    #app.nav-bottom #main-header-nav-button{
-        float: right;
     }
     #main-header-base #main-header-navigation{
-        transition: var(--time) cubic-bezier(.1,.9,.2,1);
+        transition: .3s cubic-bezier(.1,.9,.2,1);
         position: absolute;
         width: 100vw;
         left: 0;
@@ -1358,25 +1346,23 @@ u.dotted-separator{
         border-bottom: 1px solid var(--color-theme-A1);
         z-index: -10;
     }
-    #app.nav-bottom #main-header{
-        padding: 0;
-    }
     #app.nav-bottom #main-header-base #main-header-navigation{
-        bottom: 50px;
+        bottom: 53px;
         top: initial;
-        padding-bottom: 0;
-        z-index: -10;
         border-bottom: none;
         border-top: 1px solid var(--color-theme-A1);
+        padding-top: 8px;
     }
-    #app.nav-bottom #main-header-base #main-header-navigation > :nth-child(1){
-        margin-top: 8px;
-    }
-    #app.nav-bottom #main-header-base{
+    #app.nav-bottom #main-header-base
+    {
         background-color: transparent;
         backdrop-filter: none;
     }
-    #app.nav-bottom #main-header-navigation-close-space{
+    #app.nav-bottom #main-header-base.closed #main-header-navigation{
+        padding-top: 0;
+    }
+    #app.nav-bottom #main-header-navigation-close-space
+    {
         position: static;
     }
     #main-header-base.closed #main-header-navigation-close-space{
