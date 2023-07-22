@@ -1,6 +1,6 @@
 #item-content > .dev-indicator{
     background-color: var(--color-accent);
-    color: var(--color-accent-text);
+    color: var(--color-font-accent);
     padding: 4px 8px;
     font-size: var(--size-font-caption);
     margin-bottom: 8px;
