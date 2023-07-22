@@ -431,7 +431,7 @@ body.scroll-fix::-webkit-scrollbar-track{
     animation-timing-function: cubic-bezier(.16,1,.29,.99);
     animation-duration: var(--time);
 }
-#app.dev #dev-bange{
+.dev-badge{
     background-color: var(--color-accent);
     color: var(--color-font-accent);
     border-radius: 2px;
@@ -439,7 +439,6 @@ body.scroll-fix::-webkit-scrollbar-track{
     margin: 5px 2px;
     padding: 4px 8px;
     font-weight: 700;
-    display: inline-block;
     animation: DevAnim;
     animation-duration: var(--time-A1);
     animation-delay: 1.5s;
@@ -447,8 +446,12 @@ body.scroll-fix::-webkit-scrollbar-track{
     animation-fill-mode: forwards;
     animation-timing-function: cubic-bezier(.16,1,.29,.99);
 }
-#dev-bange{
+.dev-badge{
     display: none;
+}
+#app.dev .dev-badge
+{
+    display: inline-block !important;
 }
 #footer{
     display: block;
@@ -971,6 +974,15 @@ u.dotted-separator{
 .list-view > .item > b{
     font-weight: 700;
     margin: 20px 20px 0;
+}
+.list-view > .item > b>.dev-badge{
+    margin-left: auto;
+    float: right;
+    height: 24px;
+    box-sizing: border-box;
+    line-height: normal;
+    animation: none;
+    opacity: 1;
 }
 .list-view > .item > .labels{
     padding: 20px;

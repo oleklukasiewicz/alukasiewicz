@@ -1,3 +1,22 @@
+#item-content > .dev-indicator{
+    background-color: var(--color-accent);
+    color: var(--color-accent-text);
+    padding: 4px 8px;
+    font-size: var(--size-font-caption);
+    margin-bottom: 8px;
+    display: inline-block;
+    user-select: none;
+}
+#item-content > .dev-indicator > .close-dev-indicator{
+    cursor: pointer;
+    float: right;
+    font-size: var(--size-font-caption);
+    margin-left: 8px;
+    transition: opacity var(--time) ;
+}
+#item-content > .dev-indicator > .close-dev-indicator:hover{
+    opacity: .5;
+}
 #item-content > .section{
     display: flex;
     flex-direction: column;
@@ -91,7 +110,7 @@ ol li:before{
 .gallery > .list > img{
     background-color: var(--color-theme-A1);
     border-radius: var(--border-radius);
-    transition: box-shadow var(--time-A1) cubic-bezier(.16,1,.29,.99),transform var(--time-A1) cubic-bezier(.16,1,.29,.99),border-color var(--time),background-color var(--time), opacity var(--time-A1);
+    transition: box-shadow var(--time-A1) cubic-bezier(.16,1,.29,.99),transform var(--time-A1) cubic-bezier(.16,1,.29,.99),border-color var(--time),background-color var(--time),opacity var(--time-A1);
     height: 100%;
     width: 100%;
     display: block;

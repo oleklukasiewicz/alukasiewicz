@@ -734,6 +734,22 @@ const itemView = new View(
 
       //clear content
       this.data.iContent.innerHTML = "";
+      // rendering in progress indicator
+      if (item.dev) {
+        const devIndicator = document.createElement("div");
+        devIndicator.classList.add("dev-indicator");
+        devIndicator.innerHTML =
+          "<b>IN PROGRESS</b> - Content might be changed in the future";
+        const closeDevIndicator = document.createElement("div");
+        closeDevIndicator.classList.add("close-dev-indicator");
+        closeDevIndicator.innerHTML = "Close";
+        closeDevIndicator.addEventListener("click", () => {
+          devIndicator.remove();
+          closeDevIndicator.remove();
+        });
+        devIndicator.append(closeDevIndicator);
+        this.data.iContent.append(devIndicator);
+      }
 
       //render item
       this.data.iContent.append(
@@ -1030,7 +1046,7 @@ window.addEventListener("load", async function () {
     e.preventDefault();
     ViewController.navigateToDefaultView();
   });
-  
+
   getById("main-header-icons").classList.remove(GLOBAL.disabled);
 
   getById("main-header-about-button").addEventListener("click", (e) => {
@@ -1095,6 +1111,13 @@ let createItemTile = async function (node, item) {
   let nodeTitle = document.createElement("B");
   nodeTitle.classList.add("font-subtitle");
   nodeTitle.innerHTML = item.title;
+
+  if (item.dev) {
+    let _betabadge = document.createElement("SPAN");
+    _betabadge.classList.add("dev-badge");
+    _betabadge.innerHTML = "BETA";
+    nodeTitle.appendChild(_betabadge);
+  }
 
   let nodeContent = document.createElement("SPAN");
   nodeContent.classList.add("font-base");
