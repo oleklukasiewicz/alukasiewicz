@@ -40,6 +40,15 @@ let storageGroups = () => [
     dev: true,
     title: "Minecraft Dungeons Builds",
   },
+  {
+    id: "projects",
+    dev: true,
+    title: "Projects",
+    groups: ["home"],
+    arg: {
+      itemsOrder: ["fluent-pad", "fluent-design-system", "ancient-temple"],
+    },
+  },
 ];
 let storageItems = () => [
   {
@@ -271,5 +280,41 @@ let storageItems = () => [
       year: 2022,
     },
     groups: ["builds"],
+  },
+  {
+    id: "fluent-pad",
+    dev: true,
+    folder: "/fluent-pad",
+    title: "Fluent pad",
+    isLink: "https://fluent-pad.vercel.app",
+    tile: {
+      image: "/vite-js-logo.webp",
+      content:
+        "A simple notepad app with git-like version control system. Made with Svelte, Fluent-Svelte and Firebase.",
+    },
+    createDate: {
+      day: 7,
+      month: 8,
+      year: 2023,
+    },
+    groups: ["projects"],
+  },
+  {
+    id: "minerobe",
+    dev: true,
+    folder: "/minerobe",
+    title: "Minerobe",
+    isLink: "https://minerobe.vercel.app/design",
+    tile: {
+      image: "/minerobe.webp",
+      content:
+        "Radically diffrent layer based approach for Minecraft skin editor. Make your own clothes and accessories.",
+    },
+    createDate: {
+      day: 7,
+      month: 8,
+      year: 2022,
+    },
+    groups: ["projects"],
   },
 ];

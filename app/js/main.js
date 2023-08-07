@@ -926,15 +926,18 @@ const resourceView = new View(
               "/" +
               res.hash
           );
-
-          await ImageHelper(
-            _currentChild.children[0],
-            undefined,
-            undefined,
-            function () {
-              _currentChild.classList.remove(GLOBAL.loading);
-            }
-          );
+          try {
+            await ImageHelper(
+              _currentChild.children[0],
+              undefined,
+              undefined,
+              function () {
+                _currentChild.classList.remove(GLOBAL.loading);
+              }
+            );
+          } catch (e) {
+            console.error(e);
+          }
         }
       );
       this.data.resSlider.addEventListener("load", function () {
@@ -1152,16 +1155,20 @@ let createItemTile = async function (node, item) {
   node.appendChild(nodeLabels);
 
   //loading image of tile
-  await new ImageHelper(
-    _iImage,
-    function () {
-      _iImage.style = item.arg?.tileImageStyle || "";
-    },
-    function () {
-      item.isTileImageNotLoaded = true;
-      removeResourceFromCache(imageSrc);
-    }
-  );
+  try {
+    await new ImageHelper(
+      _iImage,
+      function () {
+        _iImage.style = item.arg?.tileImageStyle || "";
+      },
+      function () {
+        item.isTileImageNotLoaded = true;
+        removeResourceFromCache(imageSrc);
+      }
+    );
+  } catch (e) {
+    console.error(e);
+  }
 
   //settings up events
   node.classList.replace(GLOBAL.loading, GLOBAL.loaded);
@@ -1560,9 +1567,13 @@ let MultipleImagesHelper = function (
   onerrorsingle = () => {},
   onfinishsingle = () => {}
 ) {
-  let promises = images.map(
-    (img) => new ImageHelper(img, onloadsingle, onerrorsingle, onfinishsingle)
-  );
+  let promises = images.map((img) => {
+    try {
+      return new ImageHelper(img, onloadsingle, onerrorsingle, onfinishsingle);
+    } catch (e) {
+      console.error(e);
+    }
+  });
 
   return new Promise(async (resolve, reject) => {
     let result = await Promise.allSettled([Promise.all(promises)]);
