@@ -46,7 +46,7 @@ let storageGroups = () => [
     title: "Projects",
     groups: ["home"],
     arg: {
-      itemsOrder: ["fluent-pad", "fluent-design-system", "ancient-temple"],
+      itemsOrder: ["fluent-pad", "ancient-temple"],
     },
   },
 ];
@@ -263,6 +263,7 @@ let storageItems = () => [
       month: 5,
       year: 2022,
     },
+    groups: ["projects"],
   },
   {
     id: "sparkler-build",

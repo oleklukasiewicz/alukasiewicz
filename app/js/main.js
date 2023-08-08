@@ -1265,13 +1265,13 @@ let StorageResponseIndexer = function (
 
   //display items or groups from arguments
   if (depth == 0)
-    response.arg?.itemsOrder?.forEach((value, index) =>
-      _addIntoResponse(
+    response.arg?.itemsOrder?.forEach((value, index) => {
+      var item =
         typeof value == "number"
           ? response.content[value]
-          : ItemController.getItemSnapshotById(value)
-      )
-    );
+          : ItemController.getItemSnapshotById(value);
+      if (item.groups?.includes(response.id)) _addIntoResponse(item);
+    });
   response.arg?.groupsOrder?.forEach((value, index) =>
     _addGroupIntoResponse(
       response.content.find(
