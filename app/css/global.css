@@ -1202,6 +1202,7 @@ u.dotted-separator{
 }
 .button.github,
 .button.instagram,
+.button.discord,
 .button.twitter{
     background-color: transparent;
     display: inline-block;
@@ -1225,6 +1226,11 @@ u.dotted-separator{
 .button.twitter:hover{
     background-color: #1da1f2;
     box-shadow: 0 2px 12px -1px rgba(29,161,242,.7);
+    color: #fff;
+}
+.button.discord:hover{
+    background-color: #5865f2;
+    box-shadow: 0 2px 12px -1px rgba(88, 101, 242,.7);
     color: #fff;
 }
 .button.instagram:hover{
