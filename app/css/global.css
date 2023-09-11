@@ -488,7 +488,7 @@ body.scroll-fix::-webkit-scrollbar-track{
     width: 100%;
     display: none;
     margin: 0 auto 0 auto;
-    max-width: var(--view-max-width);
+    max-width: min(var(--view-max-width),100vw);
     box-sizing: border-box;
 }
 .view.active-view{
