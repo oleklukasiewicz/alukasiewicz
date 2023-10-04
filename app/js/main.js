@@ -178,13 +178,13 @@ let ViewController = (function () {
   //integrated error controller
   let _errors = [];
   let _errorHistory = [];
-  let _currentGlobalError;
+  let _currentGLOBALError;
 
   _controller.addError = function (error) {
     if (_errors.findIndex((_error) => error.id == _error.id) == -1)
       _errors.push(error);
   };
-  _controller.invokeError = function (errorId, globalInvoke = false) {
+  _controller.invokeError = function (errorId, GLOBALInvoke = false) {
     let __error = _errors.find(
       (_error) => errorId == _error.id || errorId.id == _error.id
     );
@@ -193,11 +193,11 @@ let ViewController = (function () {
       if (_errorHistory.includes(err)) _errorCanBeInvoked = false;
     });
     if (_errorCanBeInvoked) {
-      if (globalInvoke) {
+      if (GLOBALInvoke) {
         _views.forEach((view) =>
           view.registered ? view.event?.onError.call(view, __error) : ""
         );
-        _currentGlobalError = __error;
+        _currentGLOBALError = __error;
       } else _currentView.event?.onError.call(_currentView, __error);
       _errorHistory.push(__error.id);
     }
@@ -208,8 +208,8 @@ let ViewController = (function () {
     _views.find((view) => view.id == id) || _defaultView;
   let _registerDelayedView = function (view) {
     if (view.isRegisterDelayed && !view.registered) {
-      if (_currentGlobalError)
-        view.event?.onError.call(view, _currentGlobalError);
+      if (_currentGLOBALError)
+        view.event?.onError.call(view, _currentGLOBALError);
       view.event.onRegister?.call(view);
       view.registered = true;
     }
@@ -586,6 +586,7 @@ const landingView = new View(
 
       //set "About me" button
       let _pButton = getById("profile-link-button");
+      Effect.reveal.add(_pButton);
       _pButton.classList.remove(GLOBAL.disabled);
       _pButton.href = APP.url.profile;
       _pButton.addEventListener("click", () => {
@@ -1052,11 +1053,16 @@ window.addEventListener("load", async function () {
 
   getById("main-header-icons").classList.remove(GLOBAL.disabled);
 
-  getById("main-header-about-button").addEventListener("click", (e) => {
+  const aboutButton = getById("main-header-about-button");
+  Effect.reveal.add(aboutButton);
+  aboutButton.addEventListener("click", (e) => {
     e.preventDefault();
+
     ViewController.navigate(VIEW.profile);
   });
-  getById("main-header-work-button").addEventListener("click", (e) => {
+  const workButton = getById("main-header-work-button");
+  Effect.reveal.add(workButton);
+  workButton.addEventListener("click", (e) => {
     e.preventDefault();
     ViewController.navigate(VIEW.group, { routeArg: ["work"] });
   });
@@ -1078,6 +1084,9 @@ window.addEventListener("load", async function () {
   this.setTimeout(function () {
     APP_NODE.classList.replace("first-view", GLOBAL.loaded);
   }, 600);
+  //TO DO - enable on prod and disable on mobile
+  Effect.reveal.isEnabled = DEVELOPMENT;
+  Effect.reveal.start();
 });
 window.addEventListener("popstate", (event) =>
   ViewController.navigateFromHistory(event.state)
@@ -1181,6 +1190,7 @@ let createItemTile = async function (node, item) {
 
   //loading item
   setTimeout(() => node.classList.remove(GLOBAL.loaded), 300);
+  Effect.reveal.add(node);
   return node;
 };
 let createGroupTile = function (node, group) {
@@ -1606,4 +1616,133 @@ let MultipleImagesRenderer = async function (imagesList, targetNode) {
       targetNode.classList.replace(GLOBAL.loading, GLOBAL.error);
     }
   );
+};
+
+let Effect = {
+  reveal: (function () {
+    _isEnabled = false;
+    var rev = {
+      list: new Array(),
+      render: function (
+        element,
+        gradients = "rgba(130,130,130,0.85)",
+        hover_gradients = "rgba(130,130,130,0.0)",
+        highlight_effect = false,
+        gradient_width = 60,
+        gradient_hover_width = 60
+      ) {
+        if (Effect.reveal.isEnabled && element.style.display != "none") {
+          var positionInfo = element.getBoundingClientRect();
+          var menuWidth = positionInfo.width;
+          var menuHeight = positionInfo.height;
+          var mousePositionX = event.clientX - positionInfo.left;
+          var mousePositionY = event.clientY - positionInfo.top;
+          if (
+            mousePositionX > -100 &&
+            mousePositionX < menuWidth + 100 &&
+            mousePositionY > -100 &&
+            mousePositionY < menuHeight + 100
+          ) {
+            var percentageX = (mousePositionX / menuWidth) * 100;
+            var percentageY = (mousePositionY / menuHeight) * 100;
+            if (
+              percentageX > 0 &&
+              percentageX < 100 &&
+              percentageY > 0 &&
+              percentageY < 100
+            ) {
+              element.style.borderImage =
+                "radial-gradient(circle at " +
+                percentageX +
+                "% " +
+                percentageY +
+                "%," +
+                gradients +
+                ", " +
+                hover_gradients +
+                " " +
+                gradient_hover_width +
+                "px) 1";
+              if (highlight_effect) {
+                element.style.backgroundImage =
+                  "radial-gradient(circle at " +
+                  percentageX +
+                  "% " +
+                  percentageY +
+                  "%," +
+                  "rgba(190,190,190,0.3)" +
+                  ", " +
+                  "transparent" +
+                  " " +
+                  150 +
+                  "px)";
+              }
+              return;
+            } else {
+              element.style.backgroundImage = "";
+            }
+            element.style.borderImage =
+              "radial-gradient(circle at " +
+              percentageX +
+              "% " +
+              percentageY +
+              "%," +
+              gradients +
+              ", transparent " +
+              gradient_width +
+              "px) 1";
+          } else {
+            element.style.borderImage = "";
+            element.style.backgroundImage = "";
+          }
+        } else {
+          element.style.borderImage = "";
+          element.style.backgroundImage = "";
+        }
+      },
+      add: function (
+        element,
+        gradients,
+        hover_gradients,
+        hightlight = false,
+        width,
+        width_hover
+      ) {
+        if (!element.classList.contains(GLOBAL.reveal)) {
+          element.classList.add(GLOBAL.reveal);
+          Effect.reveal.list.push({ elem: element, arg: arguments });
+        }
+      },
+      remove: function (element) {
+        element.classList.remove(GLOBAL.reveal);
+        var s = Effect.reveal.list.findIndex(function (ele) {
+          return ele.elem == element;
+        });
+        this.list.splice(s, 1);
+      },
+      start: function () {
+        document.addEventListener("mousemove", function (event) {
+          Effect.reveal.list.forEach((element) => {
+            Effect.reveal.render(...element.arg);
+          });
+        });
+      },
+      get isEnabled() {
+        return _isEnabled;
+      },
+      set isEnabled(val) {
+        _isEnabled = val;
+        if (!val) {
+          Effect.reveal.list.forEach((element) => {
+            Effect.reveal.render(
+              element.elem,
+              element.gradients,
+              element.hovgradients
+            );
+          });
+        }
+      },
+    };
+    return rev;
+  })(),
 };

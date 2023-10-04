@@ -1,46 +1,53 @@
 //global app variables
 const APP = {
-    name: "Olek Łukasiewicz",
-    version: "2.2.1.0",
-    url: {
-        landing: "",
-        item: "posts",
-        profile: "about",
-        group: "group",
-        resource: "image"
-    },
-    startUrl: (window.location.pathname + (window.location.pathname.substr(-1) == "/" ? "" : "/")).substring(1).split("/")
+  name: "Olek Łukasiewicz",
+  version: "2.2.1.0",
+  url: {
+    landing: "",
+    item: "posts",
+    profile: "about",
+    group: "group",
+    resource: "image",
+  },
+  startUrl: (
+    window.location.pathname +
+    (window.location.pathname.substr(-1) == "/" ? "" : "/")
+  )
+    .substring(1)
+    .split("/"),
 };
 
 //global views ids
 const VIEW = {
-    landing: "landing",
-    item: "item",
-    profile: "about",
-    group: "group",
-    resource: "resource"
+  landing: "landing",
+  item: "item",
+  profile: "about",
+  group: "group",
+  resource: "resource",
 };
 
 //global item variables
-const ITEM =
-{
-    folder: "/item",
-    resourceFolder: "/resources",
-    fileName: "content.json"
-}
+const ITEM = {
+  folder: "/item",
+  resourceFolder: "/resources",
+  fileName: "content.json",
+};
 
 //global css/app classes
 const GLOBAL = {
-    item: "item",
-    group: "group",
-    loading: "loading",
-    loaded: "loaded",
-    hidden: "hidden",
-    hiddenOpacity:"hidden-opacity",
-    error: "error",
-    disabled: "disabled",
-    activeView: "active-view",
-    dataNode: "data-node"
+  item: "item",
+  group: "group",
+  loading: "loading",
+  loaded: "loaded",
+  hidden: "hidden",
+  hiddenOpacity: "hidden-opacity",
+  error: "error",
+  disabled: "disabled",
+  activeView: "active-view",
+  dataNode: "data-node",
+  reveal: "reveal",
 };
 
-const DEVELOPMENT = !window.location.hostname.includes(".online");
+const DEVELOPMENT =
+  !window.location.hostname.includes(".online") ||
+  window.location.hostname.includes("127.0.0.1");

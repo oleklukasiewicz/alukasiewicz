@@ -446,12 +446,11 @@ body.scroll-fix::-webkit-scrollbar-track{
     animation-fill-mode: forwards;
     animation-timing-function: cubic-bezier(.16,1,.29,.99);
 }
-.dev-badge{
+#app .dev-badge{
     display: none;
 }
-#app.dev .dev-badge
-{
-    display: inline-block !important;
+#app.dev .dev-badge{
+    display: inline-block;
 }
 #footer{
     display: block;
@@ -975,7 +974,7 @@ u.dotted-separator{
     font-weight: 700;
     margin: 20px 20px 0;
 }
-.list-view > .item > b>.dev-badge{
+.list-view > .item > b > .dev-badge{
     margin-left: auto;
     float: right;
     height: 24px;
@@ -1021,6 +1020,9 @@ u.dotted-separator{
     background-color: transparent;
     box-shadow: none;
     pointer-events: none;
+}
+.list-view > .item.loading > b > .dev-badge{
+    display: none!important;
 }
 .list-view > .item.loading > .img > img{
     opacity: 0;
@@ -1200,9 +1202,9 @@ u.dotted-separator{
 .button:active{
     background-color: var(--color-theme-A4);
 }
+.button.discord,
 .button.github,
 .button.instagram,
-.button.discord,
 .button.twitter{
     background-color: transparent;
     display: inline-block;
@@ -1230,7 +1232,7 @@ u.dotted-separator{
 }
 .button.discord:hover{
     background-color: #5865f2;
-    box-shadow: 0 2px 12px -1px rgba(88, 101, 242,.7);
+    box-shadow: 0 2px 12px -1px rgba(88,101,242,.7);
     color: #fff;
 }
 .button.instagram:hover{
@@ -1448,4 +1450,7 @@ u.dotted-separator{
         backdrop-filter: none;
         background-color: var(--color-theme);
     }
+}
+.reveal{
+    border: 1px solid transparent;
 }
