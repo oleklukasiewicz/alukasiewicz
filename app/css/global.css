@@ -930,7 +930,7 @@ u.dotted-separator{
     grid-template-columns: 100%;
     border-radius: var(--border-radius);
     user-select: none;
-    transition: box-shadow var(--time-A1) cubic-bezier(.16,1,.29,.99),transform var(--time-A1) cubic-bezier(.16,1,.29,.99),opacity var(--time),border-color var(--time),background-color var(--time);
+    transition: box-shadow var(--time-A1) cubic-bezier(.16,1,.29,.99),transform var(--time-A1) cubic-bezier(.16,1,.29,.99),opacity var(--time),background-color var(--time);
     color: var(--color-font);
     cursor: pointer;
 }
@@ -1280,9 +1280,6 @@ u.dotted-separator{
     .list-view{
         grid-template-columns: 1fr 1fr;
     }
-    #landing .list-view > .index-1{
-        display: none;
-    }
     #landing .list-view > .index-2{
         display: none;
     }
@@ -1335,6 +1332,9 @@ u.dotted-separator{
 @media only screen and (max-width:430px){
     .list-view{
         grid-template-columns: 100%;
+    }
+    #landing .list-view > .index-1{
+        display: none;
     }
     .list-view > .group{
         grid-column-start: 1;

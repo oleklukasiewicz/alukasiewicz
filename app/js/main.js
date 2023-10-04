@@ -586,7 +586,7 @@ const landingView = new View(
 
       //set "About me" button
       let _pButton = getById("profile-link-button");
-      Effect.reveal.add(_pButton);
+      //Effect.reveal.add(_pButton, undefined, undefined, true);
       _pButton.classList.remove(GLOBAL.disabled);
       _pButton.href = APP.url.profile;
       _pButton.addEventListener("click", () => {
@@ -1029,6 +1029,8 @@ ViewController.addEventListener("navigationRequest", () => closeNavigation());
 
 //DOM events
 window.addEventListener("load", async function () {
+  Effect.reveal.isEnabled = DEVELOPMENT && window.innerWidth > APP.mobileWidth;
+  Effect.reveal.start();
   //adding errors
   ViewController.addError(
     new ErrorClass(
@@ -1054,14 +1056,14 @@ window.addEventListener("load", async function () {
   getById("main-header-icons").classList.remove(GLOBAL.disabled);
 
   const aboutButton = getById("main-header-about-button");
-  Effect.reveal.add(aboutButton);
+  //Effect.reveal.add(aboutButton);
   aboutButton.addEventListener("click", (e) => {
     e.preventDefault();
 
     ViewController.navigate(VIEW.profile);
   });
   const workButton = getById("main-header-work-button");
-  Effect.reveal.add(workButton);
+  //Effect.reveal.add(workButton,undefined,undefined,true);
   workButton.addEventListener("click", (e) => {
     e.preventDefault();
     ViewController.navigate(VIEW.group, { routeArg: ["work"] });
@@ -1085,14 +1087,18 @@ window.addEventListener("load", async function () {
     APP_NODE.classList.replace("first-view", GLOBAL.loaded);
   }, 600);
   //TO DO - enable on prod and disable on mobile
-  Effect.reveal.isEnabled = DEVELOPMENT;
-  Effect.reveal.start();
 });
 window.addEventListener("popstate", (event) =>
   ViewController.navigateFromHistory(event.state)
 );
-window.onresize = () =>
+window.onresize = () => {
   document.body.classList.toggle("scroll-fix", !isScrollbarVisible());
+  document.body.classList.toggle(
+    "mobile-view",
+    window.innerWidth <= APP.mobileWidth
+  );
+  Effect.reveal.isEnabled = window.innerWidth > APP.mobileWidth;
+};
 
 //item tile creating method
 let createItemTile = async function (node, item) {
@@ -1190,7 +1196,7 @@ let createItemTile = async function (node, item) {
 
   //loading item
   setTimeout(() => node.classList.remove(GLOBAL.loaded), 300);
-  Effect.reveal.add(node);
+  Effect.reveal.add(node, undefined, undefined, true);
   return node;
 };
 let createGroupTile = function (node, group) {
@@ -1628,8 +1634,8 @@ let Effect = {
         gradients = "rgba(130,130,130,0.85)",
         hover_gradients = "rgba(130,130,130,0.0)",
         highlight_effect = false,
-        gradient_width = 60,
-        gradient_hover_width = 60
+        gradient_width = 128,
+        gradient_hover_width = 128
       ) {
         if (Effect.reveal.isEnabled && element.style.display != "none") {
           var positionInfo = element.getBoundingClientRect();
@@ -1637,11 +1643,12 @@ let Effect = {
           var menuHeight = positionInfo.height;
           var mousePositionX = event.clientX - positionInfo.left;
           var mousePositionY = event.clientY - positionInfo.top;
+          const limit = gradient_width;
           if (
-            mousePositionX > -100 &&
-            mousePositionX < menuWidth + 100 &&
-            mousePositionY > -100 &&
-            mousePositionY < menuHeight + 100
+            mousePositionX > -1 * limit &&
+            mousePositionX < menuWidth + limit &&
+            mousePositionY > -1 * limit &&
+            mousePositionY < menuHeight + limit
           ) {
             var percentageX = (mousePositionX / menuWidth) * 100;
             var percentageY = (mousePositionY / menuHeight) * 100;
@@ -1670,11 +1677,11 @@ let Effect = {
                   "% " +
                   percentageY +
                   "%," +
-                  "rgba(190,190,190,0.3)" +
+                  "rgba(128,128,128,0.1)" +
                   ", " +
                   "transparent" +
                   " " +
-                  150 +
+                  256 +
                   "px)";
               }
               return;

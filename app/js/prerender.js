@@ -1,5 +1,6 @@
 //global app variables
 const APP = {
+  mobileWidth: 430,
   name: "Olek Łukasiewicz",
   version: "2.2.1.0",
   url: {
