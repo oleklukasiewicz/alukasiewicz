@@ -933,6 +933,8 @@ u.dotted-separator{
     transition: box-shadow var(--time-A1) cubic-bezier(.16,1,.29,.99),transform var(--time-A1) cubic-bezier(.16,1,.29,.99),opacity var(--time),background-color var(--time);
     color: var(--color-font);
     cursor: pointer;
+    position: relative;
+    border: 0;
 }
 .list-view > .item:hover{
     box-shadow: 0 12px 30px 0 rgba(0,0,0,.13);
@@ -992,6 +994,8 @@ u.dotted-separator{
 .list-view > .item > .labels > .button{
     transition: var(--transition-bg-only);
     width: 118px;
+    position: absolute;
+    z-index: 3;
 }
 .list-view > .item > .labels > .button > i{
     float: right;
@@ -1054,6 +1058,15 @@ u.dotted-separator{
 }
 .list-view > .item.loaded > .img > img{
     opacity: 1;
+}
+.list-view > .item > .reveal-layer{
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    position: absolute;
+    z-index: 2;
+    top: 0;
+    left: 0;
 }
 .list-view > .group{
     grid-column-start: 1;

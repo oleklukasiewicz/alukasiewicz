@@ -1164,10 +1164,14 @@ let createItemTile = async function (node, item) {
   nodeUpdateLabel.insertBefore(nodeUpdateLabelIcon, nodeUpdateLabel.firstChild);
   nodeLabels.appendChild(nodeUpdateLabel);
 
+  let revealLayer = document.createElement("DIV");
+  revealLayer.classList.add("reveal-layer");
+
   node.appendChild(nodeImgContainer);
   node.appendChild(nodeTitle);
   node.appendChild(nodeContent);
   node.appendChild(nodeLabels);
+  node.appendChild(revealLayer);
 
   //loading image of tile
   try {
@@ -1196,7 +1200,7 @@ let createItemTile = async function (node, item) {
 
   //loading item
   setTimeout(() => node.classList.remove(GLOBAL.loaded), 300);
-  Effect.reveal.add(node, undefined, undefined, true);
+  Effect.reveal.add(revealLayer, undefined, undefined, true);
   return node;
 };
 let createGroupTile = function (node, group) {
