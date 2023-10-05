@@ -1029,8 +1029,7 @@ ViewController.addEventListener("navigationRequest", () => closeNavigation());
 
 //DOM events
 window.addEventListener("load", async function () {
-  Effect.reveal.isEnabled = DEVELOPMENT && window.innerWidth > APP.mobileWidth;
-  Effect.reveal.start();
+  Effect.reveal.discover();
   //adding errors
   ViewController.addError(
     new ErrorClass(
@@ -1086,7 +1085,9 @@ window.addEventListener("load", async function () {
   this.setTimeout(function () {
     APP_NODE.classList.replace("first-view", GLOBAL.loaded);
   }, 600);
-  //TO DO - enable on prod and disable on mobile
+  // reveal effect
+  Effect.reveal.isEnabled = DEVELOPMENT && window.innerWidth > APP.mobileWidth;
+  Effect.reveal.start();
 });
 window.addEventListener("popstate", (event) =>
   ViewController.navigateFromHistory(event.state)
@@ -1097,7 +1098,7 @@ window.onresize = () => {
     "mobile-view",
     window.innerWidth <= APP.mobileWidth
   );
-  Effect.reveal.isEnabled = window.innerWidth > APP.mobileWidth;
+  Effect.reveal.isEnabled = window.innerWidth > APP.mobileWidth && DEVELOPMENT;
 };
 
 //item tile creating method
@@ -1200,7 +1201,7 @@ let createItemTile = async function (node, item) {
 
   //loading item
   setTimeout(() => node.classList.remove(GLOBAL.loaded), 300);
-  Effect.reveal.add(revealLayer, undefined, undefined, true);
+  Effect.reveal.add(revealLayer, true);
   return node;
 };
 let createGroupTile = function (node, group) {
@@ -1635,9 +1636,9 @@ let Effect = {
       list: new Array(),
       render: function (
         element,
+        highlight_effect = false,
         gradients = "rgba(130,130,130,0.85)",
         hover_gradients = "rgba(130,130,130,0.0)",
-        highlight_effect = false,
         gradient_width = 128,
         gradient_hover_width = 128
       ) {
@@ -1662,66 +1663,26 @@ let Effect = {
               percentageY > 0 &&
               percentageY < 100
             ) {
-              element.style.borderImage =
-                "radial-gradient(circle at " +
-                percentageX +
-                "% " +
-                percentageY +
-                "%," +
-                gradients +
-                ", " +
-                hover_gradients +
-                " " +
-                gradient_hover_width +
-                "px) 1";
+              element.style.borderImage = `radial-gradient(circle at ${percentageX}% ${percentageY}%,${gradients},${hover_gradients} ${gradient_hover_width}px) 1`;
               if (highlight_effect) {
-                element.style.backgroundImage =
-                  "radial-gradient(circle at " +
-                  percentageX +
-                  "% " +
-                  percentageY +
-                  "%," +
-                  "rgba(128,128,128,0.1)" +
-                  ", " +
-                  "transparent" +
-                  " " +
-                  256 +
-                  "px)";
+                element.style.backgroundImage = `radial-gradient(circle at ${percentageX}%
+                  ${percentageY}%,rgba(128,128,128,0.1),transparent 256px)`;
               }
               return;
             } else {
               element.style.backgroundImage = "";
             }
-            element.style.borderImage =
-              "radial-gradient(circle at " +
-              percentageX +
-              "% " +
-              percentageY +
-              "%," +
-              gradients +
-              ", transparent " +
-              gradient_width +
-              "px) 1";
-          } else {
-            element.style.borderImage = "";
-            element.style.backgroundImage = "";
+            element.style.borderImage = `radial-gradient(circle at ${percentageX}% ${percentageY}%, ${gradients}, transparent ${gradient_width}px) 1`;
+            return;
           }
-        } else {
           element.style.borderImage = "";
           element.style.backgroundImage = "";
         }
       },
-      add: function (
-        element,
-        gradients,
-        hover_gradients,
-        hightlight = false,
-        width,
-        width_hover
-      ) {
+      add: function (element, hightlight = false) {
         if (!element.classList.contains(GLOBAL.reveal)) {
           element.classList.add(GLOBAL.reveal);
-          Effect.reveal.list.push({ elem: element, arg: arguments });
+          Effect.reveal.list.push({ elem: element, arg:{hightlight} });
         }
       },
       remove: function (element) {
@@ -1734,8 +1695,16 @@ let Effect = {
       start: function () {
         document.addEventListener("mousemove", function (event) {
           Effect.reveal.list.forEach((element) => {
-            Effect.reveal.render(...element.arg);
+            Effect.reveal.render(element.elem, element.arg.hightlight);
           });
+        });
+      },
+      discover: function () {
+        const discovered = [
+          ...document.body.getElementsByClassName(GLOBAL.reveal),
+        ];
+        discovered.forEach((element) => {
+          Effect.reveal.list.push({ elem: element, arg: { hightlight: false } });
         });
       },
       get isEnabled() {
@@ -1745,11 +1714,7 @@ let Effect = {
         _isEnabled = val;
         if (!val) {
           Effect.reveal.list.forEach((element) => {
-            Effect.reveal.render(
-              element.elem,
-              element.gradients,
-              element.hovgradients
-            );
+            Effect.reveal.render(element.elem, element.arg.hightlight);
           });
         }
       },
