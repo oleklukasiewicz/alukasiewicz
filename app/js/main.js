@@ -1611,8 +1611,9 @@ let MultipleImagesHelper = function (
 let MultipleImagesRenderer = async function (imagesList, targetNode) {
   targetNode.innerHTML = "";
 
-  let nodes = imagesList.map((image) => {
+  let nodes = imagesList.map((image, index) => {
     let imgNode = document.createElement("IMG");
+    imgNode.alt = "img-" + index;
     imgNode.src = image;
     targetNode.appendChild(imgNode);
     return imgNode;
@@ -1682,7 +1683,7 @@ let Effect = {
       add: function (element, hightlight = false) {
         if (!element.classList.contains(GLOBAL.reveal)) {
           element.classList.add(GLOBAL.reveal);
-          Effect.reveal.list.push({ elem: element, arg:{hightlight} });
+          Effect.reveal.list.push({ elem: element, arg: { hightlight } });
         }
       },
       remove: function (element) {
@@ -1704,7 +1705,10 @@ let Effect = {
           ...document.body.getElementsByClassName(GLOBAL.reveal),
         ];
         discovered.forEach((element) => {
-          Effect.reveal.list.push({ elem: element, arg: { hightlight: false } });
+          Effect.reveal.list.push({
+            elem: element,
+            arg: { hightlight: false },
+          });
         });
       },
       get isEnabled() {
