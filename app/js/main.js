@@ -1086,7 +1086,7 @@ window.addEventListener("load", async function () {
     APP_NODE.classList.replace("first-view", GLOBAL.loaded);
   }, 600);
   // reveal effect
-  Effect.reveal.isEnabled = DEVELOPMENT && window.innerWidth > APP.mobileWidth;
+  Effect.reveal.isEnabled = window.innerWidth > APP.mobileWidth;
   Effect.reveal.start();
 });
 window.addEventListener("popstate", (event) =>
@@ -1098,7 +1098,7 @@ window.onresize = () => {
     "mobile-view",
     window.innerWidth <= APP.mobileWidth
   );
-  Effect.reveal.isEnabled = window.innerWidth > APP.mobileWidth && DEVELOPMENT;
+  Effect.reveal.isEnabled = window.innerWidth > APP.mobileWidth;
 };
 
 //item tile creating method
