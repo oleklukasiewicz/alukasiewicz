@@ -48,11 +48,11 @@ let View = function (
   loadingMode = ViewController.loadingModes.single
 ) {
   return {
-    id:routingData.viewId,
-    url:routingData.url,
+    id: routingData.viewId,
+    url: routingData.url,
     data,
     event,
-    rootNode:routingData.rootNodeId,
+    rootNode: routingData.rootNodeId,
     isRegisterDelayed,
     loadingMode,
   };
@@ -1410,7 +1410,7 @@ const createButton = function (icon, label, tagName = "A", rightLabel = false) {
   _buttonContent.innerHTML = label;
 
   if (!rightLabel) _button.appendChild(_buttonIcon);
-  _button.appendChild(_buttonContent);
+  if (label != null && label != undefined) _button.appendChild(_buttonContent);
   if (rightLabel) _button.appendChild(_buttonIcon);
   return _button;
 };

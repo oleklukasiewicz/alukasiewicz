@@ -128,7 +128,12 @@ let ItemComponentBuilder = async function (component, itemFolder, item) {
           "<i class='mi mi-Picture'></i><span>Show all</span>";
         _button.className = "button";
         _button.href =
-          "/" + APP.route.resource.url + "/" + item.id + "/" + _displayImages[0].hash;
+          "/" +
+          APP.route.resource.url +
+          "/" +
+          item.id +
+          "/" +
+          _displayImages[0].hash;
 
         //add action to navigate into resources view
         _button.onclick = function (e) {
@@ -273,12 +278,61 @@ let ItemComponentBuilder = async function (component, itemFolder, item) {
         (img) => img.classList.remove(GLOBAL.loading)
       );
       break;
+    case "code":
+      _finalComponent = document.createElement("DIV");
+      _finalComponent.classList.add("code");
+
+      const codeTitle = document.createElement("DIV");
+      codeTitle.classList.add("code-title");
+
+      if (component.title) codeTitle.innerText = component.title;
+
+      const copyButton = createButton("mi-Copy");
+      copyButton.addEventListener("click", function () {
+        navigator.clipboard.writeText(component.content);
+      });
+
+      codeTitle.appendChild(copyButton);
+
+      _finalComponent.appendChild(codeTitle);
+
+      const codeText = document.createElement("DIV");
+      codeText.classList.add("code-text");
+
+      const rawText = component.content.replaceAll(
+        "\t",
+        "&nbsp;&nbsp;&nbsp;&nbsp;"
+      );
+
+      const rows = rawText.split("\n");
+      rows.forEach((row, line) => {
+        const rowNode = document.createElement("div");
+        rowNode.classList.add("code-row");
+
+        const lineNode = document.createElement("span");
+        lineNode.innerText = line + 1;
+        rowNode.appendChild(lineNode);
+
+        const lineContent = document.createElement("div");
+        lineContent.innerHTML = row;
+        rowNode.appendChild(lineContent);
+        codeText.appendChild(rowNode);
+      });
+
+      _finalComponent.appendChild(codeText);
+      break;
+    case "hightlight":
+      _finalComponent = document.createElement("DIV");
+      _finalComponent.classList.add("hightlight");
+      _finalComponent.append(await ItemComponentBuilder(component.content));
+      break;
   }
 
   _finalComponent.style = component.style;
   _finalComponent.class = component.class;
-  _finalComponent.id = component.id;
-
+  if (component.id) {
+    _finalComponent.id = component.id;
+  }
   component.node = _finalComponent;
   return _finalComponent;
 };

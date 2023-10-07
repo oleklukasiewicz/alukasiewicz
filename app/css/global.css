@@ -179,6 +179,9 @@ a.link:hover{
 .mi-Search:before{
     content: "\EE04";
 }
+.mi-Copy:before{
+    content: "\EB1A";
+}
 .al-logo{
     text-decoration: none;
     display: inline-block;
