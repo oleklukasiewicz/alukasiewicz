@@ -6,28 +6,28 @@ const APP = {
     landing: {
       url: "",
       viewId: "landing",
-      isDefault:true,
-      rootNodeId:"landing"
+      isDefault: true,
+      rootNodeId: "landing",
     },
     item: {
       url: "posts",
       viewId: "item",
-      rootNodeId:"item"
+      rootNodeId: "item",
     },
     profile: {
       url: "about",
       viewId: "about",
-      rootNodeId:"about"
+      rootNodeId: "about",
     },
     group: {
       url: "group",
       viewId: "group",
-      rootNodeId:"group"
+      rootNodeId: "group",
     },
     resource: {
       url: "image",
       viewId: "resource",
-      rootNodeId:"resource"
+      rootNodeId: "resource",
     },
   },
   startUrl: (

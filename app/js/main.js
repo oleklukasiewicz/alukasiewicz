@@ -41,20 +41,18 @@ ResourceDictionary.prototype = new Array();
 ResourceDictionary.constructor = ResourceDictionary;
 
 let View = function (
-  id,
-  url,
+  routingData,
   data = {},
   event = {},
-  rootNode = null,
   isRegisterDelayed = false,
   loadingMode = ViewController.loadingModes.single
 ) {
   return {
-    id,
-    url,
+    id:routingData.viewId,
+    url:routingData.url,
     data,
     event,
-    rootNode,
+    rootNode:routingData.rootNodeId,
     isRegisterDelayed,
     loadingMode,
   };
@@ -539,8 +537,7 @@ let ItemController = (function () {
 
 //views declarations
 const landingView = new View(
-  APP.route.landing.viewId,
-  APP.route.landing.url,
+  APP.route.landing,
   { scrollY: -1, itemsLoaded: false },
   {
     onNavigate: function () {
@@ -610,13 +607,11 @@ const landingView = new View(
       createErrorMsg(err, getById("landing-error-node"));
     },
   },
-  APP.route.landing.rootNodeId,
   true,
   ViewController.loadingModes.single
 );
 const profileView = new View(
-  APP.route.profile.viewId,
-  APP.route.profile.url,
+  APP.route.profile,
   {},
   {
     onNavigate: () => {
@@ -650,13 +645,11 @@ const profileView = new View(
       renderProfileImage(DARK_THEME_MATCH.matches, profileImage);
     },
   },
-  APP.route.profile.rootNodeId,
   true,
   ViewController.loadingModes.never
 );
 const itemView = new View(
-  APP.route.item.viewId,
-  APP.route.item.url,
+  APP.route.item,
   { currentItem: null },
   {
     onNavigate: () => window.scroll(0, 0),
@@ -752,13 +745,11 @@ const itemView = new View(
       createErrorMsg(err, getById("item-error-node"));
     },
   },
-  APP.route.item.rootNodeId,
   true,
   ViewController.loadingModes.always
 );
 const groupView = new View(
-  APP.route.group.viewId,
-  APP.route.group.url,
+  APP.route.group,
   { scrollY: -1 },
   {
     onRegister: function () {
@@ -813,13 +804,11 @@ const groupView = new View(
       createErrorMsg(err, getById("group-error-node"));
     },
   },
-  APP.route.group.rootNodeId,
   true,
   ViewController.loadingModes.always
 );
 const resourceView = new View(
-  APP.route.resource.viewId,
-  APP.route.resource.url,
+  APP.route.resource,
   {},
   {
     onNavigate: function () {
@@ -982,7 +971,6 @@ const resourceView = new View(
       createErrorMsg(err, getById("resources-error-node"));
     },
   },
-  APP.route.resource.rootNodeId,
   true,
   ViewController.loadingModes.always
 );
