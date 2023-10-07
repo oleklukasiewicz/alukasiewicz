@@ -128,12 +128,12 @@ let ItemComponentBuilder = async function (component, itemFolder, item) {
           "<i class='mi mi-Picture'></i><span>Show all</span>";
         _button.className = "button";
         _button.href =
-          "/" + APP.url.resource + "/" + item.id + "/" + _displayImages[0].hash;
+          "/" + APP.route.resource.url + "/" + item.id + "/" + _displayImages[0].hash;
 
         //add action to navigate into resources view
         _button.onclick = function (e) {
           e.preventDefault();
-          ViewController.navigate(VIEW.resource, {
+          ViewController.navigate(APP.route.resource.viewId, {
             routeArg: [item.id, _displayImages[0].hash],
             currentItem: item,
           });
@@ -161,7 +161,7 @@ let ItemComponentBuilder = async function (component, itemFolder, item) {
               _img,
               function (img) {
                 img.onclick = function () {
-                  ViewController.navigate(VIEW.resource, {
+                  ViewController.navigate(APP.route.resource.viewId, {
                     routeArg: [item.id, res.hash],
                     currentItem: item,
                   });

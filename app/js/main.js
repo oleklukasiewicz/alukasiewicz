@@ -1,16 +1,3 @@
-if ("scrollRestoration" in history) history.scrollRestoration = "manual";
-
-let darkThemeMatcher = window.matchMedia("(prefers-color-scheme:dark)");
-
-//features for nodes, nodes lists and objects
-Element.prototype.remove = function () {
-  this.parentElement.removeChild(this);
-};
-NodeList.prototype.remove = HTMLCollection.prototype.remove = function () {
-  for (let i = this.length - 1; i >= 0; i--)
-    this[i].parentElement.removeChild(this[i]);
-};
-
 //hashing algorythm
 const CREATE_HASH = function (str, seed = 0) {
   let _h1 = 0xdeadbeef ^ seed;
@@ -552,8 +539,8 @@ let ItemController = (function () {
 
 //views declarations
 const landingView = new View(
-  VIEW.landing,
-  APP.url.landing,
+  APP.route.landing.viewId,
+  APP.route.landing.url,
   { scrollY: -1, itemsLoaded: false },
   {
     onNavigate: function () {
@@ -579,19 +566,19 @@ const landingView = new View(
           targetNode
         );
       };
-      darkThemeMatcher.addEventListener("change", (e) =>
+      DARK_THEME_MATCH.addEventListener("change", (e) =>
         renderProfileImage(e.matches, profileImage)
       );
-      renderProfileImage(darkThemeMatcher.matches, profileImage);
+      renderProfileImage(DARK_THEME_MATCH.matches, profileImage);
 
       //set "About me" button
       let _pButton = getById("profile-link-button");
       //Effect.reveal.add(_pButton, undefined, undefined, true);
       _pButton.classList.remove(GLOBAL.disabled);
-      _pButton.href = APP.url.profile;
+      _pButton.href = APP.route.profile.url;
       _pButton.addEventListener("click", () => {
         event.preventDefault();
-        ViewController.navigate(VIEW.profile);
+        ViewController.navigate(APP.route.profile.viewId);
       });
       this.data.iList = getById("main-list");
     },
@@ -623,13 +610,13 @@ const landingView = new View(
       createErrorMsg(err, getById("landing-error-node"));
     },
   },
-  VIEW.landing,
+  APP.route.landing.rootNodeId,
   true,
   ViewController.loadingModes.single
 );
 const profileView = new View(
-  VIEW.profile,
-  APP.url.profile,
+  APP.route.profile.viewId,
+  APP.route.profile.url,
   {},
   {
     onNavigate: () => {
@@ -657,19 +644,19 @@ const profileView = new View(
           targetNode
         );
       };
-      darkThemeMatcher.addEventListener("change", (e) =>
+      DARK_THEME_MATCH.addEventListener("change", (e) =>
         renderProfileImage(e.matches, profileImage)
       );
-      renderProfileImage(darkThemeMatcher.matches, profileImage);
+      renderProfileImage(DARK_THEME_MATCH.matches, profileImage);
     },
   },
-  VIEW.profile,
+  APP.route.profile.rootNodeId,
   true,
   ViewController.loadingModes.never
 );
 const itemView = new View(
-  VIEW.item,
-  APP.url.item,
+  APP.route.item.viewId,
+  APP.route.item.url,
   { currentItem: null },
   {
     onNavigate: () => window.scroll(0, 0),
@@ -765,13 +752,13 @@ const itemView = new View(
       createErrorMsg(err, getById("item-error-node"));
     },
   },
-  VIEW.item,
+  APP.route.item.rootNodeId,
   true,
   ViewController.loadingModes.always
 );
 const groupView = new View(
-  VIEW.group,
-  APP.url.group,
+  APP.route.group.viewId,
+  APP.route.group.url,
   { scrollY: -1 },
   {
     onRegister: function () {
@@ -826,13 +813,13 @@ const groupView = new View(
       createErrorMsg(err, getById("group-error-node"));
     },
   },
-  VIEW.group,
+  APP.route.group.rootNodeId,
   true,
   ViewController.loadingModes.always
 );
 const resourceView = new View(
-  VIEW.resource,
-  APP.url.resource,
+  APP.route.resource.viewId,
+  APP.route.resource.url,
   {},
   {
     onNavigate: function () {
@@ -995,114 +982,13 @@ const resourceView = new View(
       createErrorMsg(err, getById("resources-error-node"));
     },
   },
-  VIEW.resource,
+  APP.route.resource.rootNodeId,
   true,
   ViewController.loadingModes.always
 );
 
-//registering views
-ViewController.register(landingView, true);
-ViewController.register(profileView);
-ViewController.register(itemView);
-ViewController.register(groupView);
-ViewController.register(resourceView);
-
-//view controller events
-ViewController.addEventListener("historyEdit", (historyItem, view) => {
-  //preparing history
-  if (historyItem.index == 0 || view.navigationArgs.noHistoryPush)
-    history.replaceState(historyItem, "", view.navigationUrl);
-  else history.pushState(historyItem, "", view.navigationUrl);
-});
-
-ViewController.addEventListener("navigateToView", (view, lastView) => {
-  CONTENT_NODE.classList.remove("closing");
-  view.rootNode.classList.add(GLOBAL.activeView);
-  APP_NODE.classList.replace(lastView?.id, view.id);
-  document.body.classList.toggle("scroll-fix", !isScrollbarVisible());
-});
-ViewController.addEventListener("navigateFromView", async (lastView) => {
-  await PlayViewUnLoadingAnimation();
-  lastView.rootNode.classList.remove(GLOBAL.activeView);
-});
-ViewController.addEventListener("navigationRequest", () => closeNavigation());
-
-//DOM events
-window.addEventListener("load", async function () {
-  Effect.reveal.discover();
-  //adding errors
-  ViewController.addError(
-    new ErrorClass(
-      "item_load_error",
-      "Items cannot be loaded",
-      "Try refreshing the page"
-    )
-  );
-  ViewController.addError(
-    new ErrorClass(
-      "item_outdated",
-      "Items are outdated",
-      "Try refreshing the page"
-    )
-  );
-
-  //adding home button event
-  getById("home-button").addEventListener("click", (e) => {
-    e.preventDefault();
-    ViewController.navigateToDefaultView();
-  });
-
-  getById("main-header-icons").classList.remove(GLOBAL.disabled);
-
-  const aboutButton = getById("main-header-about-button");
-  //Effect.reveal.add(aboutButton);
-  aboutButton.addEventListener("click", (e) => {
-    e.preventDefault();
-
-    ViewController.navigate(VIEW.profile);
-  });
-  const workButton = getById("main-header-work-button");
-  //Effect.reveal.add(workButton,undefined,undefined,true);
-  workButton.addEventListener("click", (e) => {
-    e.preventDefault();
-    ViewController.navigate(VIEW.group, { routeArg: ["work"] });
-  });
-
-  //loading items and groups
-  try {
-    await ItemController.loadData(storageGroups(), storageItems());
-  } catch (e) {
-    ViewController.invokeError("item_load_error", true);
-    console.error(e);
-  }
-
-  //navigating to view based by url or by history state
-  if (history.state) ViewController.navigateFromHistory(history.state);
-  else
-    await ViewController.navigate(START_ROUTE.target, {
-      routeArg: APP.startUrl.slice(1, APP.startUrl.length - 1),
-    });
-  this.setTimeout(function () {
-    APP_NODE.classList.replace("first-view", GLOBAL.loaded);
-  }, 600);
-  // reveal effect
-  Effect.reveal.isEnabled = window.innerWidth > APP.mobileWidth;
-  Effect.reveal.start();
-});
-window.addEventListener("popstate", (event) =>
-  ViewController.navigateFromHistory(event.state)
-);
-window.onresize = () => {
-  document.body.classList.toggle("scroll-fix", !isScrollbarVisible());
-  document.body.classList.toggle(
-    "mobile-view",
-    window.innerWidth <= APP.mobileWidth
-  );
-  Effect.reveal.isEnabled = window.innerWidth > APP.mobileWidth;
-};
-
 //item tile creating method
-let createItemTile = async function (node, item) {
+const createItemTile = async function (node, item) {
   if (node.nodeName != "A") {
     let oldNode = node;
     node = document.createElement("A");
@@ -1187,7 +1073,7 @@ let createItemTile = async function (node, item) {
       }
     );
   } catch (e) {
-    console.error(e);
+    console.error(`Cannot load image ${item.tile.image}`);
   }
 
   //settings up events
@@ -1195,16 +1081,17 @@ let createItemTile = async function (node, item) {
   node.onclick = function () {
     event.preventDefault();
     if (item.isLink) window.open(item.isLink, "_blank").focus();
-    else ViewController.navigate(VIEW.item, { routeArg: [item.id] });
+    else
+      ViewController.navigate(APP.route.item.viewId, { routeArg: [item.id] });
   };
-  node.href = item.isLink || APP.url.item + "/" + item.id;
+  node.href = item.isLink || APP.route.item.url + "/" + item.id;
 
   //loading item
   setTimeout(() => node.classList.remove(GLOBAL.loaded), 300);
   Effect.reveal.add(revealLayer, true);
   return node;
 };
-let createGroupTile = function (node, group) {
+const createGroupTile = function (node, group) {
   if (node.nodeName != "DIV") {
     let oldNode = node;
     node = document.createElement("DIV");
@@ -1225,14 +1112,14 @@ let createGroupTile = function (node, group) {
   //settings up tile events
   node.children[1].onclick = function () {
     event.preventDefault();
-    ViewController.navigate(VIEW.group, { routeArg: [group.id] });
+    ViewController.navigate(APP.route.group.viewId, { routeArg: [group.id] });
   };
-  node.children[1].href = APP.url.group + "/" + group.id;
+  node.children[1].href = APP.route.group.url + "/" + group.id;
   return node;
 };
 
 //storage response display helpers
-let StorageResponseIndexer = function (
+const StorageResponseIndexer = function (
   response,
   depth = 1,
   limit = 3,
@@ -1317,7 +1204,7 @@ let StorageResponseIndexer = function (
   });
   return _indexedItems;
 };
-let StorageResponseBuilder = async function (
+const StorageResponseBuilder = async function (
   response,
   targetNode = document.createElement("DIV"),
   depth = 1,
@@ -1348,7 +1235,7 @@ let StorageResponseBuilder = async function (
 };
 
 //universal slider class for resourceMap objects
-let ResourceSlider = function () {
+const ResourceSlider = function () {
   let _res = [];
   let _currentIndex;
 
@@ -1448,7 +1335,7 @@ let ResourceSlider = function () {
 };
 
 //gesture support for element
-let GestureBuilder = function (node, event = {}) {
+const GestureBuilder = function (node, event = {}) {
   const _directions = {
     up: "up",
     down: "down",
@@ -1495,7 +1382,7 @@ let GestureBuilder = function (node, event = {}) {
 };
 
 //error message node builder
-let createErrorMsg = function (err, node, customImage) {
+const createErrorMsg = function (err, node, customImage) {
   node.innerHTML = "";
   let errorImg;
   if (!customImage) {
@@ -1524,7 +1411,7 @@ let createErrorMsg = function (err, node, customImage) {
     node.appendChild(_but);
   }
 };
-let createButton = function (icon, label, tagName = "A", rightLabel = false) {
+const createButton = function (icon, label, tagName = "A", rightLabel = false) {
   let _button = document.createElement(tagName);
   _button.classList.add("button");
 
@@ -1541,11 +1428,11 @@ let createButton = function (icon, label, tagName = "A", rightLabel = false) {
 };
 
 //check if scrollbar is visible
-let isScrollbarVisible = (element = document.body) =>
+const isScrollbarVisible = (element = document.body) =>
   element.scrollHeight > element.clientHeight;
 
 //views unloading animation
-let PlayViewUnLoadingAnimation = async function () {
+const PlayViewUnLoadingAnimation = async function () {
   CONTENT_NODE.classList.add("closing");
 
   //awaiting for animation to end
@@ -1553,7 +1440,7 @@ let PlayViewUnLoadingAnimation = async function () {
 };
 
 //Image helper for images
-let ImageHelper = function (
+const ImageHelper = function (
   image,
   onload = () => {},
   onerror = () => {},
@@ -1579,7 +1466,7 @@ let ImageHelper = function (
     };
   });
 };
-let MultipleImagesHelper = function (
+const MultipleImagesHelper = function (
   images,
   onload = () => {},
   onerror = () => {},
@@ -1608,7 +1495,7 @@ let MultipleImagesHelper = function (
     }
   });
 };
-let MultipleImagesRenderer = async function (imagesList, targetNode) {
+const MultipleImagesRenderer = async function (imagesList, targetNode) {
   targetNode.innerHTML = "";
 
   let nodes = imagesList.map((image, index) => {
@@ -1630,7 +1517,7 @@ let MultipleImagesRenderer = async function (imagesList, targetNode) {
   );
 };
 
-let Effect = {
+const Effect = {
   reveal: (function () {
     _isEnabled = false;
     var rev = {
@@ -1726,3 +1613,110 @@ let Effect = {
     return rev;
   })(),
 };
+
+const ConfigureDefaultErrors = function () {
+  ViewController.addError(
+    new ErrorClass(
+      "item_load_error",
+      "Items cannot be loaded",
+      "Try refreshing the page"
+    )
+  );
+  ViewController.addError(
+    new ErrorClass(
+      "item_outdated",
+      "Items are outdated",
+      "Try refreshing the page"
+    )
+  );
+};
+
+const ConfigureDOM = function () {
+  getById("home-button").addEventListener("click", (e) => {
+    e.preventDefault();
+    ViewController.navigateToDefaultView();
+  });
+
+  getById("main-header-icons").classList.remove(GLOBAL.disabled);
+
+  const aboutButton = getById("main-header-about-button");
+  //Effect.reveal.add(aboutButton);
+  aboutButton.addEventListener("click", (e) => {
+    e.preventDefault();
+
+    ViewController.navigate(APP.route.profile.viewId);
+  });
+  const workButton = getById("main-header-work-button");
+  //Effect.reveal.add(workButton,undefined,undefined,true);
+  workButton.addEventListener("click", (e) => {
+    e.preventDefault();
+    ViewController.navigate(APP.route.group.viewId, { routeArg: ["work"] });
+  });
+};
+//registering views
+ViewController.register(landingView, true);
+ViewController.register(profileView);
+ViewController.register(itemView);
+ViewController.register(groupView);
+ViewController.register(resourceView);
+
+//view controller events
+ViewController.addEventListener("historyEdit", (historyItem, view) => {
+  //preparing history
+  if (historyItem.index == 0 || view.navigationArgs.noHistoryPush)
+    history.replaceState(historyItem, "", view.navigationUrl);
+  else history.pushState(historyItem, "", view.navigationUrl);
+});
+
+ViewController.addEventListener("navigateToView", (view, lastView) => {
+  CONTENT_NODE.classList.remove("closing");
+  view.rootNode.classList.add(GLOBAL.activeView);
+  APP_NODE.classList.replace(lastView?.id, view.id);
+  document.body.classList.toggle("scroll-fix", !isScrollbarVisible());
+});
+ViewController.addEventListener("navigateFromView", async (lastView) => {
+  await PlayViewUnLoadingAnimation();
+  lastView.rootNode.classList.remove(GLOBAL.activeView);
+});
+ViewController.addEventListener("navigationRequest", () => closeNavigation());
+
+window.addEventListener("popstate", (event) =>
+  ViewController.navigateFromHistory(event.state)
+);
+window.onresize = () => {
+  document.body.classList.toggle("scroll-fix", !isScrollbarVisible());
+};
+
+//DOM events
+window.addEventListener("load", async function () {
+  Effect.reveal.discover();
+
+  ConfigureDefaultErrors();
+  ConfigureDOM();
+
+  //loading items and groups
+  try {
+    await ItemController.loadData(storageGroups(), storageItems());
+  } catch (e) {
+    ViewController.invokeError("item_load_error", true);
+    console.error(e);
+  }
+
+  //navigating to view based by url or by history state
+  if (history.state) ViewController.navigateFromHistory(history.state);
+  else
+    await ViewController.navigate(START_ROUTE.target, {
+      routeArg: APP.startUrl.slice(1, APP.startUrl.length - 1),
+    });
+  this.setTimeout(function () {
+    APP_NODE.classList.replace("first-view", GLOBAL.loaded);
+  }, 600);
+
+  //enabling dynamic reveal effect
+  IS_MOBILE_MATCH.addEventListener("change", (e) => {
+    Effect.reveal.isEnabled = !e.matches;
+  });
+  // reveal effect
+  Effect.reveal.isEnabled = !IS_MOBILE_MATCH.matches;
+  Effect.reveal.start();
+});

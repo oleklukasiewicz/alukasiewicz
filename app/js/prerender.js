@@ -1,14 +1,34 @@
 //global app variables
 const APP = {
-  mobileWidth: 430,
   name: "Olek Łukasiewicz",
   version: "2.2.1.0",
-  url: {
-    landing: "",
-    item: "posts",
-    profile: "about",
-    group: "group",
-    resource: "image",
+  route: {
+    landing: {
+      url: "",
+      viewId: "landing",
+      isDefault:true,
+      rootNodeId:"landing"
+    },
+    item: {
+      url: "posts",
+      viewId: "item",
+      rootNodeId:"item"
+    },
+    profile: {
+      url: "about",
+      viewId: "about",
+      rootNodeId:"about"
+    },
+    group: {
+      url: "group",
+      viewId: "group",
+      rootNodeId:"group"
+    },
+    resource: {
+      url: "image",
+      viewId: "resource",
+      rootNodeId:"resource"
+    },
   },
   startUrl: (
     window.location.pathname +
@@ -16,15 +36,6 @@ const APP = {
   )
     .substring(1)
     .split("/"),
-};
-
-//global views ids
-const VIEW = {
-  landing: "landing",
-  item: "item",
-  profile: "about",
-  group: "group",
-  resource: "resource",
 };
 
 //global item variables
