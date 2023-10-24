@@ -1674,6 +1674,12 @@ window.addEventListener("popstate", (event) =>
 window.onresize = () => {
   document.body.classList.toggle("scroll-fix", !isScrollbarVisible());
 };
+window.addEventListener("mousemove", (event) => {
+  Effect.reveal.isEnabled=true;
+})
+window.addEventListener("touchstart", (event) => {
+  Effect.reveal.isEnabled=false;
+});
 
 //DOM events
 window.addEventListener("load", async function () {
@@ -1700,11 +1706,5 @@ window.addEventListener("load", async function () {
     APP_NODE.classList.replace("first-view", GLOBAL.loaded);
   }, 600);
 
-  //enabling dynamic reveal effect
-  IS_MOBILE_MATCH.addEventListener("change", (e) => {
-    Effect.reveal.isEnabled = !e.matches;
-  });
-  // reveal effect
-  Effect.reveal.isEnabled = !IS_MOBILE_MATCH.matches;
   Effect.reveal.start();
 });
