@@ -1551,9 +1551,9 @@ const Effect = {
             element.style.borderImage = `radial-gradient(circle at ${percentageX}% ${percentageY}%, ${gradients}, transparent ${gradient_width}px) 1`;
             return;
           }
-          element.style.borderImage = "";
-          element.style.backgroundImage = "";
         }
+        element.style.borderImage = "";
+        element.style.backgroundImage = "";
       },
       add: function (element, hightlight = false) {
         if (!element.classList.contains(GLOBAL.reveal)) {
@@ -1679,6 +1679,7 @@ window.addEventListener("mousemove", (event) => {
 })
 window.addEventListener("touchstart", (event) => {
   Effect.reveal.isEnabled=false;
+
 });
 
 //DOM events
