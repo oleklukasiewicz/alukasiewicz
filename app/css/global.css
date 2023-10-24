@@ -997,7 +997,6 @@ u.dotted-separator{
 .list-view > .item > .labels > .button{
     transition: var(--transition-bg-only);
     width: 118px;
-    position: absolute;
     z-index: 3;
 }
 .list-view > .item > .labels > .button > i{
