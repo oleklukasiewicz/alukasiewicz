@@ -16,10 +16,10 @@ jobs:
         run: npm install terser -g
       - name: Minify JavaScript with Terser
         run: |
-              terser ./app/js/prerender.js   --name-cache /tmp/cache.json -m -o ./app/js/prerender.js
-              terser ./app/js/postrender.js   --name-cache /tmp/cache.json -m -o ./app/js/postrender.js
-              terser ./app/js/main.js   --name-cache /tmp/cache.json -m -o ./app/js/main.js
-              terser ./app/js/item.js   --name-cache /tmp/cache.json -m -o ./app/js/item.js
+              terser ./app/js/prerender.js   --name-cache /tmp/cache.json --mangle -o ./app/js/prerender.js
+              terser ./app/js/postrender.js   --name-cache /tmp/cache.json --mangle -o ./app/js/postrender.js
+              terser ./app/js/main.js   --name-cache /tmp/cache.json --mangle -o ./app/js/main.js
+              terser ./app/js/item.js   --name-cache /tmp/cache.json --mangle -o ./app/js/item.js
               terser ./app/serviceworker.js -o ./app/serviceworker.js
               terser ./app/item/storage.js   --name-cache /tmp/cache.json -o ./app/item/storage.js
       - name: Upload Minified Artifact
