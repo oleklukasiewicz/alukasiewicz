@@ -13,7 +13,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Create Empty File
-        run: touch cache.json
+        run: echo '{}' > cache.json
       - name: Install dependencies
         run: npm install terser -g
       - name: Minify JavaScript with Terser
