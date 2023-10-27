@@ -1,9 +1,9 @@
-name: Deploy to Vercel
+name: Deploy to Vercel (Production)
 
 on:
   push:
     branches:
-      - main
+      - production
 
 jobs:
   build:
