@@ -1513,6 +1513,7 @@ const Effect = {
       render: function (
         element,
         highlight_effect = false,
+        reveal_effect = true,
         gradients = "rgba(130,130,130,0.85)",
         hover_gradients = "rgba(130,130,130,0.0)",
         gradient_width = 128,
@@ -1539,26 +1540,30 @@ const Effect = {
               percentageY > 0 &&
               percentageY < 100
             ) {
-              element.style.borderImage = `radial-gradient(circle at ${percentageX}% ${percentageY}%,${gradients},${hover_gradients} ${gradient_hover_width}px) 1`;
-              if (highlight_effect) {
-                element.style.backgroundImage = `radial-gradient(circle at ${percentageX}%
-                  ${percentageY}%,rgba(128,128,128,0.1),transparent 256px)`;
-              }
+              if (reveal_effect)
+                element.style.borderImage = `radial-gradient(circle at ${percentageX}% ${percentageY}%,${gradients},${hover_gradients} ${gradient_hover_width}px) 1`;
+              if (highlight_effect)
+                element.style.backgroundImage = `radial-gradient(circle at ${percentageX}% ${percentageY}%,rgba(128,128,128,0.1),transparent 256px)`;
+
               return;
             } else {
               element.style.backgroundImage = "";
             }
-            element.style.borderImage = `radial-gradient(circle at ${percentageX}% ${percentageY}%, ${gradients}, transparent ${gradient_width}px) 1`;
+            if (reveal_effect)
+              element.style.borderImage = `radial-gradient(circle at ${percentageX}% ${percentageY}%, ${gradients}, transparent ${gradient_width}px) 1`;
             return;
           }
         }
         element.style.borderImage = "";
         element.style.backgroundImage = "";
       },
-      add: function (element, hightlight = false) {
+      add: function (element, hightlight = false, reveal = true) {
         if (!element.classList.contains(GLOBAL.reveal)) {
           element.classList.add(GLOBAL.reveal);
-          Effect.reveal.list.push({ elem: element, arg: { hightlight } });
+          Effect.reveal.list.push({
+            elem: element,
+            arg: { hightlight, reveal },
+          });
         }
       },
       remove: function (element) {
@@ -1572,7 +1577,11 @@ const Effect = {
       start: function () {
         document.addEventListener("mousemove", function (event) {
           Effect.reveal.list.forEach((element) => {
-            Effect.reveal.render(element.elem, element.arg.hightlight);
+            Effect.reveal.render(
+              element.elem,
+              element.arg.hightlight,
+              element.arg.reveal
+            );
           });
         });
       },
@@ -1583,7 +1592,7 @@ const Effect = {
         discovered.forEach((element) => {
           Effect.reveal.list.push({
             elem: element,
-            arg: { hightlight: false },
+            arg: { hightlight: false, reveal: true },
           });
         });
       },
