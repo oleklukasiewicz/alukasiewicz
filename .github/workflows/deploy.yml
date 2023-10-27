@@ -12,6 +12,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - name: Minify JavaScript with Terser
+        run: |
+              npm terser ./app/js/prerender.js   --name-cache /tmp/cache.json  -o ./app/js/prerender.js
+              npm terser ./app/js/postrender.js   --name-cache /tmp/cache.json  -o ./app/js/postrender.js
+              npm terser ./app/js/main.js   --name-cache /tmp/cache.json  -o ./app/js/main.js
+              npm terser ./app/js/item.js   --name-cache /tmp/cache.json  -o ./app/js/item.js
+              npm terser ./app/serviceworker.js -o ./app/serviceworker.js
+              npm terser ./app/item/storage.js   --name-cache /tmp/cache.json -o ./app/item/storage.js
+      - name: Upload Minified Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: minified-artifact
+          path: dist
       - name: Install Vercel CLI
         run: npm install --global vercel@latest
       - name: Pull Vercel Environment Information
