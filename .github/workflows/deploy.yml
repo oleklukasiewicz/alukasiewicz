@@ -12,6 +12,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - name: Install dependencies
+        run: npm install
       - name: Minify JavaScript with Terser
         run: |
               npm terser ./app/js/prerender.js   --name-cache /tmp/cache.json  -o ./app/js/prerender.js
