@@ -31,4 +31,4 @@ jobs:
         run: npm install --global vercel@latest
       - name: Extract Minified Artifacts
         run: |
-          vercel --token $VERCEL_TOKEN --prod
+          vercel --token=${{ secrets.VERCEL_TOKEN }} --prod
