@@ -215,49 +215,12 @@ ol li:before{
     margin-bottom: 16px;
     font-size: var(--size-font-subtitle);
 }
-#item-content .code{
-    background-color: var(--color-theme-A1);
-}
-#item-content .code > .code-title{
-    background-color: var(--color-theme-A2);
-    padding: 4px 4px 4px 8px;
-    box-sizing: border-box;
-}
-#item-content .code > .code-title > .button{
-    display: inline-table;
-    float: right;
-    padding: 7px 8px 8px;
-    margin: -4px;
-    height: auto;
-}
 #item-content .hightlight
 {
     display: inline;
     background-color: var(--color-theme-hover);
     color: var(--color-theme-A6);
     padding: 1px 6px 2px;
-}
-#item-content .code > .code-text{
-    padding: 6px 8px;
-    box-sizing: border-box;
-}
-#item-content .code > .code-text > .code-row > *{
-    display: inline-table;
-    line-height: 20px;
-    vertical-align: top;
-    font-size: var(--size-font-base);
-}
-#item-content .code > .code-text > .code-row{
-    height: 20px;
-}
-#item-content .code > .code-text > .code-row > span{
-    color: var(--color-theme-A6);
-    margin-right: 8px;
-    margin-top: 1px;
-    user-select: none;
-    padding-right: 8px;
-    box-sizing: border-box;
-    border-right: 1px solid var(--color-theme-A3);
 }
 #item-content .bold{
     font-weight: 700;

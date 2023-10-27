@@ -46,7 +46,7 @@ let storageGroups = () => [
     title: "Projects",
     groups: ["home"],
     arg: {
-      itemsOrder: ["fluent-pad", "ancient-temple"],
+      itemsOrder: ["fluent-pad", "ancient-temple","fluent-design-system"],
     },
   },
 ];

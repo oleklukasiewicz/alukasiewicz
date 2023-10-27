@@ -278,49 +278,6 @@ let ItemComponentBuilder = async function (component, itemFolder, item) {
         (img) => img.classList.remove(GLOBAL.loading)
       );
       break;
-    case "code":
-      _finalComponent = document.createElement("DIV");
-      _finalComponent.classList.add("code");
-
-      const codeTitle = document.createElement("DIV");
-      codeTitle.classList.add("code-title");
-
-      if (component.title) codeTitle.innerText = component.title;
-
-      const copyButton = createButton("mi-Copy");
-      copyButton.addEventListener("click", function () {
-        navigator.clipboard.writeText(component.content);
-      });
-
-      codeTitle.appendChild(copyButton);
-
-      _finalComponent.appendChild(codeTitle);
-
-      const codeText = document.createElement("DIV");
-      codeText.classList.add("code-text");
-
-      const rawText = component.content.replaceAll(
-        "\t",
-        "&nbsp;&nbsp;&nbsp;&nbsp;"
-      );
-
-      const rows = rawText.split("\n");
-      rows.forEach((row, line) => {
-        const rowNode = document.createElement("div");
-        rowNode.classList.add("code-row");
-
-        const lineNode = document.createElement("span");
-        lineNode.innerText = line + 1;
-        rowNode.appendChild(lineNode);
-
-        const lineContent = document.createElement("div");
-        lineContent.innerHTML = row;
-        rowNode.appendChild(lineContent);
-        codeText.appendChild(rowNode);
-      });
-
-      _finalComponent.appendChild(codeText);
-      break;
     case "hightlight":
       _finalComponent = document.createElement("DIV");
       _finalComponent.classList.add("hightlight");

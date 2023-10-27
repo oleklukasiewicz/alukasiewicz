@@ -101,13 +101,6 @@ let ItemDate = function (day, month, year) {
   ) {
     return months[this.month - 1] + "&nbsp;" + this.day + ",&nbsp;" + this.year;
   };
-  this.toString = function () {
-    return (
-      this.year.toString() +
-      (this.month < 10 ? "0" + this.month.toString() : this.month.toString()) +
-      (this.day < 10 ? "0" + this.day.toString() : this.day.toString())
-    );
-  };
   this.compare = function (date) {
     let _intDate = parseInt(date);
     if (_intDate > parseInt(this.toString())) return -1;
@@ -1675,11 +1668,10 @@ window.onresize = () => {
   document.body.classList.toggle("scroll-fix", !isScrollbarVisible());
 };
 window.addEventListener("mousemove", (event) => {
-  Effect.reveal.isEnabled=true;
-})
+  Effect.reveal.isEnabled = true;
+});
 window.addEventListener("touchstart", (event) => {
-  Effect.reveal.isEnabled=false;
-
+  Effect.reveal.isEnabled = false;
 });
 
 //DOM events

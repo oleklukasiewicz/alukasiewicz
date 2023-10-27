@@ -982,6 +982,7 @@ u.dotted-separator{
 .list-view > .item > b > .dev-badge{
     margin-left: auto;
     float: right;
+    transform: translateY(-2px);
     height: 24px;
     box-sizing: border-box;
     line-height: normal;
