@@ -758,7 +758,14 @@ const groupView = new View(
       //set all group items into loading state
       Array.prototype.forEach.call(
         this.data.groupList.getElementsByClassName(GLOBAL.dataNode),
-        (node) => node.classList.add("loading", "no-data")
+        (node) => {
+          node.classList.add("loading", "no-data");
+
+          const revealLayer = node.children[4];
+          if (revealLayer) {
+            const s = Effect.reveal.remove(revealLayer);
+          }
+        }
       );
       this.rootNode.classList.remove(GLOBAL.error);
 
@@ -1559,7 +1566,8 @@ const Effect = {
         var s = Effect.reveal.list.findIndex(function (ele) {
           return ele.elem == element;
         });
-        this.list.splice(s, 1);
+        if (s != -1) this.list.splice(s, 1);
+        return s;
       },
       start: function () {
         document.addEventListener("mousemove", function (event) {
