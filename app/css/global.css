@@ -776,7 +776,7 @@ body.scroll-fix::-webkit-scrollbar-track{
     height: 100%;
     max-width: 100%;
     width: 100%;
-    margin: 12px 0 30px;
+    margin: 12px 0;
     box-sizing: border-box;
 }
 #resource.loading #image-viewer-next,
@@ -790,7 +790,7 @@ body.scroll-fix::-webkit-scrollbar-track{
     position: absolute;
     border-radius: var(--border-radius);
     display: flex;
-    margin: 12px var(--size-margin-base) 40px;
+    margin: 12px var(--size-margin-base) 12px;
     box-sizing: border-box;
 }
 #image-viewer-list > .img.no-animation{
@@ -813,7 +813,7 @@ body.scroll-fix::-webkit-scrollbar-track{
 #image-viewer-list > .img.active-view,
 #image-viewer-list > .img.old{
     width: calc(100% - (2 * var(--size-margin-base)));
-    height: calc(100% - 52px);
+    height: calc(100% - 24px);
     z-index: 5;
 }
 #image-viewer-list > .img.old{
