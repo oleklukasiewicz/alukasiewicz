@@ -305,7 +305,7 @@ let storageItems = () => [
     dev: true,
     folder: "/minerobe",
     title: "Minerobe",
-    isLink: "https://minerobe.vercel.app/design",
+    isLink: "https://minerobe.alukasiewicz.online",
     tile: {
       image: "/minerobe.webp",
       content:
