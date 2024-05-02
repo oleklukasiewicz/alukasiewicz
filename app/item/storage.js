@@ -309,7 +309,7 @@ let storageItems = () => [
     tile: {
       image: "/minerobe.webp",
       content:
-        "Radically diffrent layer based approach for Minecraft skin editor. Make your own clothes and accessories.",
+        "Digital wardrobe for your Minecraft skin. Create your own outfits and use them in the game.",
     },
     createDate: {
       day: 7,
