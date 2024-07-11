@@ -1118,7 +1118,9 @@ u.dotted-separator{
     display: none;
 }
 .multi-layer-img{
-    display: block;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     position: relative;
     overflow: hidden;
     width: 100%;
@@ -1145,6 +1147,10 @@ u.dotted-separator{
     display: table;
     opacity: 0;
     transition: opacity var(--time);
+}
+.multi-layer-img > .bg{
+    width: auto;
+    height: auto;
 }
 .multi-layer-img.loaded > *{
     opacity: 1;

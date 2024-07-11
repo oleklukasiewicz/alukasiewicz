@@ -1488,6 +1488,7 @@ const MultipleImagesRenderer = async function (imagesList, targetNode) {
 
   let nodes = imagesList.map((image, index) => {
     let imgNode = document.createElement("IMG");
+    if (image.includes("bg")) imgNode.classList.add("bg");
     imgNode.alt = "img-" + index;
     imgNode.src = image;
     targetNode.appendChild(imgNode);
