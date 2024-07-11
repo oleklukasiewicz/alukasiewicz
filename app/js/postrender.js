@@ -114,8 +114,6 @@ const INIT_DEVICE_ORIENTATION = () => {
 const SET_DEVICE_ORIENTATION = (coords) => {
   DEVICE_ORIENTATION.x = coords.x;
   DEVICE_ORIENTATION.y = coords.y;
-  console.log(DEVICE_ORIENTATION);
-
 }
 
 //navigation control methods
