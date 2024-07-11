@@ -121,7 +121,7 @@ const SET_DEVICE_ORIENTATION = (coords) => {
 
       const maxY = 20;
       const maxX = 20;
-      const minY = maxy * -1;
+      const minY = maxY * -1;
       const minX = maxX * -1;
       if (coords.y > maxY) coords.y = maxY;
       if (coords.y < minY) coords.y = minY;
