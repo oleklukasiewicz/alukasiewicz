@@ -77,7 +77,6 @@ const INIT_DEVICE_ORIENTATION = () => {
     y: 0,
   };
   if (window.DeviceOrientationEvent) {
-    console.log("DeviceOrientation is supported");
     window.addEventListener(
       "deviceorientation",
       function () {
@@ -88,7 +87,6 @@ const INIT_DEVICE_ORIENTATION = () => {
       true
     );
   } else if (window.DeviceMotionEvent) {
-    console.log("DeviceMotion is supported");
     window.addEventListener(
       "devicemotion",
       function () {
@@ -99,7 +97,6 @@ const INIT_DEVICE_ORIENTATION = () => {
       true
     );
   } else {
-    console.log("MozOrientation is supported");
     window.addEventListener(
       "MozOrientation",
       function () {
@@ -115,10 +112,13 @@ const SET_DEVICE_ORIENTATION = (coords) => {
   DEVICE_ORIENTATION.x = coords.x;
   DEVICE_ORIENTATION.y = coords.y;
   const profileImage = getById("profile-image");
-  console.log(coords);
-  if (coords.x && coords.y)
-    profileImage.style.transform =
-      "translate(" + coords.y / 5 + "px," + (coords.x - 50) / 5 + "px)";
+  if (coords.x && coords.y) {
+    const childs = profileImage.children;
+    foreach(childs, (child) => {
+      child.style.transform =
+        "translate(" + coords.y / 5 + "px," + (coords.x - 50) / 5 + "px)";
+    });
+  }
 };
 
 //navigation control methods
