@@ -116,8 +116,8 @@ const SET_DEVICE_ORIENTATION = (coords) => {
     const childs = profileImage.children;
     Array.prototype.forEach.call(childs, (child) => {
       //normalize
-      coords.x = (coords.x - 50) / 10;
-      coords.y = coords.y / 10;
+      coords.x = (coords.x - 50) / 5;
+      coords.y = coords.y / 5;
 
       const maxY = 50;
       const maxX = 50;
