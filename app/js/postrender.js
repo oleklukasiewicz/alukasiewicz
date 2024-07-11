@@ -67,8 +67,8 @@ const DARK_THEME_MATCH = window.matchMedia("(prefers-color-scheme:dark)");
 const IS_MOBILE_MATCH = window.matchMedia("(max-width:430px)");
 
 const DEVICE_ORIENTATION = {
-  x: 0,
-  y: 0,
+  x: null,
+  y: null,
 };
 
 const INIT_DEVICE_ORIENTATION = () => {
@@ -109,6 +109,18 @@ const INIT_DEVICE_ORIENTATION = () => {
   }
 };
 const SET_DEVICE_ORIENTATION = (coords) => {
+  //if change is to big - ignore
+
+  if (DEVICE_ORIENTATION.x && DEVICE_ORIENTATION.y) {
+    if (
+      Math.abs(coords.x - DEVICE_ORIENTATION.x) > 10 ||
+      Math.abs(coords.y - DEVICE_ORIENTATION.y) > 10
+    ) {
+      DEVICE_ORIENTATION.x = null;
+      DEVICE_ORIENTATION.y = null;
+    }
+  }
+
   DEVICE_ORIENTATION.x = coords.x;
   DEVICE_ORIENTATION.y = coords.y;
   const profileImage = getById("profile-image");
@@ -116,8 +128,8 @@ const SET_DEVICE_ORIENTATION = (coords) => {
     const childs = profileImage.children;
     Array.prototype.forEach.call(childs, (child) => {
       //normalize
-      coords.x = (coords.x-15) / 2;
-      coords.y = coords.y / 2;
+      coords.x = (coords.x - 15) / 4;
+      coords.y = coords.y / 4;
 
       const maxY = 20;
       const maxX = 100;
@@ -127,6 +139,7 @@ const SET_DEVICE_ORIENTATION = (coords) => {
       if (coords.y < minY) coords.y = minY;
       if (coords.x > maxX) coords.x = maxX;
       if (coords.x < minX) coords.x = minX;
+      console.log(coords.x, coords.y);
       child.style.transform =
         "translate(" + coords.y + "px," + coords.x + "px)";
     });
