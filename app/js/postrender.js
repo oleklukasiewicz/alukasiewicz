@@ -120,14 +120,13 @@ const SET_DEVICE_ORIENTATION = (coords) => {
       coords.y = coords.y / 2;
 
       const maxY = 20;
-      const maxX = 20;
+      const maxX = 100;
       const minY = maxY * -1;
-      const minX = maxX * -1;
+      const minX = 0;
       if (coords.y > maxY) coords.y = maxY;
       if (coords.y < minY) coords.y = minY;
       if (coords.x > maxX) coords.x = maxX;
       if (coords.x < minX) coords.x = minX;
-      console.log(coords.x, coords.y);
       child.style.transform =
         "translate(" + coords.y + "px," + coords.x + "px)";
     });
