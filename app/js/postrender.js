@@ -115,6 +115,10 @@ const SET_DEVICE_ORIENTATION = (coords) => {
   if (coords.x && coords.y) {
     const childs = profileImage.children;
     Array.prototype.forEach.call(childs, (child) => {
+      //normalize
+      coords.x = (coords.x - 50) / 10;
+      coords.y = coords.y / 10;
+
       const maxY = 20;
       const maxX = 20;
       const minY = maxy * -1;
@@ -124,7 +128,7 @@ const SET_DEVICE_ORIENTATION = (coords) => {
       if (coords.x > maxX) coords.x = maxX;
       if (coords.x < minX) coords.x = minX;
       child.style.transform =
-        "translate(" + coords.y / 10 + "px," + (coords.x - 50) / 10 + "px)";
+        "translate(" + coords.y + "px," + coords.x + "px)";
     });
   }
 };
