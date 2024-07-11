@@ -29,15 +29,21 @@ let RouteController = (function () {
   };
   _controller.resolve = (arg) =>
     _routesList.find((route) => route.source == arg) || _defaultRoute;
-  
-    _controller.routes = () => _routesList;
+
+  _controller.routes = () => _routesList;
   return _controller;
 })();
 
 //adding views routes
 const ROUTES_KEYS = Object.keys(APP.route);
 ROUTES_KEYS.forEach((route) => {
-  RouteController.add(new Route(APP.route[route].url, APP.route[route].viewId, APP.route[route].isDefault));
+  RouteController.add(
+    new Route(
+      APP.route[route].url,
+      APP.route[route].viewId,
+      APP.route[route].isDefault
+    )
+  );
 });
 
 //loading start view
@@ -59,6 +65,52 @@ const NAV_CLOSE_NODE = getById("main-header-navigation-close-space");
 //global variables
 const DARK_THEME_MATCH = window.matchMedia("(prefers-color-scheme:dark)");
 const IS_MOBILE_MATCH = window.matchMedia("(max-width:430px)");
+
+const DEVICE_ORIENTATION = {
+  x: 0,
+  y: 0,
+};
+
+const INIT_DEVICE_ORIENTATION = () => {
+  const data = {
+    x: 0,
+    y: 0,
+  };
+  if (window.DeviceOrientationEvent) {
+    console.log("DeviceOrientation is supported");
+    window.addEventListener(
+      "deviceorientation",
+      function () {
+        data.x = event.beta;
+        data.y = event.gamma;
+      },
+      true
+    );
+  } else if (window.DeviceMotionEvent) {
+    console.log("DeviceMotion is supported");
+    window.addEventListener(
+      "devicemotion",
+      function () {
+        data.x = event.accelerationIncludingGravity.x * 5;
+        data.y = event.accelerationIncludingGravity.y * 5;
+      },
+      true
+    );
+  } else {
+    console.log("MozOrientation is supported");
+    window.addEventListener(
+      "MozOrientation",
+      function () {
+        data.x = orientation.x * 50;
+        data.y = orientation.y * 50;
+      },
+      true
+    );
+  }
+  console.log(data);
+  DEVICE_ORIENTATION.x = data.x;
+  DEVICE_ORIENTATION.y = data.y;
+};
 
 //navigation control methods
 let isNavigationOpen = false;

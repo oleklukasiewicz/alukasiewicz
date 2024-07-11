@@ -1697,6 +1697,7 @@ window.addEventListener("load", async function () {
 
   ConfigureDefaultErrors();
   ConfigureDOM();
+  INIT_DEVICE_ORIENTATION();
 
   //loading items and groups
   try {
