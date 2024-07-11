@@ -114,7 +114,7 @@ const SET_DEVICE_ORIENTATION = (coords) => {
   const profileImage = getById("profile-image");
   if (coords.x && coords.y) {
     const childs = profileImage.children;
-    foreach(childs, (child) => {
+    childs.forEach((child) => {
       child.style.transform =
         "translate(" + coords.y / 5 + "px," + (coords.x - 50) / 5 + "px)";
     });
