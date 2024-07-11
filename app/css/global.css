@@ -1333,7 +1333,7 @@ u.dotted-separator{
         padding-top: 50px;
         padding-bottom: 50px;
     }
-    #profile-image{
+    #profile-image-frame{
         margin-left: auto;
         margin-right: auto;
     }
@@ -1341,7 +1341,7 @@ u.dotted-separator{
         padding-left: 0;
         padding-top: 0;
     }
-    #profile-image{
+    #profile-image-frame{
         margin-bottom: 30px;
     }
     #profile-header > div > .button{
