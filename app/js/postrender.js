@@ -83,6 +83,7 @@ const INIT_DEVICE_ORIENTATION = () => {
       function () {
         data.x = event.beta;
         data.y = event.gamma;
+        SET_DEVICE_ORIENTATION(data);
       },
       true
     );
@@ -93,6 +94,7 @@ const INIT_DEVICE_ORIENTATION = () => {
       function () {
         data.x = event.accelerationIncludingGravity.x * 5;
         data.y = event.accelerationIncludingGravity.y * 5;
+        SET_DEVICE_ORIENTATION(data);
       },
       true
     );
@@ -103,14 +105,18 @@ const INIT_DEVICE_ORIENTATION = () => {
       function () {
         data.x = orientation.x * 50;
         data.y = orientation.y * 50;
+        SET_DEVICE_ORIENTATION(data);
       },
       true
     );
   }
-  console.log(data);
-  DEVICE_ORIENTATION.x = data.x;
-  DEVICE_ORIENTATION.y = data.y;
 };
+const SET_DEVICE_ORIENTATION = (coords) => {
+  DEVICE_ORIENTATION.x = coords.x;
+  DEVICE_ORIENTATION.y = coords.y;
+  console.log(DEVICE_ORIENTATION);
+
+}
 
 //navigation control methods
 let isNavigationOpen = false;
