@@ -117,7 +117,7 @@ const SET_DEVICE_ORIENTATION = (coords) => {
   const profileImage = getById("profile-image");
   console.log(coords);
   profileImage.style.transform =
-    "translate(" + coords.x/10 + "px," + coords.y/10 + "px)";
+    "translate(" + coords.y/10 + "px," + coords.x/10 + "px)";
 };
 
 //navigation control methods
