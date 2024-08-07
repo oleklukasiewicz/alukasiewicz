@@ -569,27 +569,27 @@ body.scroll-fix::-webkit-scrollbar-track{
 #about-img > :nth-child(2){
     animation-delay: .1s;
     background-image: var(--src-about-banner-l2);
-    z-index: 2;
+    z-index: 1;
 }
 #about-img > :nth-child(3){
     animation-delay: .2s;
     background-image: var(--src-about-banner-l3);
-    z-index: 4;
+    z-index: 2;
 }
 #about-img > :nth-child(4){
     animation-delay: .4s;
     background-image: var(--src-about-banner-l4);
-    z-index: 6;
+    z-index: 3;
 }
 #about-img > :nth-child(5){
     animation-delay: .5s;
     background-image: var(--src-about-banner-l5);
-    z-index: 7;
+    z-index: 4;
 }
 #about-img > :nth-child(6){
     animation-delay: .7s;
     background-image: var(--src-about-banner-l6);
-    z-index: 8;
+    z-index: 5;
 }
 #about-data{
     margin: 0 auto;
