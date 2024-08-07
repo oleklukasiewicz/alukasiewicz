@@ -1124,7 +1124,9 @@ u.dotted-separator{
     display: none;
 }
 .multi-layer-img{
-    display: block;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     position: relative;
     overflow: hidden;
     width: 100%;
@@ -1151,6 +1153,10 @@ u.dotted-separator{
     display: table;
     opacity: 0;
     transition: opacity var(--time);
+}
+.multi-layer-img > .bg{
+    width: auto;
+    height: auto;
 }
 .multi-layer-img.loaded > *{
     opacity: 1;
@@ -1332,7 +1338,7 @@ u.dotted-separator{
         padding-top: 50px;
         padding-bottom: 50px;
     }
-    #profile-image{
+    #profile-image-frame{
         margin-left: auto;
         margin-right: auto;
     }
@@ -1340,7 +1346,7 @@ u.dotted-separator{
         padding-left: 0;
         padding-top: 0;
     }
-    #profile-image{
+    #profile-image-frame{
         margin-bottom: 30px;
     }
     #profile-header > div > .button{
