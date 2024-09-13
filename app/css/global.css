@@ -1325,7 +1325,6 @@ u.dotted-separator{
     #about-img-area{
         aspect-ratio: 3/2;
         width: 100%;
-        height: 100%;
     }
 }
 @media only screen and (max-width:540px){

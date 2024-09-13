@@ -62,4 +62,5 @@ const GLOBAL = {
 
 const DEVELOPMENT =
   !window.location.hostname.includes(".online") ||
-  window.location.hostname.includes("127.0.0.1");
+  window.location.hostname.includes("127.0.0.1") ||
+  window.location.hostname.includes("dev");
