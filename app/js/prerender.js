@@ -43,6 +43,7 @@ const ITEM = {
   folder: "/item",
   resourceFolder: "/resources",
   fileName: "content.json",
+  fileNameMd: "content.md",
 };
 
 //global css/app classes
