@@ -711,10 +711,12 @@ const itemView = new View(
           : "");
 
       //clear content
+      this.data.iContent.classList.remove("markdown");
       this.data.iContent.innerHTML = "";
 
       //render item
       if (item.format == "md") {
+        this.data.iContent.classList.add("markdown");
         this.data.iContent.innerHTML = item.content;
         return;
       }

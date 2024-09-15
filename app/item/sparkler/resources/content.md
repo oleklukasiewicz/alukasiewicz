@@ -1,31 +1,69 @@
----
-title: Announcing Files v3.7.6
-description: Discover the latest improvements in Files v3.7.6, including improved toolbar settings, the ability to open more than 10 files simultaneously, and several important fixes.
-thumbnail: /blog-resources/v3-4-1/Hero.png
-date: 9/13/2024
-author: files-community
----
+ ![logo](https://github.com/oleklukasiewicz/minerobe/assets/69370471/f9277a21-f817-47bd-b242-0770ed38f14a)
 
-We're excited to announce that Files v3.7.6 is now available! 🎉 Existing users will receive an update notification in the top right corner of the app, while new users can get started for free from our [download page](/download/). Additionally, you can help support the project by purchasing Files on the [Microsoft Store](ms-windows-store://pdp/?ProductId=9nghp3dx8hdx&cid=FilesWebsite) or sponsoring us on [GitHub](https://github.com/sponsors/yaira2). Your support is greatly appreciated but entirely optional.
+<h1 align="center">Digital wardrobe for minecraft skins</h1>
 
-## Changes in v3.7.6
+Minerobe is a project that allows for the customization of Minecraft skins through an advanced digital wardrobe. Designed with ease of sharing and combining different clothing items in mind, this program opens up new possibilities for the Minecraft community.
 
-- Enhanced the user experience for toolbar settings.
-- Removed the restriction on opening more than 10 files simultaneously.
-- Updated translations for better localization.
-- Resolved a NullReferenceException caused by EnableRaisingEvents.
-- Addressed an OverflowException in UpdateSelectionSize.
-- Fixed a NullReferenceException related to ShellFileOperations2.
-- Fixed a crash when opening folders with invalid Git configurations.
-- Fixed a crash that occurred when closing the main window.
-- Fixed a crash that occurred when the Windows Event Log service wasn't running.
+## Features:
 
-### Conclusion
+### 1. Skin Customization: 
+Users can tailor their skins by combining various clothing elements into unique combinations.
 
-As always, we appreciate your feedback and suggestions on how we improve Files. You can reach us through our GitHub issues page: https://github.com/files-community/Files/issues.
+### 2. Sharing Outfits: 
+With the sharing feature, players can share their created outfits with other community members.
 
-Thank you for using Files! 😊
+### 3. Open Source Code: 
+The entire project is available on GitHub, enabling the community to report bugs, propose features, and collaboratively develop Minerobe.
 
----
+## Building project
 
-Download Files from our [download page](/download/) | Sponsor us on [GitHub](https://github.com/sponsors/yaira2)
+### 1. Clone the repository
+It will create copy of the repository on your local machine.
+
+### 2. Setup database  
+Create database called `minerobe` on your local SQL Server instance.
+Run `update-database` or `script-migration` in Visual Studio for database structure migration.
+
+### 3. Add environment variables
+Create `.env` file in root directory of the project (minerobe.client) and add environment variables. You can find them in firebase settings.
+```
+Firebase (client side)
+VITE_API_KEY=<value>
+VITE_AUTH_DOMAIN=<value>
+VITE_PROJECT_ID=<value>
+VITE_STORAGE_BUCKET=<value>
+VITE_MESSAGING_SENDER_ID=<value>
+VITE_APP_ID=<value>
+VITE_MEASUREMENT_ID=<value>
+```
+Add appsettings file in minerobe.api project and add connection to your firebase app for user authentication.
+```
+"Jwt": {
+  "Authority": "https://securetoken.google.com/<your_app_id>",
+  "Audience": "<your_app_id>"
+}
+```
+
+Optionally you can add parameters for integration with minecraft services using MSAL.
+```
+ "MicrosoftAuth": {
+   "ClientId": "<your-client-id>",
+   "OriginUri": "<your-origin-uri (only for self hosted instances)>",
+   "CacheDirectory": "<your-cache-directory>",
+   "CacheFileName": "<your-cache-file-name>"
+ }
+```
+
+## Screeenshots
+
+![image](https://github.com/oleklukasiewicz/minerobe/assets/69370471/732eea4e-ada1-49b4-a5b1-182452f6d801)
+![image](https://github.com/oleklukasiewicz/minerobe/assets/69370471/380e42e3-a743-45be-b4ff-f07bf3d7cc81)
+
+
+
+
+
+
+<!--# icons 
+https://iconduck.com/search?query=vectorSetIds:140
+](url)--!>
