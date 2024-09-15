@@ -25,6 +25,11 @@
 #item-content img {
   max-width: 100%;
 }
+#item-content code {
+  max-width: 100%;
+  display: inline-block;
+  white-space: break-spaces;
+}
 #item-content .section > .section-title {
   font-weight: 700;
   margin-bottom: 24px;
