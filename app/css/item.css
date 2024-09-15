@@ -29,6 +29,7 @@
   max-width: 100%;
   display: inline-block;
   white-space: break-spaces;
+  background-color: var(--color-theme-A1);
 }
 #item-content .section > .section-title {
   font-weight: 700;
