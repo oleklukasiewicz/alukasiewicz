@@ -32,6 +32,8 @@
 }
 #item-content code {
   width: 100%;
+  padding: 4px;
+  box-sizing: border-box;
   white-space: break-spaces;
   background-color: var(--color-theme-A1);
 }
