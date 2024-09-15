@@ -25,11 +25,13 @@
 #item-content img {
   max-width: 100%;
 }
-#item-content code {
-  width: 100%;
+#item-content pre {
   padding: 6px;
   box-sizing: border-box;
-  display: inline-block;
+  background-color: var(--color-theme-A1);
+}
+#item-content code {
+  width: 100%;
   white-space: break-spaces;
   background-color: var(--color-theme-A1);
 }
