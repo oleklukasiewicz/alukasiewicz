@@ -26,6 +26,7 @@ const cacheListJS =
     [
         "/item/storage.js",
         "/js/item.js",
+        "/js/extension/showdown.js",
         "/js/prerender.js",
         "/js/postrender.js",
         "/js/main.js"

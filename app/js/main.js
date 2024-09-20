@@ -384,9 +384,14 @@ let ItemController = (function () {
   let _downloadItemContent = async function (item) {
     return new Promise((resolve, reject) =>
       fetch(
-        ITEM.folder + item.folder + ITEM.resourceFolder + "/" + ITEM.fileName
+        ITEM.folder +
+          item.folder +
+          ITEM.resourceFolder +
+          "/" +
+          (item.format == "md" ? ITEM.fileNameMd : ITEM.fileName)
       )
         .then((respond) => {
+          if (item.format == "md") return resolve(respond.text());
           resolve(respond.json());
         })
         .catch((err) => {
@@ -482,10 +487,9 @@ let ItemController = (function () {
     if (!item.isLink && !item.isContentCached) {
       //getting item content
       let _content = await _downloadItemContent(item, item.folder);
-
       //TODO: check content component version if newer -> download new version of item.css and js
-
-      ItemStuctureBuilder(item, _content);
+      if (item.format == "md") item.content = ItemMarkdownBuilder(_content);
+      else ItemStuctureBuilder(item, _content);
 
       //indicating content is cached
       item.isContentCached = true;
@@ -707,25 +711,15 @@ const itemView = new View(
           : "");
 
       //clear content
+      this.data.iContent.classList.remove("markdown");
       this.data.iContent.innerHTML = "";
-      // rendering in progress indicator
-      if (item.dev) {
-        const devIndicator = document.createElement("div");
-        devIndicator.classList.add("dev-indicator");
-        devIndicator.innerHTML =
-          "<b>IN PROGRESS</b> - Content might be changed in the future";
-        const closeDevIndicator = document.createElement("div");
-        closeDevIndicator.classList.add("close-dev-indicator");
-        closeDevIndicator.innerHTML = "Close";
-        closeDevIndicator.addEventListener("click", () => {
-          devIndicator.remove();
-          closeDevIndicator.remove();
-        });
-        devIndicator.append(closeDevIndicator);
-        this.data.iContent.append(devIndicator);
-      }
 
       //render item
+      if (item.format == "md") {
+        this.data.iContent.classList.add("markdown");
+        this.data.iContent.innerHTML = item.content;
+        return;
+      }
       this.data.iContent.append(
         await ItemComponentBuilder(item.content, item.folder, item)
       );

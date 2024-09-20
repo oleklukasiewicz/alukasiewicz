@@ -269,6 +269,7 @@ let storageItems = () => [
     id: "sparkler-build",
     dev: true,
     folder: "/sparkler",
+    format: "md",
     title: "The Sparkler",
     tile: {
       image: "/sparkler.webp",
