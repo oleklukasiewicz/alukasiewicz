@@ -387,3 +387,7 @@ let ResourcesConverter = function (resource, component, item) {
   }
   return _resources;
 };
+let ItemMarkdownBuilder = function (markdown) {
+  const converter = new showdown.Converter();
+  return converter.makeHtml(markdown);
+};

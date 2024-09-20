@@ -26,6 +26,7 @@ const cacheListJS =
     [
         "/item/storage.js",
         "/js/item.js",
+        "/js/extension/showdown.js",
         "/js/prerender.js",
         "/js/postrender.js",
         "/js/main.js"
@@ -61,6 +62,7 @@ const cacheListImages =
         "/img/logo/vs2022.svg",
         "/img/logo/vscode.svg",
         "/img/logo/vue.svg",
+        "/img/logo/dotnet.svg",
     ];
 
 const cacheList = cacheListApp.concat(cacheListCSS, cacheListJS, cacheListIcons, cacheListImages);
