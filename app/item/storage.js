@@ -16,7 +16,7 @@ let storageGroups = () => [
     },
     groups: ["home"],
     arg: {
-      itemsOrder: ["orchid", "lighthouse", "lily"],
+      itemsOrder: ["orchid", "temple", "lily"],
     },
   },
   {
@@ -46,26 +46,28 @@ let storageGroups = () => [
     title: "Projects",
     groups: ["home"],
     arg: {
-      itemsOrder: ["fluent-pad", "ancient-temple","fluent-design-system"],
+      itemsOrder: ["fluent-pad", "ancient-temple", "fluent-design-system"],
     },
   },
 ];
 let storageItems = () => [
   {
     id: "ancient-temple",
+    aliases:["temple"],
     folder: "/temple",
     dev: true,
     isLink: true,
-    title: "Ancient Times",
+    title: "The Old Times",
     tile: {
       image: "/temple-alt.webp",
       content:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ac mauris non justo dictum ullamcorper vel in ante.",
+        "Ancient temple at sunset, surrounded by nature. Classic architecture combining simplicity and elegance.",
     },
+    groups: ["featured"],
     createDate: {
       day: 21,
-      month: 12,
-      year: 2022,
+      month: 9,
+      year: 2024,
     },
   },
   {
