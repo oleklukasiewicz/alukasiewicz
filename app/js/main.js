@@ -101,10 +101,19 @@ let ItemDate = function (day, month, year) {
   ) {
     return months[this.month - 1] + "&nbsp;" + this.day + ",&nbsp;" + this.year;
   };
+  this.toNormalizedString = function (date) {
+    var year = date.year;
+    var month = date.month < 10 ? "0" + date.month : date.month;
+    var day = date.day < 10 ? "0" + date.day : date.day;
+    return "" + year + month + day;
+  };
   this.compare = function (date) {
-    let _intDate = parseInt(date);
-    if (_intDate > parseInt(this.toString())) return -1;
-    else if (_intDate < parseInt(this.toString())) return 1;
+    const aDate = this.toNormalizedString(date);
+    const bDate = this.toNormalizedString(this);
+
+    let _intDate = parseInt(aDate);
+    if (_intDate > parseInt(bDate)) return -1;
+    else if (_intDate < parseInt(bDate)) return 1;
     else return 0;
   };
 
