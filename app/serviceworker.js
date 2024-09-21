@@ -62,6 +62,7 @@ const cacheListImages =
         "/img/logo/vs2022.svg",
         "/img/logo/vscode.svg",
         "/img/logo/vue.svg",
+        "/img/logo/dotnet.svg",
     ];
 
 const cacheList = cacheListApp.concat(cacheListCSS, cacheListJS, cacheListIcons, cacheListImages);
