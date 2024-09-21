@@ -100,12 +100,12 @@
   display: block;
   margin-bottom: 8px;
 }
-a:not(.icon-button):not(.button):not(.data-node) {
+a:not(.icon-button):not(.button):not(.data-node):not(.lang-logo) {
   color: var(--color-accent-A2);
   transition: color var(--time);
   text-decoration: none;
 }
-a:not(.icon-button):not(.button):not(.data-node):hover {
+a:not(.icon-button):not(.button):not(.data-node):not(.lang-logo):hover {
   color: var(--color-accent);
   text-decoration: underline;
 }

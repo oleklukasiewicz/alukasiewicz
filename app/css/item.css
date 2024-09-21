@@ -35,6 +35,7 @@
   padding: 4px;
   box-sizing: border-box;
   white-space: break-spaces;
+  word-break: break-all;
   background-color: var(--color-theme-A1);
 }
 #item-content .section > .section-title {
