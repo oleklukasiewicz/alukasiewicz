@@ -57,7 +57,7 @@ let storageItems = () => [
     folder: "/temple",
     dev: true,
     isLink: true,
-    title: "The Old Times",
+    title: "Old Times",
     tile: {
       image: "/temple-alt.webp",
       content:
