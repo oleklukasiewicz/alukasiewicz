@@ -1169,7 +1169,7 @@ const StorageResponseIndexer = function (
         typeof value == "number"
           ? response.content[value]
           : ItemController.getItemSnapshotById(value);
-      if (item.groups?.includes(response.id)) _addIntoResponse(item);
+      if (item?.groups?.includes(response.id)) _addIntoResponse(item);
     });
   response.arg?.groupsOrder?.forEach((value, index) =>
     _addGroupIntoResponse(
