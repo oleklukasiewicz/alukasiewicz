@@ -53,10 +53,9 @@ let storageGroups = () => [
 let storageItems = () => [
   {
     id: "ancient-temple",
-    aliases:["temple"],
+    aliases: ["temple"],
     folder: "/temple",
-    dev: true,
-    isLink: true,
+    isLink: "https://www.instagram.com/p/DAOHMGxIv6j/",
     title: "Old Times",
     tile: {
       image: "/temple-alt.webp",
@@ -65,7 +64,7 @@ let storageItems = () => [
     },
     groups: ["featured"],
     createDate: {
-      day: 21,
+      day: 22,
       month: 9,
       year: 2024,
     },
