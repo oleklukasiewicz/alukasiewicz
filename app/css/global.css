@@ -997,6 +997,8 @@ u.dotted-separator{
     box-sizing: border-box;
     line-height: normal;
     animation: none;
+    line-height: 16px;
+    margin-right: 0px;
     opacity: 1;
 }
 .list-view > .item > .labels{
