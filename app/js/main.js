@@ -107,6 +107,9 @@ let ItemDate = function (day, month, year) {
     var day = date.day < 10 ? "0" + date.day : date.day;
     return "" + year + month + day;
   };
+  this.toDate = function () {
+    return new Date(this.year, this.month - 1, this.day);
+  };
   this.compare = function (date) {
     const aDate = this.toNormalizedString(date);
     const bDate = this.toNormalizedString(this);
@@ -116,7 +119,14 @@ let ItemDate = function (day, month, year) {
     else if (_intDate < parseInt(bDate)) return 1;
     else return 0;
   };
-
+  this.diff = function (date) {
+    let _date = this.toDate();
+    let _diff = date - _date;
+    const days = Math.floor(_diff / (1000 * 60 * 60 * 24));
+    const months = Math.floor(days / 30);
+    const years = Math.floor(months / 12);
+    return { days, months, years };
+  };
   if (typeof arguments[0] === "object") {
     this.day = arguments[0].day;
     this.month = arguments[0].month;
@@ -1011,7 +1021,16 @@ const createItemTile = async function (node, item) {
   if (item.dev) {
     let _betabadge = document.createElement("SPAN");
     _betabadge.classList.add("dev-badge");
+    _betabadge.classList.add("badge");
     _betabadge.innerHTML = "BETA";
+    nodeTitle.appendChild(_betabadge);
+  }
+  const targetDate = item.modifyDate || item.createDate;
+  const dateDiffrence = targetDate.diff(new Date());
+  if (dateDiffrence.days < 30) {
+    let _betabadge = document.createElement("SPAN");
+    _betabadge.classList.add("badge");
+    _betabadge.innerHTML = "NEW";
     nodeTitle.appendChild(_betabadge);
   }
 

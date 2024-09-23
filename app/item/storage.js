@@ -16,7 +16,7 @@ let storageGroups = () => [
     },
     groups: ["home"],
     arg: {
-      itemsOrder: ["orchid", "temple", "lily"],
+      itemsOrder: ["temple", "orchid", "lily"],
     },
   },
   {
