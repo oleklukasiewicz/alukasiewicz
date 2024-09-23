@@ -991,14 +991,13 @@ u.dotted-separator{
 }
 .list-view > .item > b > .badge{
     margin-left: auto;
+    margin-top: 0;
     float: right;
-    transform: translateY(-2px);
     height: 24px;
     box-sizing: border-box;
-    line-height: normal;
     animation: none;
     line-height: 16px;
-    margin-right: 0px;
+    margin-right: 0;
     opacity: 1;
 }
 .list-view > .item > .labels{
