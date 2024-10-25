@@ -8,7 +8,7 @@
     --color-theme-A6: hsl(215, 5%, 54%);
     --color-theme-hover: hsla(216, 21%, 24%, 0.1);
     --color-theme-active: hsla(216, 21%, 24%, 0.2);
-    --color-theme-acrylic: hsl(215, 21%, 95%, 0.3);
+    --color-theme-acrylic: hsl(215, 21%, 95%, 0.6);
     --shadow-profile-header: 0 2px 12px rgba(0, 0, 0, 0.04);
     --color-font: #4f4f4f;
     --color-font-disabled: #aaaaaa;
