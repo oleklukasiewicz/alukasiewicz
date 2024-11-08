@@ -183,7 +183,7 @@ a:not(.icon-button):not(.button):not(.data-node):not(.lang-logo):hover{
     content: "\EB1A";
 }
 .al-logo{
-    text-decoration: none;
+    text-decoration: none !important;
     display: inline-block;
     max-height: var(--logo-height);
     margin: 8px;
