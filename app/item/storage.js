@@ -3,7 +3,7 @@ let storageGroups = () => [
     id: "home",
     aliases: ["landing"],
     arg: {
-      groupsOrder: ["featured", "organic-group", "all"],
+      groupsOrder: ["featured", "organic-group", "architecture", "all"],
     },
   },
   {
@@ -16,7 +16,7 @@ let storageGroups = () => [
     },
     groups: ["home"],
     arg: {
-      itemsOrder: ["orchid", "temple", "lily"],
+      itemsOrder: ["temple", "orchid", "lily"],
     },
   },
   {
@@ -26,6 +26,11 @@ let storageGroups = () => [
     arg: {
       itemsOrder: ["crocus", "lily", "tree"],
     },
+  },
+  {
+    id: "architecture",
+    title: "Architecture",
+    groups: ["home"],
   },
   {
     id: "all",
@@ -53,19 +58,18 @@ let storageGroups = () => [
 let storageItems = () => [
   {
     id: "ancient-temple",
-    aliases:["temple"],
+    aliases: ["temple"],
     folder: "/temple",
-    dev: true,
-    isLink: true,
+    isLink: "https://www.instagram.com/p/DAOHMGxIv6j/",
     title: "Old Times",
     tile: {
       image: "/temple-alt.webp",
       content:
         "Ancient temple at sunset, surrounded by nature. Classic architecture combining simplicity and elegance.",
     },
-    groups: ["featured"],
+    groups: ["featured", "architecture"],
     createDate: {
-      day: 21,
+      day: 22,
       month: 9,
       year: 2024,
     },
@@ -133,7 +137,7 @@ let storageItems = () => [
         "The world is full of patterns. Here it is represented as a set of tiles.",
       image: "/isometric_castle.webp",
     },
-    groups: ["featured"],
+    groups: ["featured", "architecture"],
     createDate: {
       day: 9,
       month: 2,
@@ -149,7 +153,7 @@ let storageItems = () => [
       content: "Alone lighthouse on the night sea with a sky full of stars.",
       image: "/lighthouse.webp",
     },
-    groups: ["featured"],
+    groups: ["featured", "architecture"],
     createDate: {
       day: 16,
       month: 3,
