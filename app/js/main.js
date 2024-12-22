@@ -1607,15 +1607,6 @@ const Effect = {
             );
           });
         });
-        document.addEventListener("scroll", function () {
-          Effect.reveal.list.forEach((element) => {
-            Effect.reveal.render(
-              element.elem,
-              element.arg.hightlight,
-              element.arg.reveal
-            );
-          });
-        });
       },
       discover: function () {
         const discovered = [
