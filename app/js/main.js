@@ -18,10 +18,10 @@ const CREATE_HASH = function (str, seed = 0) {
 };
 
 //resource classes declaration
-let Resource = function (src, type, hash = CREATE_HASH(src), props = {}) {
+const Resource = function (src, type, hash = CREATE_HASH(src), props = {}) {
   return { src, type, hash, props };
 };
-let ResourceGroup = function (resourcesList = [], selectedResourceHash) {
+const ResourceGroup = function (resourcesList = [], selectedResourceHash) {
   this.addResource = function (resource) {
     if (Array.isArray(resource))
       resource.forEach((_res) => resourcesList.push(_res));
@@ -31,7 +31,7 @@ let ResourceGroup = function (resourcesList = [], selectedResourceHash) {
   this.selected = selectedResourceHash;
 };
 
-let ResourceDictionary = function (resourcesGroups = []) {
+const ResourceDictionary = function (resourcesGroups = []) {
   let _dictionary = this;
   this.addGroup = (group) => _dictionary.push(group) - 1;
 
@@ -40,7 +40,7 @@ let ResourceDictionary = function (resourcesGroups = []) {
 ResourceDictionary.prototype = new Array();
 ResourceDictionary.constructor = ResourceDictionary;
 
-let View = function (
+const View = function (
   routingData,
   data = {},
   event = {},
@@ -57,7 +57,7 @@ let View = function (
     loadingMode,
   };
 };
-let ErrorClass = function (
+const ErrorClass = function (
   id,
   title,
   message,
@@ -72,7 +72,7 @@ let ErrorClass = function (
     refreshRequire,
   };
 };
-let HistoryItem = function (id, index, defaultViewHistoryIndex, arg) {
+const HistoryItem = function (id, index, defaultViewHistoryIndex, arg) {
   return {
     id,
     index,
@@ -82,7 +82,7 @@ let HistoryItem = function (id, index, defaultViewHistoryIndex, arg) {
 };
 
 //item date class declaration
-let ItemDate = function (day, month, year) {
+const ItemDate = function (day, month, year) {
   this.toHTMLString = function (
     months = [
       "Jan",
@@ -140,7 +140,7 @@ let ItemDate = function (day, month, year) {
 };
 
 //event sub controller declaration
-let EventController = function (eventsList = []) {
+const EventController = function (eventsList = []) {
   let _events = {};
 
   eventsList.forEach((eventName) => (_events[eventName] = []));
@@ -152,7 +152,7 @@ let EventController = function (eventsList = []) {
 };
 
 //controllers declarations
-let ViewController = (function () {
+const ViewController = (function () {
   let _controller = {};
   let _views = [];
   let _currentHistoryIndex = -1;
@@ -201,9 +201,9 @@ let ViewController = (function () {
   };
 
   //view controller methods
-  let _getViewById = (id) =>
+  const _getViewById = (id) =>
     _views.find((view) => view.id == id) || _defaultView;
-  let _registerDelayedView = function (view) {
+  const _registerDelayedView = function (view) {
     if (view.isRegisterDelayed && !view.registered) {
       if (_currentGLOBALError)
         view.event?.onError.call(view, _currentGLOBALError);
@@ -211,22 +211,22 @@ let ViewController = (function () {
       view.registered = true;
     }
   };
-  let _generateRootNode = function (view) {
+  const _generateRootNode = function (view) {
     if (typeof view.rootNode == "string")
       view.rootNode = getById(view.rootNode);
   };
-  let _unLoadView = function (view) {
+  const _unLoadView = function (view) {
     if (view.loadingMode == _controller.loadingModes.always)
       view.isLoaded = false;
   };
-  let _invokeLoadEvent = async function (view, arg) {
+  const _invokeLoadEvent = async function (view, arg) {
     if (!view.isLoading && !view.isLoaded) {
       view.isLoading = true;
       await view.event.onLoad?.call(view, arg);
     }
     return view;
   };
-  let _invokeLoadFinishEvent = async function (view, arg) {
+  const _invokeLoadFinishEvent = async function (view, arg) {
     if (view.isLoading && !view.isLoaded) {
       view.isLoading = false;
       view.isLoaded = true;
@@ -352,7 +352,7 @@ let ViewController = (function () {
   };
   return _controller;
 })();
-let ItemController = (function () {
+const ItemController = (function () {
   let _routes = [];
   let _groupRoutes = [];
   let _storage = [];
@@ -400,7 +400,7 @@ let ItemController = (function () {
     )
   );
 
-  let _downloadItemContent = async function (item) {
+  const _downloadItemContent = async function (item) {
     return new Promise((resolve, reject) =>
       fetch(
         ITEM.folder +
@@ -419,14 +419,14 @@ let ItemController = (function () {
     );
   };
 
-  let _generateId = (id) =>
+  const _generateId = (id) =>
     encodeURIComponent(id.toLowerCase().replaceAll(" ", "-"));
-  let _generateValidStorageObject = function (obj) {
+  const _generateValidStorageObject = function (obj) {
     obj.id = obj.id || _generateId(obj.title);
     obj.createDate = new ItemDate(obj.createDate);
     if (obj.modifyDate) obj.modifyDate = new ItemDate(obj.modifyDate);
   };
-  let _generateGroup = function (group) {
+  const _generateGroup = function (group) {
     group.content = [];
     group.type = GLOBAL.group;
     _generateValidStorageObject(group);
@@ -434,11 +434,11 @@ let ItemController = (function () {
     return group;
   };
 
-  let _getGroupByRoute = (id) =>
+  const _getGroupByRoute = (id) =>
     _groupRoutes.find((route) => route.source == id)?.target;
-  let _getItemByRoute = (id) =>
+  const _getItemByRoute = (id) =>
     _routes.find((route) => route.source == id)?.target;
-  let _getResourceGroupByHash = function (dictionary, hash) {
+  const _getResourceGroupByHash = function (dictionary, hash) {
     let targetResource;
     let target = dictionary.find((resGroup) => {
       targetResource = resGroup.resources.find((res) => res.hash == hash);
@@ -449,7 +449,7 @@ let ItemController = (function () {
     return target;
   };
 
-  let _fetchGroups = async function (groups) {
+  const _fetchGroups = async function (groups) {
     await Promise.all(
       groups.map(async (group) => {
         if (group.dev === true && !DEVELOPMENT) return;
@@ -470,7 +470,7 @@ let ItemController = (function () {
     await _controller.invokeEvent("fetchGroupFinish");
     _groupsLoaded = true;
   };
-  let _fetchItems = async function (items, sortingMethod) {
+  const _fetchItems = async function (items, sortingMethod) {
     await Promise.all(
       items.map(async (item) => {
         _generateValidStorageObject(item);
@@ -496,7 +496,7 @@ let ItemController = (function () {
     _itemsLoaded = true;
   };
   //loading full item content
-  let _fetchItemContent = async function (item) {
+  const _fetchItemContent = async function (item) {
     if (!item) {
       ViewController.invokeError("item_not_found");
       return;
@@ -568,7 +568,7 @@ const landingView = new View(
     onRegister: function () {
       let profileImage = getById("profile-image");
 
-      let renderProfileImage = async function (isDark = false, targetNode) {
+      const renderProfileImage = async function (isDark = false, targetNode) {
         let imagesList = ["/bg1.webp", "/profile-picture.webp"];
         let folder = isDark
           ? "/img/dark/landing-banner"
@@ -856,7 +856,7 @@ const resourceView = new View(
         ViewController.back
       );
 
-      let _setButtonsDisplay = function (isHidden) {
+      const _setButtonsDisplay = function (isHidden) {
         _nextBtn.classList.toggle(GLOBAL.hidden, isHidden);
         _prevBtn.classList.toggle(GLOBAL.hidden, isHidden);
       };
@@ -1141,7 +1141,7 @@ const StorageResponseIndexer = function (
   let _groupIndex = 0;
   let _currentIndex = startIndex;
 
-  let _addIntoResponse = function (entry) {
+  const _addIntoResponse = function (entry) {
     if (!entry || entry.hidden) return;
     entry.isIndexed = true;
 
@@ -1155,7 +1155,7 @@ const StorageResponseIndexer = function (
     if (limit > 0) limit -= 1;
     _currentIndex += 1;
   };
-  let _addGroupIntoResponse = function (entry) {
+  const _addGroupIntoResponse = function (entry) {
     if (!entry) return;
     _groupItemIndex = 0;
     _groupIndex += 1;
@@ -1277,7 +1277,7 @@ const ResourceSlider = function () {
     }
   });
 
-  let _renderIndex = async function (index, direction) {
+  const _renderIndex = async function (index, direction) {
     _history.unshift({ resource: _res[_currentIndex], index: _currentIndex });
     if (_history.length > _historyLimit) _history.pop();
 
@@ -1358,7 +1358,7 @@ const GestureBuilder = function (node, event = {}) {
 
   const MIN_DIST = 100;
 
-  let _directionSolver = function (startX, startY, endX, endY) {
+  const _directionSolver = function (startX, startY, endX, endY) {
     let _distX = Math.abs(endX - startX);
     let _distY = Math.abs(endY - startY);
 
@@ -1457,13 +1457,13 @@ const ImageHelper = function (
   onfinish = () => {}
 ) {
   if (!image.src) return;
-  let imageIsNotLoaded = function () {
+  const imageIsNotLoaded = function () {
     image.src = "/img/image_error.webp";
     image.onload = function () {};
     onerror(image);
     onfinish(image);
   };
-  let imageLoaded = function () {
+  const imageLoaded = function () {
     image.classList.add(GLOBAL.loaded);
     onload(image);
     onfinish(image);

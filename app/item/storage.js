@@ -1,4 +1,4 @@
-let storageGroups = () => [
+const storageGroups = () => [
   {
     id: "home",
     aliases: ["landing"],
@@ -55,7 +55,7 @@ let storageGroups = () => [
     },
   },
 ];
-let storageItems = () => [
+const storageItems = () => [
   {
     id: "ancient-temple",
     aliases: ["temple"],

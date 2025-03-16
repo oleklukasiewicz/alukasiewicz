@@ -10,7 +10,7 @@ NodeList.prototype.remove = HTMLCollection.prototype.remove = function () {
 const getById = (id) => document.getElementById(id);
 
 //route class declaration
-let Route = function (source, target = source) {
+const Route = function (source, target = source) {
   return {
     source,
     target,
@@ -18,7 +18,7 @@ let Route = function (source, target = source) {
 };
 
 //route controller declaration
-let RouteController = (function () {
+const RouteController = (function () {
   let _controller = {};
   let _routesList = [];
   let _defaultRoute;
@@ -68,12 +68,12 @@ const IS_MOBILE_MATCH = window.matchMedia("(max-width:430px)");
 
 //navigation control methods
 let isNavigationOpen = false;
-let setNavigationState = function (isOpened) {
+const setNavigationState = function (isOpened) {
   NAV_NODE.classList.toggle("closed", !isOpened);
   isNavigationOpen = isOpened;
 };
-let toggleNavigationState = () => setNavigationState(!isNavigationOpen);
-let closeNavigation = function () {
+const toggleNavigationState = () => setNavigationState(!isNavigationOpen);
+const closeNavigation = function () {
   if (isNavigationOpen) setNavigationState(false);
 };
 
