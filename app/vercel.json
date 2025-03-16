@@ -1,5 +1,0 @@
-{
-  "rewrites": [{ "source": "/:path(.*.)", "destination": "/" }],
-  "outputDirectory": "/app",
-  "cleanUrls": true
-}
