@@ -53,6 +53,7 @@ function processFiles(inputDir, outputDir) {
         }
       });
     });
+    console.log("Files processed successfully");
   });
 }
 
