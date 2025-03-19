@@ -2,8 +2,8 @@ const fs = require("fs");
 const path = require("path");
 const { minify } = require("terser");
 
-const inputFolder = "./app";
-const outputFolder = "./output";
+const inputFolder = "./alukasiewicz.client";
+const outputFolder = "./alukasiewicz.client/output";
 
 // Ensure output folder exists
 if (!fs.existsSync(outputFolder)) {
@@ -37,9 +37,9 @@ function processFiles(inputDir, outputDir) {
         } else if (path.extname(file) === ".js") {
           try {
             const code = fs.readFileSync(inputFilePath, "utf8");
-            const result = await minify(code,{
-                compress: true,
-                mangle: true
+            const result = await minify(code, {
+              compress: true,
+              mangle: true,
             });
 
             if (result.code) {
@@ -53,8 +53,8 @@ function processFiles(inputDir, outputDir) {
         }
       });
     });
-    console.log("Files processed successfully");
   });
+  console.log("Files processed successfully");
 }
 
 // Start processing

@@ -1,5 +1,5 @@
 .*
-output
+*/output
 node_modules
 !.gitignore
 !.vscode
