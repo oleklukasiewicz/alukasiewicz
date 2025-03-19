@@ -1,6 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 const { minify } = require("terser");
+const { exec } = require("child_process");
 
 const inputFolder = "alukasiewicz.client";
 const outputFolder = "alukasiewicz.client/.output";
@@ -10,7 +11,7 @@ if (!fs.existsSync(outputFolder)) {
   fs.mkdirSync(outputFolder, { recursive: true });
 }
 
-// Function to copy and process files
+// Function to copy, transpile, and process files
 async function processFiles(inputDir, outputDir) {
   if (!fs.existsSync(outputDir)) {
     fs.mkdirSync(outputDir, { recursive: true });
@@ -36,6 +37,27 @@ async function processFiles(inputDir, outputDir) {
       if (stats.isDirectory()) {
         // Recursively process subdirectories
         await processFiles(inputFilePath, outputFilePath);
+      } else if (path.extname(file) === ".ts") {
+        // Transpile TypeScript files to JavaScript and then minify
+        const jsOutputFilePath = outputFilePath.replace(/\.ts$/, ".js");
+        try {
+          await transpileTypeScript(inputFilePath, jsOutputFilePath);
+          console.log(`Transpiled: ${inputFilePath} -> ${jsOutputFilePath}`);
+
+          // Minify the transpiled JavaScript file
+          const code = await fs.promises.readFile(jsOutputFilePath, "utf8");
+          const result = await minify(code, {
+            compress: true,
+            mangle: true,
+          });
+
+          if (result.code) {
+            await fs.promises.writeFile(jsOutputFilePath, result.code, "utf8");
+            console.log(`Minified: ${jsOutputFilePath}`);
+          }
+        } catch (error) {
+          console.error(`Error processing ${file}:`, error);
+        }
       } else if (path.extname(file) === ".js") {
         // Minify JavaScript files
         try {
@@ -61,6 +83,16 @@ async function processFiles(inputDir, outputDir) {
   } catch (error) {
     console.error("Error processing files:", error);
   }
+}
+
+// Function to transpile TypeScript files
+function transpileTypeScript(inputFilePath, outputFilePath) {
+  return new Promise((resolve, reject) => {
+    const command = `tsc ${inputFilePath} --outFile ${outputFilePath}`;
+    exec(command, (error, stdout, stderr) => {
+      resolve(stdout);
+    });
+  });
 }
 
 // Start processing
