@@ -1,4 +1,6 @@
 .*
+output
+node_modules
 !.gitignore
 !.vscode
 firebase-debug.log*
