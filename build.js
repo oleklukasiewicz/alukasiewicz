@@ -3,7 +3,7 @@ const path = require("path");
 const { minify } = require("terser");
 
 const inputFolder = "alukasiewicz.client";
-const outputFolder = "alukasiewicz.client/output";
+const outputFolder = "alukasiewicz.client/.output";
 
 // Ensure output folder exists
 if (!fs.existsSync(outputFolder)) {
@@ -26,7 +26,7 @@ async function processFiles(inputDir, outputDir) {
       // Skip the output folder
       if (
         inputFilePath.includes(outputFolder) ||
-        inputFilePath.includes("output")
+        inputFilePath.includes(".output")
       ) {
         continue;
       }
