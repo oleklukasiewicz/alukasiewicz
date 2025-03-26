@@ -37,7 +37,7 @@
 <body id="app" class="scroll-fix first-view nav-bottom">
     <div id="main-header-base" class="closed" style="display:table;z-index:11;">
         <div id="main-header-navigation-close-space"></div>
-        <div id="main-header" style="width:100%;height: 54px;position: relative;z-index: 12;gap:8px;display: grid;">
+        <div id="main-header" style="width:100%;position: relative;z-index: 12;">
             <div id="main-header-icons-left" style="float: left;">
                 <a class="al-logo anim" id="home-button" title="Home page" href="/">
                     <div class="l"></div>
@@ -49,14 +49,8 @@
                     DEV
                 </div>
             </div>
-            <div id="main-header-search">
-                <div id="main-search">
-                    <div class="icon-button" style="height: 34px;width: 34px;"><i class="mi mi-Search"></i></div>
-                    <input id="main-search-input" type="text" placeholder="Search for posts, groups and projects" />
-                    <div id="main-search-shortcut">Ctrl + K</div>
-            </div>
-            </div>
-            <div id="main-header-icons" style="justify-content: right;" class="disabled">
+            <div id="main-header-icons" style="float: right;" class="disabled">
+                <!-- <div class="icon-button" style="height: 34px;width: 34px;"><i class="mi mi-Search"></i></div> -->
                 <div id="main-header-nav-button" class="icon-button"><i class="mi mi-Navigation"></i></div>
                 <div id="main-header-navigation">
                     <a id="main-header-work-button" class="icon-button" href="/group/work" title="Work"><i
