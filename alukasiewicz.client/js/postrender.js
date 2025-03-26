@@ -42,7 +42,8 @@ ROUTES_KEYS.forEach((route) => {
       APP.route[route].url,
       APP.route[route].viewId,
       APP.route[route].isDefault
-    )
+    ),
+    APP.route[route].isDefault
   );
 });
 

@@ -20,9 +20,8 @@
     <Folder Include="Module\Groups\Controllers\" />
     <Folder Include="Module\Groups\Interfaces\" />
     <Folder Include="Module\Groups\Services\" />
-    <Folder Include="Module\Posts\Controllers\" />
-    <Folder Include="Module\Posts\Interfaces\" />
-    <Folder Include="Module\Posts\Services\" />
+    <Folder Include="Module\Posts\ResponseModel\" />
+    <Folder Include="Module\Resources\Controllers\" />
   </ItemGroup>
 
 </Project>

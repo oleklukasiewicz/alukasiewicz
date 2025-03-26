@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using alukasiewicz.api.Database;
 
@@ -11,9 +12,11 @@ using alukasiewicz.api.Database;
 namespace alukasiewicz.api.Migrations
 {
     [DbContext(typeof(BaseDbContext))]
-    partial class BaseDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250326145936_ResourcesSet")]
+    partial class ResourcesSet
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -97,7 +100,7 @@ namespace alukasiewicz.api.Migrations
                     b.Property<bool>("IsPublished")
                         .HasColumnType("bit");
 
-                    b.Property<Guid?>("TileImageResourceId")
+                    b.Property<Guid>("TileImegeResourceId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Title")
