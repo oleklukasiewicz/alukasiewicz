@@ -1,4 +1,4 @@
-﻿namespace alukasiewicz.api.Module.Posts.Entity.ResponseModel
+﻿namespace alukasiewicz.api.Module.Posts.ResponseModel
 {
     public class ItemListItemResponseModel
     {

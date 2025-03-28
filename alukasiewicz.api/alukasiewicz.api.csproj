@@ -18,9 +18,6 @@
 
   <ItemGroup>
     <Folder Include="Module\Groups\Controllers\" />
-    <Folder Include="Module\Groups\Interfaces\" />
-    <Folder Include="Module\Groups\Services\" />
-    <Folder Include="Module\Posts\ResponseModel\" />
     <Folder Include="Module\Resources\Controllers\" />
   </ItemGroup>
 

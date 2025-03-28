@@ -1,4 +1,4 @@
-﻿using alukasiewicz.api.Module.Posts.Entity.ResponseModel;
+﻿using alukasiewicz.api.Module.Posts.ResponseModel;
 using alukasiewicz.api.Module.Resources.Entity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;

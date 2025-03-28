@@ -1,6 +1,6 @@
 ﻿using alukasiewicz.api.Module.Resources.Model;
 
-namespace alukasiewicz.api.Module.Posts.Entity.ResponseModel
+namespace alukasiewicz.api.Module.Posts.ResponseModel
 {
     public class ItemResponseModel
     {
