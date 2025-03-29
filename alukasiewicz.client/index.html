@@ -45,8 +45,11 @@
                     <div class="l"></div>
                     <div class="c"></div>
                 </a>
-                <div class="dev-badge">
+                <div class="dev-badge badge">
                     DEV
+                </div>
+                <div class="offline-badge badge">
+                    Offline
                 </div>
             </div>
             <div id="main-header-icons" style="float: right;" class="disabled">
@@ -61,7 +64,17 @@
                 </div>
             </div>
         </div>
-
+        <div id="search">
+            <div id="search-input">
+                <input type="text" id="search-text" placeholder="Search posts, groups and resources" />
+                <a id="search-btn" class="icon-button" ><i class="mi mi-BackMirrored"></i></a>
+            </div>
+            <div id="search-results">
+                <div class="loading"></div>
+                <div class="loading"></div>
+                <div class="loading"></div>
+            </div>
+        </div>
     </div>
     <div id="content">
         <main id="views">

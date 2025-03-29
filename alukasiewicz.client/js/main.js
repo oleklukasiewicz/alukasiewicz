@@ -1699,7 +1699,10 @@ ViewController.addEventListener("navigateFromView", async (lastView) => {
   await PlayViewUnLoadingAnimation();
   lastView.rootNode.classList.remove(GLOBAL.activeView);
 });
-ViewController.addEventListener("navigationRequest", () => closeNavigation());
+ViewController.addEventListener("navigationRequest", () => {
+  closeNavigation();
+  closeSearch();
+});
 
 window.addEventListener("popstate", (event) =>
   ViewController.navigateFromHistory(event.state)

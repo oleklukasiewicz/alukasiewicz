@@ -67,10 +67,26 @@ const NAV_CLOSE_NODE = getById("main-header-navigation-close-space");
 const DARK_THEME_MATCH = window.matchMedia("(prefers-color-scheme:dark)");
 const IS_MOBILE_MATCH = window.matchMedia("(max-width:430px)");
 
+//matcher
+IS_MOBILE_MATCH.addEventListener(
+  "change",
+  (e) => {
+    if (!isSearchOpen) {
+      setNavigationState(false);
+    }
+  },
+  {
+    passive: true,
+  }
+);
+
 //navigation control methods
 let isNavigationOpen = false;
 const setNavigationState = function (isOpened) {
+  closeSearch();
   NAV_NODE.classList.toggle("closed", !isOpened);
+  NAV_NODE.classList.toggle("opened", isOpened);
+  APP_NODE.classList.toggle("dialog-opened", isOpened);
   isNavigationOpen = isOpened;
 };
 const toggleNavigationState = () => setNavigationState(!isNavigationOpen);
@@ -94,3 +110,51 @@ NAV_CLOSE_NODE.addEventListener("touchstart", closeNavigation, {
 getById(START_ROUTE.target).classList.add(GLOBAL.activeView);
 APP_NODE.classList.add(START_ROUTE.target);
 if ("scrollRestoration" in history) history.scrollRestoration = "manual";
+
+//setup offline
+let IS_OFFLINE = navigator.onLine ? false : true;
+if (IS_OFFLINE) {
+  APP_NODE.classList.add("offline");
+}
+window.addEventListener(
+  "offline",
+  () => {
+    IS_OFFLINE = true;
+    APP_NODE.classList.add("offline");
+  },
+  { passive: true }
+);
+window.addEventListener(
+  "online",
+  () => {
+    IS_OFFLINE = false;
+    APP_NODE.classList.remove("offline");
+  },
+  { passive: true }
+);
+//add search
+let isSearchOpen = false;
+const SEARCH_NODE = getById("search");
+const openSearch = function () {
+  setNavigationState(false);
+  SEARCH_NODE.classList.add("opened");
+  APP_NODE.classList.add("dialog-opened");
+  const searchInput = getById("search-text");
+  searchInput.focus();
+  searchInput.select();
+  isSearchOpen = true;
+};
+const closeSearch = function () {
+  SEARCH_NODE.classList.remove("opened");
+  APP_NODE.classList.remove("dialog-opened");
+  isSearchOpen = false;
+};
+const toggleSearch = function () {
+  if (isSearchOpen) closeSearch();
+  else openSearch();
+};
+NAV_CLOSE_NODE.addEventListener("click", closeSearch, { passive: true });
+NAV_CLOSE_NODE.addEventListener("touchstart", closeSearch, {
+  passive: true,
+});
+getById("main-header-search").addEventListener("click", toggleSearch);
