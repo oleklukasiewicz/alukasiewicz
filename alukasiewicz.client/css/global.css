@@ -1,5 +1,6 @@
 :root {
   --color-theme: hsl(216, 21%, 95%);
+  --color-theme-nav-border: hsl(215, 21%, 90%);
   --color-theme-A1: hsl(215, 21%, 98%);
   --color-theme-A2: hsl(215, 18%, 90%);
   --color-theme-A3: hsl(215, 15%, 83%);
@@ -49,6 +50,7 @@
 @media (prefers-color-scheme: dark) {
   :root {
     --color-theme: hsl(215, 21%, 11%);
+    --color-theme-nav-border: hsl(215, 15%, 15%);
     --color-theme-A1: hsl(215, 15%, 15%);
     --color-theme-A2: hsl(215, 12%, 21%);
     --color-theme-A3: hsl(215, 10%, 27%);
@@ -1484,7 +1486,7 @@ u.dotted-separator {
     bottom: 53px;
     top: initial;
     border-bottom: none;
-    border-top: 1px solid var(--color-theme-A1);
+    border-top: 1px solid var(--color-theme-nav-border);
   }
   #app.nav-bottom #main-header-base.closed #main-header-navigation {
     max-height: 0;
@@ -1530,7 +1532,7 @@ u.dotted-separator {
     overflow: hidden;
     transition: var(--time) cubic-bezier(0.1, 0.9, 0.2, 1);
     transform: translateY(50px);
-    border-top: 1px solid var(--color-theme-A1);
+    border-top: 1px solid var(--color-theme-nav-border);
     background-color: var(--color-theme);
     border-left: 0px;
     border-right: 0px;
