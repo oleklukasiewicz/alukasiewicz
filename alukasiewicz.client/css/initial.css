@@ -6,9 +6,10 @@
   --color-theme-A3: hsl(215, 15%, 83%);
   --color-theme-A4: hsl(215, 11%, 74%);
   --color-theme-A5: hsl(215, 8%, 65%);
-  --color-theme-A6: hsl(215, 5%, 50%);
+  --color-theme-A6: hsl(215, 5%, 40%);
   --color-theme-hover: hsla(216, 21%, 24%, 0.1);
   --color-theme-active: hsla(216, 21%, 24%, 0.2);
+  --color-theme-active-darken: hsla(216, 21%, 24%, 0.3);
   --color-theme-acrylic: hsl(215, 21%, 95%, 0.6);
   --shadow-profile-header: 0 2px 12px rgba(0, 0, 0, 0.04);
   --color-font: #4f4f4f;
@@ -59,6 +60,7 @@
     --color-theme-A6: hsl(215, 4%, 56%);
     --color-theme-hover: rgba(72, 79, 88, 0.4);
     --color-theme-active: rgba(72, 79, 88, 0.2);
+    --color-theme-active-darken: hsla(215, 4%, 80%, 0.3);
     --color-theme-acrylic: rgba(22, 27, 34, 0.8);
     --color-font: #e5e5e5;
     --color-font-disabled: #aaaaaa;
@@ -482,7 +484,7 @@ body.scroll-fix::-webkit-scrollbar-track {
   background-color: rgba(45, 51, 59, 0.8);
 }
 u.separator.vertical {
-  border-right: 1px solid var(--color-theme-A4);
+  border-right: 1px solid var(--color-theme-active-darken);
   min-height: 100%;
   flex: 1;
   margin: 8px 2px;
