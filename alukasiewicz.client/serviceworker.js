@@ -1,5 +1,5 @@
-const cacheName = "2.2.2.4";
-const serviceWorkerVersion = "27-05-23-v2";
+const cacheName = "2.2.2.5";
+const serviceWorkerVersion = "30-03-25-v1";
 
 const networkOnlyResources =
     [
@@ -20,6 +20,7 @@ const cacheListApp =
 const cacheListCSS =
     [
         "/css/global.css",
+        "/css/initial.css",
         "/css/item.css"
     ];
 const cacheListJS =
