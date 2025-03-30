@@ -177,6 +177,41 @@
     opacity: 0;
   }
 }
+.badge {
+  background-color: var(--color-accent);
+  color: var(--color-font-accent);
+  border-radius: 2px;
+  font-size: var(--size-font-caption);
+  margin: 5px 2px;
+  padding: 4px 8px;
+  font-weight: 700;
+  opacity: 0;
+  transition: opacity var(--time), transform var(--time);
+  transition-timing-function: cubic-bezier(0.16, 1, 0.29, 0.99);
+  transform: translateX(-8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.dev-badge {
+  display: none;
+  animation-name: DevAnim;
+  animation-fill-mode: forwards;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.29, 0.99);
+  animation-duration: var(--time);
+  animation-delay: 1.5s;
+}
+.offline-badge {
+  background-color: var(--color-font);
+  color: var(--color-theme);
+}
+#app.offline .offline-badge {
+  opacity: 1;
+  transform: none;
+}
+#app.dev .dev-badge {
+  display: block;
+}
 #search.opened {
   display: grid;
 }
@@ -435,7 +470,173 @@
 .multi-layer-img.loaded > * {
   opacity: 1;
 }
-
+.button.twitter:hover {
+  background-color: #1da1f2;
+  box-shadow: 0 2px 12px -1px rgba(29, 161, 242, 0.7);
+  color: #fff;
+}
+.button.discord:hover {
+  background-color: #5865f2;
+  box-shadow: 0 2px 12px -1px rgba(88, 101, 242, 0.7);
+  color: #fff;
+}
+.button.instagram:hover {
+  box-shadow: 0 2px 12px -1px rgba(237, 73, 86, 0.7);
+  background-color: #ed4956;
+  color: #fff;
+}
+.button.twitter:active {
+  background-color: rgba(29, 161, 242, 0.8);
+  box-shadow: 0 2px 12px -1px rgba(29, 161, 242, 0.2);
+}
+.button.instagram:active {
+  box-shadow: 0 2px 12px -1px rgba(237, 73, 86, 0.2);
+  background-color: rgba(237, 73, 86, 0.8);
+}
+.button.github:hover {
+  box-shadow: 0 2px 12px -1px rgba(45, 51, 59, 0.7);
+  background-color: #2d333b;
+  color: #fff;
+}
+.button.github:active {
+  box-shadow: 0 2px 12px -1px rgba(45, 51, 59, 0.2);
+  background-color: rgba(45, 51, 59, 0.8);
+}
+.list-view > .item {
+  width: 100%;
+  min-width: 10px;
+  text-decoration: none;
+  display: grid;
+  grid-template-rows: auto auto 1fr auto;
+  grid-template-columns: 100%;
+  border-radius: var(--border-radius);
+  user-select: none;
+  transition: box-shadow var(--time-A1) cubic-bezier(0.16, 1, 0.29, 0.99),
+    transform var(--time-A1) cubic-bezier(0.16, 1, 0.29, 0.99),
+    opacity var(--time), background-color var(--time);
+  color: var(--color-font);
+  cursor: pointer;
+  position: relative;
+  border: 0;
+}
+.list-view > .item:hover {
+  box-shadow: 0 12px 30px 0 rgba(0, 0, 0, 0.13);
+  transform: translateY(-4px);
+  background-color: var(--color-theme-A1);
+}
+.list-view > .item:active {
+  box-shadow: 0 6px 10px 0 rgba(0, 0, 0, 0.13);
+  transform: translateY(-2px);
+  background-color: var(--color-theme-A1);
+}
+.list-view > .item > .img {
+  width: 100%;
+  background-color: var(--color-theme-hover);
+  transition: var(--transition-bg-only);
+  position: relative;
+}
+.list-view > .item > .img:after {
+  content: "";
+  display: block;
+  padding-bottom: 100%;
+}
+.list-view > .item > .img > img {
+  width: 100%;
+  height: 100%;
+  transition: opacity var(--time);
+  position: absolute;
+  will-change: opacity;
+  object-fit: cover;
+  border-top-left-radius: var(--border-radius);
+  border-top-right-radius: var(--border-radius);
+}
+.list-view > .item > span {
+  margin: 12px 20px 0;
+  text-align: justify;
+  letter-spacing: 0.1px;
+}
+.list-view > .item > b {
+  font-weight: 700;
+  margin: 20px 20px 0;
+}
+.list-view > .item > b > .badge {
+  margin-left: auto;
+  margin-top: 0;
+  float: right;
+  height: 24px;
+  box-sizing: border-box;
+  animation: none;
+  line-height: 16px;
+  margin-right: 0;
+  opacity: 1;
+}
+.list-view > .item > .labels {
+  padding: 20px;
+  display: flex;
+  height: 72px;
+  box-sizing: border-box;
+}
+.list-view > .item > .labels > .button {
+  transition: var(--transition-bg-only);
+  width: 118px;
+  z-index: 3;
+}
+.list-view > .item > .labels > .button > i {
+  float: right;
+}
+.list-view > .item > .labels > .label > i {
+  transform: translateY(1px);
+  min-width: 13px;
+  min-height: 13px;
+  display: inline-table;
+}
+.list-view > .item > .labels > .label {
+  color: var(--color-font);
+  margin-left: 20px;
+  text-align: right;
+  overflow: hidden;
+  max-height: 32px;
+  box-sizing: border-box;
+  line-height: 32px;
+  flex: 1;
+}
+.list-view > .group {
+  grid-column-start: 1;
+  grid-column-end: 4;
+  box-sizing: border-box;
+  padding: 20px;
+  font-weight: 700;
+  user-select: none;
+  width: 100%;
+  display: flex;
+  overflow: hidden;
+}
+.list-view > .group > span {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  width: calc(100% - 82px);
+  flex: 1;
+  margin-right: 24px;
+}
+.list-view > .group > .button {
+  float: right;
+  font-weight: 400;
+  padding: 9px 9px;
+  height: 34px;
+}
+.list-view > .item.loaded > .img > img {
+  opacity: 1;
+}
+.list-view > .item > .reveal-layer {
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  position: absolute;
+  z-index: 2;
+  top: 0;
+  left: 0;
+}
 @media only screen and (max-width: 470px) {
   #search-input {
     animation: none;
