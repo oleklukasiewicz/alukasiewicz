@@ -68,6 +68,25 @@
     --color-logo-A1: #a0a0a0;
   }
 }
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-theme-A3);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-theme-A4);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-theme-A5);
+}
+::-webkit-scrollbar-thumb:active {
+  background: var(--color-theme-A6);
+}
+::selection {
+  background: var(--color-accent-A2);
+  color: var(--color-font-accent);
+}
 .font-base {
   font-size: var(--size-font-base);
   line-height: 20px;
@@ -103,25 +122,6 @@
   font-weight: 700;
   display: block;
   margin-bottom: 8px;
-}
-a:not(.icon-button):not(.button):not(.data-node):not(.lang-logo) {
-  color: var(--color-accent-A2);
-  transition: color var(--time), opacity var(--time);
-  text-decoration: none;
-}
-a:not(.icon-button):not(.button):not(.data-node):not(.lang-logo):hover {
-  color: var(--color-accent);
-  text-decoration: underline;
-}
-.disabled {
-  pointer-events: none !important;
-  opacity: 0.6;
-}
-.hidden {
-  display: none !important;
-}
-.hidden-opacity {
-  opacity: 0 !important;
 }
 @font-face {
   font-family: micon_nb;
@@ -204,6 +204,25 @@ body {
 }
 body.scroll-fix::-webkit-scrollbar-track {
   background: var(--color-theme) !important;
+}
+a:not(.icon-button):not(.button):not(.data-node):not(.lang-logo) {
+  color: var(--color-accent-A2);
+  transition: color var(--time), opacity var(--time);
+  text-decoration: none;
+}
+a:not(.icon-button):not(.button):not(.data-node):not(.lang-logo):hover {
+  color: var(--color-accent);
+  text-decoration: underline;
+}
+.disabled {
+  pointer-events: none !important;
+  opacity: 0.6;
+}
+.hidden {
+  display: none !important;
+}
+.hidden-opacity {
+  opacity: 0 !important;
 }
 #main-header-base {
   width: 100%;
@@ -343,25 +362,6 @@ body.scroll-fix::-webkit-scrollbar-track {
 }
 .view.active-view {
   display: table;
-}
-::-webkit-scrollbar {
-  width: 8px;
-}
-::-webkit-scrollbar-track {
-  background: var(--color-theme-A3);
-}
-::-webkit-scrollbar-thumb {
-  background: var(--color-theme-A4);
-}
-::-webkit-scrollbar-thumb:hover {
-  background: var(--color-theme-A5);
-}
-::-webkit-scrollbar-thumb:active {
-  background: var(--color-theme-A6);
-}
-::selection {
-  background: var(--color-accent-A2);
-  color: var(--color-font-accent);
 }
 .button,
 .icon-button {
@@ -1050,7 +1050,6 @@ u.dotted-separator {
     padding-bottom: 12px;
   }
 }
-
 @media only screen and (max-width: 470px) {
   .list-view {
     grid-template-columns: 100%;
