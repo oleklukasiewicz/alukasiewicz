@@ -13,13 +13,15 @@
     <link rel="preload" href="/js/postrender.js" as="script" type="text/javascript" />
     <link rel="preload" href="/item/storage.js" as="script" type="text/javascript" />
     <script src="/item/storage.js" defer></script>
-    
+
     <link rel="preload" href="/css/initial.css" as="style" type="text/css" />
     <link rel="stylesheet" href="/css/initial.css" media="screen" />
 
-    <link rel="preload" href="/css/global.css" as="style" type="text/css" />
-    <link rel="stylesheet" href="/css/global.css" media="screen" defer />
-
+    <link rel="preload" href="/css/global.css" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+    <noscript>
+        <link rel="stylesheet" href="/css/global.css" media="screen" />
+    </noscript>
+    
     <link rel="preload" href="/img/dark/landing-banner/bg1.webp" as="image" type="image/webp" />
     <link rel="preload" href="/img/dark/landing-banner/profile-picture.webp" as="image" type="image/webp" />
 
@@ -29,8 +31,12 @@
     <script src="/js/main.js" async></script>
     <script src="/js/extension/showdown.js" defer></script>
     <script src="/js/item.js" defer></script>
-    <link rel="preload" href="/css/item.css" as="style">
-    <link rel="stylesheet" href="/css/item.css">
+
+    <link rel="preload" href="/css/item.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript>
+        <link rel="stylesheet" href="/css/item.css">
+    </noscript>
+
     <link rel="preload" href="/img/image_error.webp" as="image" type="image/webp" />
     <link rel="manifest" href="/manifest.webmanifest">
     <script src="/serviceworker.js" async></script>
@@ -71,92 +77,92 @@
         <div id="search">
             <div id="search-input">
                 <input type="text" id="search-text" placeholder="Search posts, groups and resources" />
-                <a id="search-btn" class="icon-button" ><i class="mi mi-BackMirrored"></i></a>
+                <a id="search-btn" class="icon-button"><i class="mi mi-BackMirrored"></i></a>
             </div>
             <div id="search-results">
                 <div id="search-result-items">
-                <div class="search-item">
-                    <div class="search-item-img"></div>
-                    <div class="search-item-data">
-                        <span class="font-base search-item-title">Title</span>
-                        <span class="search-item-type">Item</span>
+                    <div class="search-item">
+                        <div class="search-item-img"></div>
+                        <div class="search-item-data">
+                            <span class="font-base search-item-title">Title</span>
+                            <span class="search-item-type">Item</span>
+                        </div>
+                        <a class="icon-button"><i class="mi mi-BackMirrored"></i></a>
                     </div>
-                    <a class="icon-button" ><i class="mi mi-BackMirrored"></i></a>
-                </div>
-                <div class="search-item">
-                    <div class="search-item-img"></div>
-                    <div class="search-item-data">
-                        <span class="font-base search-item-title">Title</span>
-                        <span class="search-item-type">Item</span>
+                    <div class="search-item">
+                        <div class="search-item-img"></div>
+                        <div class="search-item-data">
+                            <span class="font-base search-item-title">Title</span>
+                            <span class="search-item-type">Item</span>
+                        </div>
+                        <a class="icon-button"><i class="mi mi-BackMirrored"></i></a>
                     </div>
-                    <a class="icon-button" ><i class="mi mi-BackMirrored"></i></a>
-                </div>
-                <div class="search-item">
-                    <div class="search-item-img"></div>
-                    <div class="search-item-data">
-                        <span class="font-base search-item-title">Title</span>
-                        <span class="search-item-type">Item</span>
+                    <div class="search-item">
+                        <div class="search-item-img"></div>
+                        <div class="search-item-data">
+                            <span class="font-base search-item-title">Title</span>
+                            <span class="search-item-type">Item</span>
+                        </div>
+                        <a class="icon-button"><i class="mi mi-BackMirrored"></i></a>
                     </div>
-                    <a class="icon-button" ><i class="mi mi-BackMirrored"></i></a>
-                </div>
-                <div class="search-item">
-                    <div class="search-item-img"></div>
-                    <div class="search-item-data">
-                        <span class="font-base search-item-title">Title</span>
-                        <span class="search-item-type">Item</span>
+                    <div class="search-item">
+                        <div class="search-item-img"></div>
+                        <div class="search-item-data">
+                            <span class="font-base search-item-title">Title</span>
+                            <span class="search-item-type">Item</span>
+                        </div>
+                        <a class="icon-button"><i class="mi mi-BackMirrored"></i></a>
                     </div>
-                    <a class="icon-button" ><i class="mi mi-BackMirrored"></i></a>
-                </div>
-                <div class="search-item">
-                    <div class="search-item-img"></div>
-                    <div class="search-item-data">
-                        <span class="font-base search-item-title">Title</span>
-                        <span class="search-item-type">Item</span>
+                    <div class="search-item">
+                        <div class="search-item-img"></div>
+                        <div class="search-item-data">
+                            <span class="font-base search-item-title">Title</span>
+                            <span class="search-item-type">Item</span>
+                        </div>
+                        <a class="icon-button"><i class="mi mi-BackMirrored"></i></a>
                     </div>
-                    <a class="icon-button" ><i class="mi mi-BackMirrored"></i></a>
-                </div>
-                <div class="search-item">
-                    <div class="search-item-img"></div>
-                    <div class="search-item-data">
-                        <span class="font-base search-item-title">Title</span>
-                        <span class="search-item-type">Item</span>
+                    <div class="search-item">
+                        <div class="search-item-img"></div>
+                        <div class="search-item-data">
+                            <span class="font-base search-item-title">Title</span>
+                            <span class="search-item-type">Item</span>
+                        </div>
+                        <a class="icon-button"><i class="mi mi-BackMirrored"></i></a>
                     </div>
-                    <a class="icon-button" ><i class="mi mi-BackMirrored"></i></a>
-                </div>
-                <div class="search-item">
-                    <div class="search-item-img"></div>
-                    <div class="search-item-data">
-                        <span class="font-base search-item-title">Title</span>
-                        <span class="search-item-type">Item</span>
+                    <div class="search-item">
+                        <div class="search-item-img"></div>
+                        <div class="search-item-data">
+                            <span class="font-base search-item-title">Title</span>
+                            <span class="search-item-type">Item</span>
+                        </div>
+                        <a class="icon-button"><i class="mi mi-BackMirrored"></i></a>
                     </div>
-                    <a class="icon-button" ><i class="mi mi-BackMirrored"></i></a>
-                </div>
-                <div class="search-item">
-                    <div class="search-item-img"></div>
-                    <div class="search-item-data">
-                        <span class="font-base search-item-title">Title</span>
-                        <span class="search-item-type">Item</span>
+                    <div class="search-item">
+                        <div class="search-item-img"></div>
+                        <div class="search-item-data">
+                            <span class="font-base search-item-title">Title</span>
+                            <span class="search-item-type">Item</span>
+                        </div>
+                        <a class="icon-button"><i class="mi mi-BackMirrored"></i></a>
                     </div>
-                    <a class="icon-button" ><i class="mi mi-BackMirrored"></i></a>
-                </div>
-                <div class="search-item">
-                    <div class="search-item-img"></div>
-                    <div class="search-item-data">
-                        <span class="font-base search-item-title">Title</span>
-                        <span class="search-item-type">Item</span>
+                    <div class="search-item">
+                        <div class="search-item-img"></div>
+                        <div class="search-item-data">
+                            <span class="font-base search-item-title">Title</span>
+                            <span class="search-item-type">Item</span>
+                        </div>
+                        <a class="icon-button"><i class="mi mi-BackMirrored"></i></a>
                     </div>
-                    <a class="icon-button" ><i class="mi mi-BackMirrored"></i></a>
-                </div>
-                <div class="search-item">
-                    <div class="search-item-img"></div>
-                    <div class="search-item-data">
-                        <span class="font-base search-item-title">Title</span>
-                        <span class="search-item-type">Item</span>
+                    <div class="search-item">
+                        <div class="search-item-img"></div>
+                        <div class="search-item-data">
+                            <span class="font-base search-item-title">Title</span>
+                            <span class="search-item-type">Item</span>
+                        </div>
+                        <a class="icon-button"><i class="mi mi-BackMirrored"></i></a>
                     </div>
-                    <a class="icon-button" ><i class="mi mi-BackMirrored"></i></a>
                 </div>
             </div>
-        </div>
         </div>
     </div>
     <div id="content">
@@ -293,7 +299,7 @@
                             <a class="lang-logo" href="https://www.typescriptlang.org/" target="_blank"
                                 title="Typescript">
                                 <img src="/img/logo/typescript.svg"></img></a>
-                                <a class="lang-logo" href="https://learn.microsoft.com/pl-pl/dotnet/" target="_blank"
+                            <a class="lang-logo" href="https://learn.microsoft.com/pl-pl/dotnet/" target="_blank"
                                 title=".NET">
                                 <img src="/img/logo/dotnet.svg"></img></a>
                             <a class="lang-logo" href="https://code.visualstudio.com/" target="_blank"
