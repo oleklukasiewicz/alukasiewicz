@@ -1,6 +1,6 @@
 .al-logo {
   text-decoration: none !important;
-  display: inline-block;
+  display: flex;
   max-height: var(--logo-height);
   margin: 10px;
   margin-top: 10px;
@@ -21,12 +21,12 @@
   background-color: var(--color-logo-A1);
 }
 .al-logo.anim > .l:nth-child(2) {
+  margin-left: 2px;
   animation-delay: calc(var(--logo-anim-delay) + 0.3s);
-  margin-left: -3px;
 }
 .al-logo.anim > .l:nth-child(3) {
+  margin-left: 4px;
   animation-delay: calc(var(--logo-anim-delay) + 0.5s);
-  margin-left: -0.5px;
 }
 .al-logo.anim > .c {
   transform: scale(0);
@@ -35,11 +35,12 @@
   border-radius: 50%;
   height: var(--logo-width);
   vertical-align: top;
-  margin-left: -2.5px;
+  margin-left: 1px;
 }
 .al-logo > .c,
 .al-logo > .l {
-  display: inline-block;
+  display: inline-table;
+  width: 4px;
   background-color: var(--color-logo);
   width: var(--logo-width);
 }
