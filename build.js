@@ -1,6 +1,9 @@
 const fs = require("fs");
 const path = require("path");
 const { minify } = require("terser");
+const minifyCore = require("@node-minify/core");
+const minifyHTML = require("html-minifier").minify;
+const cleanCSS = require("@node-minify/clean-css");
 const { exec } = require("child_process");
 
 const inputFolder = "alukasiewicz.client";
@@ -74,6 +77,31 @@ async function processFiles(inputDir, outputDir) {
         } catch (error) {
           console.error(`Error minifying ${file}:`, error);
         }
+      } else if (path.extname(file) === ".css") {
+        minifyCore({
+          compressor: cleanCSS,
+          input: inputFilePath,
+          output: outputFilePath,
+          callback: function (err, min) {
+            if (err) {
+              console.error(`Error minifying ${file}:`, err);
+            } else {
+              console.log(
+                `Minified CSS: ${inputFilePath} -> ${outputFilePath}`
+              );
+            }
+          },
+        });
+      } else if (path.extname(file) === ".html") {
+        var html = fs.readFileSync(inputFilePath, "utf8");
+        var minified = minifyHTML(html, {
+          removeComments: true,
+          collapseWhitespace: true,
+          minifyCSS: true,
+          minifyJS: true,
+        });
+        fs.writeFileSync(outputFilePath, minified, "utf8");
+        console.log(`Minified HTML: ${inputFilePath} -> ${outputFilePath}`);
       } else {
         // Copy other files as-is
         await fs.promises.copyFile(inputFilePath, outputFilePath);
