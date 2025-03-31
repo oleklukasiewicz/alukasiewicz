@@ -502,7 +502,7 @@
   background-color: rgba(45, 51, 59, 0.8);
 }
 .list-view > .item {
-  width: 100%;
+  max-width: 100%;
   min-width: 10px;
   text-decoration: none;
   display: grid;
@@ -603,7 +603,7 @@
   grid-column-start: 1;
   grid-column-end: 4;
   box-sizing: border-box;
-  padding: 20px;
+  padding: 12px 16px;
   font-weight: 700;
   user-select: none;
   width: 100%;
@@ -675,7 +675,19 @@
   background-image: var(--src-about-banner-l6);
   z-index: 5;
 }
+@media only screen and (max-width: 700px) {
+  .list-view > .group {
+    grid-column-start: 1;
+    grid-column-end: 3;
+    padding: 20px 12px;
+  }
+}
 @media only screen and (max-width: 470px) {
+  .list-view > .group {
+    grid-column-start: 1;
+    grid-column-end: 2;
+    padding: 16px 12px;
+  }
   #search-input {
     animation: none;
     overflow: hidden;

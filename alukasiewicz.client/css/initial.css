@@ -751,13 +751,19 @@ u.dotted-separator {
 @media only screen and (max-width: 700px) {
   .list-view {
     grid-template-columns: 1fr 1fr;
+    gap: 0px;
+    padding-top: 0px;
+  }
+  #landing .list-view > .index-0 {
+    grid-column: 1;
+    margin-right: 5px;
+  }
+  #landing .list-view > .index-1 {
+    grid-column: 2;
+    margin-left: 5px;
   }
   #landing .list-view > .index-2 {
     display: none;
-  }
-  .list-view > .group {
-    grid-column-start: 1;
-    grid-column-end: 3;
   }
   :root {
     --size-margin-base: 10px;
@@ -802,14 +808,15 @@ u.dotted-separator {
 }
 @media only screen and (max-width: 470px) {
   .list-view {
-    grid-template-columns: 100%;
+    grid-template-columns: 1fr;
+    gap: 0px;
+  }
+  #landing .list-view > .index-0 {
+    grid-column: 1;
+    margin-right: 0px;
   }
   #landing .list-view > .index-1 {
     display: none;
-  }
-  .list-view > .group {
-    grid-column-start: 1;
-    grid-column-end: 2;
   }
   #app.nav-bottom #main-header-base {
     bottom: 0;
