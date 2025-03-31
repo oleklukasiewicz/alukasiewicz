@@ -234,8 +234,8 @@ a:not(.icon-button):not(.button):not(.data-node):not(.lang-logo):hover {
 }
 .offline-badge {
   display: none;
-  background-color: var(--color-font);
-  color: var(--color-theme);
+  background-color: var(--color-font) !important;
+  color: var(--color-theme) !important;
 }
 #main-header-base {
   width: 100%;
@@ -540,8 +540,7 @@ u.dotted-separator {
   display: block;
   flex: 1;
 }
-#about-img.multi-layer-img
-{
+#about-img.multi-layer-img {
   background-color: var(--color-theme-A1);
 }
 #about-img.multi-layer-img > * {
