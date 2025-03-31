@@ -224,6 +224,19 @@ a:not(.icon-button):not(.button):not(.data-node):not(.lang-logo):hover {
 .hidden-opacity {
   opacity: 0 !important;
 }
+.dev-badge {
+  display: none;
+  animation-name: DevAnim;
+  animation-fill-mode: forwards;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.29, 0.99);
+  animation-duration: var(--time);
+  animation-delay: 1.5s;
+}
+.offline-badge {
+  display: none;
+  background-color: var(--color-font);
+  color: var(--color-theme);
+}
 #main-header-base {
   width: 100%;
   backdrop-filter: var(--acrylic);
@@ -325,7 +338,7 @@ a:not(.icon-button):not(.button):not(.data-node):not(.lang-logo):hover {
   width: 100%;
   display: none;
   margin: 0 auto 0 auto;
-  max-width: min(var(--view-max-width), 100vw);
+  max-width: min(var(--view-max-width), 100%);
   box-sizing: border-box;
 }
 .view.active-view {
@@ -372,21 +385,6 @@ a:not(.icon-button):not(.button):not(.data-node):not(.lang-logo):hover {
 .icon-button:hover {
   background-color: var(--color-theme-hover);
 }
-.button.primary,
-.icon-button.toggled {
-  background-color: var(--color-accent);
-  color: var(--color-font-accent);
-}
-.button.primary:hover,
-.icon-button.toggled:hover {
-  background-color: var(--color-accent-A1);
-  box-shadow: 0 2px 12px -1px var(--color-accent-shadow);
-}
-.button.primary:active,
-.icon-button.toggled:active {
-  background-color: var(--color-accent-A2);
-  box-shadow: 0 2px 8px -1px var(--color-accent-shadow);
-}
 .button {
   background-color: var(--color-theme-A2);
 }
@@ -395,19 +393,6 @@ a:not(.icon-button):not(.button):not(.data-node):not(.lang-logo):hover {
 }
 .button:active {
   background-color: var(--color-theme-A4);
-}
-.button.discord,
-.button.github,
-.button.instagram,
-.button.twitter {
-  background-color: transparent;
-  display: inline-block;
-  overflow: hidden;
-  text-align: center;
-  padding: 8px;
-  width: 37px;
-  height: 37px;
-  margin-right: 4px;
 }
 .button > svg {
   height: 32px;
@@ -555,47 +540,12 @@ u.dotted-separator {
   display: block;
   flex: 1;
 }
+#about-img.multi-layer-img
+{
+  background-color: var(--color-theme-A1);
+}
 #about-img.multi-layer-img > * {
   opacity: 0;
-}
-#about-img.multi-layer-img.loaded > * {
-  animation-name: FadeInUp;
-  animation-duration: 0.9s;
-  animation-timing-function: cubic-bezier(0.16, 1, 0.29, 0.99);
-  animation-fill-mode: forwards;
-  background-size: cover;
-  background-position: center;
-}
-#about-img.multi-layer-img > :nth-child(1) {
-  animation: none !important;
-  opacity: 1;
-  background-image: var(--src-about-banner-l1);
-  z-index: 0;
-}
-#about-img > :nth-child(2) {
-  animation-delay: 0.1s;
-  background-image: var(--src-about-banner-l2);
-  z-index: 1;
-}
-#about-img > :nth-child(3) {
-  animation-delay: 0.2s;
-  background-image: var(--src-about-banner-l3);
-  z-index: 2;
-}
-#about-img > :nth-child(4) {
-  animation-delay: 0.4s;
-  background-image: var(--src-about-banner-l4);
-  z-index: 3;
-}
-#about-img > :nth-child(5) {
-  animation-delay: 0.5s;
-  background-image: var(--src-about-banner-l5);
-  z-index: 4;
-}
-#about-img > :nth-child(6) {
-  animation-delay: 0.7s;
-  background-image: var(--src-about-banner-l6);
-  z-index: 5;
 }
 #about-data {
   margin: 0 auto;
@@ -945,7 +895,6 @@ u.dotted-separator {
   #main-header-search-separator {
     display: none;
   }
-
   #search {
     bottom: 53px;
     top: initial;

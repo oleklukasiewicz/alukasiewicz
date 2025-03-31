@@ -1,9 +1,7 @@
 .al-logo {
   text-decoration: none !important;
   display: flex;
-  max-height: var(--logo-height);
-  margin: 10px;
-  margin-top: 10px;
+  padding: 10px;
   box-sizing: border-box;
   cursor: pointer;
   transition: opacity 0.3s;
@@ -192,18 +190,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-}
-.dev-badge {
-  display: none;
-  animation-name: DevAnim;
-  animation-fill-mode: forwards;
-  animation-timing-function: cubic-bezier(0.16, 1, 0.29, 0.99);
-  animation-duration: var(--time);
-  animation-delay: 1.5s;
-}
-.offline-badge {
-  background-color: var(--color-font);
-  color: var(--color-theme);
 }
 #app.offline .offline-badge {
   opacity: 1;
@@ -470,6 +456,19 @@
 .multi-layer-img.loaded > * {
   opacity: 1;
 }
+.button.discord,
+.button.github,
+.button.instagram,
+.button.twitter {
+  background-color: transparent;
+  display: inline-block;
+  overflow: hidden;
+  text-align: center;
+  padding: 8px;
+  width: 37px;
+  height: 37px;
+  margin-right: 4px;
+}
 .button.twitter:hover {
   background-color: #1da1f2;
   box-shadow: 0 2px 12px -1px rgba(29, 161, 242, 0.7);
@@ -636,6 +635,45 @@
   z-index: 2;
   top: 0;
   left: 0;
+}
+#about-img.multi-layer-img.loaded > * {
+  animation-name: FadeInUp;
+  animation-duration: 0.9s;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.29, 0.99);
+  animation-fill-mode: forwards;
+  background-size: cover;
+  background-position: center;
+}
+#about-img.multi-layer-img > :nth-child(1) {
+  animation: none !important;
+  opacity: 1;
+  background-image: var(--src-about-banner-l1);
+  z-index: 0;
+}
+#about-img > :nth-child(2) {
+  animation-delay: 0.1s;
+  background-image: var(--src-about-banner-l2);
+  z-index: 1;
+}
+#about-img > :nth-child(3) {
+  animation-delay: 0.2s;
+  background-image: var(--src-about-banner-l3);
+  z-index: 2;
+}
+#about-img > :nth-child(4) {
+  animation-delay: 0.4s;
+  background-image: var(--src-about-banner-l4);
+  z-index: 3;
+}
+#about-img > :nth-child(5) {
+  animation-delay: 0.5s;
+  background-image: var(--src-about-banner-l5);
+  z-index: 4;
+}
+#about-img > :nth-child(6) {
+  animation-delay: 0.7s;
+  background-image: var(--src-about-banner-l6);
+  z-index: 5;
 }
 @media only screen and (max-width: 470px) {
   #search-input {
