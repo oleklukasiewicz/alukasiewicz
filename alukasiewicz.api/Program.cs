@@ -1,4 +1,8 @@
 using alukasiewicz.api.Database;
+using alukasiewicz.api.Module.Groups.Interfaces;
+using alukasiewicz.api.Module.Groups.Services;
+using alukasiewicz.api.Module.Matchings.Interfaces;
+using alukasiewicz.api.Module.Matchings.Services;
 using alukasiewicz.api.Module.Posts.Interfaces;
 using alukasiewicz.api.Module.Posts.Services;
 using alukasiewicz.api.Module.Resources.Interfaces;
@@ -11,6 +15,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddTransient<IResourcesService, ResourcesService>();
 builder.Services.AddTransient<IItemAliasService, ItemAliasService>();
 builder.Services.AddTransient<IItemService, ItemService>();
+builder.Services.AddTransient<IGroupService, GroupService>();
+builder.Services.AddTransient<IMatchingService,MatchingService>();
 
 builder.Services.AddControllers();
 builder.Services.AddDbContext<BaseDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("BaseConnection")));

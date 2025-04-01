@@ -28,6 +28,16 @@ namespace alukasiewicz.api.Module.Resources.Services
             await _context.SaveChangesAsync();
             return true;
         }
+        public async Task<ResourceItem> Update(ResourceItem resource)
+        {
+            var exisitng = await Get(resource.Id);
+            if (exisitng == null)
+                return null;
+
+            _context.Entry(exisitng).CurrentValues.SetValues(resource);
+            await _context.SaveChangesAsync();
+            return resource;
+        }
         public async Task<ResourceItem> Get(Guid resourceId)
         {
             return await _context.ResourceItems.FindAsync(resourceId);
