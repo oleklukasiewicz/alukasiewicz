@@ -63,7 +63,7 @@ namespace alukasiewicz.api.Module.Posts.Entity
             {
                 Id = item.Id,
                 Title = item.Title,
-                TileImageResourceId = item.TileImageResourceId.Value,
+                TileImageResourceId = item.TileImageResourceId != null ? item.TileImageResourceId.Value : null,
                 Description = item.Description,
                 Href = item.IsLink ? item.Content : item.Id.ToString(),
                 CreatedAt = item.CreatedAt,

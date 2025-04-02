@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace alukasiewicz.api.Module.Resources.Controllers
 {
-    [Route("Resources")]
+    [Route("api/Resources")]
     public class ResourcesController : Controller
     {
         private readonly IResourcesService _resourceService;

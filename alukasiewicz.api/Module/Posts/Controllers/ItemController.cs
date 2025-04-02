@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace alukasiewicz.api.Module.Posts.Controllers
 {
-    [Route("Item")]
+    [Route("api/Item")]
     public class ItemController : Controller
     {
         private readonly IItemService _itemService;

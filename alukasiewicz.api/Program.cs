@@ -7,7 +7,9 @@ using alukasiewicz.api.Module.Posts.Interfaces;
 using alukasiewicz.api.Module.Posts.Services;
 using alukasiewicz.api.Module.Resources.Interfaces;
 using alukasiewicz.api.Module.Resources.Services;
+using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
+using System.IO.Compression;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -34,6 +36,15 @@ builder.Services.AddCors(options =>
     });
 });
 
+builder.Services.AddResponseCompression((options) =>
+{
+    options.Providers.Add<GzipCompressionProvider>();
+});
+builder.Services.Configure<GzipCompressionProviderOptions>(options =>
+{
+    options.Level = CompressionLevel.Fastest;
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -46,6 +57,8 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
+
+app.UseResponseCompression();
 
 app.UseCors();
 

@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace alukasiewicz.api.Module.Groups.Controllers
 {
-    [Route("Group")]
+    [Route("api/Group")]
     public class GroupController : Controller
     {
         private readonly IGroupService _groupService;

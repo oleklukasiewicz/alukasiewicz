@@ -1,4 +1,4 @@
-const API_URL = "https://localhost:7209/";
+const API_URL = "https://localhost:7209/api/";
 
 const PostRequest = async (url, data) => {
   const response = await fetch(url, {
@@ -46,4 +46,3 @@ const PutRequest = async (url, data) => {
 const GetDefaultGroup = async () => {
   return await GetRequest(API_URL + "group/Default");
 };
-

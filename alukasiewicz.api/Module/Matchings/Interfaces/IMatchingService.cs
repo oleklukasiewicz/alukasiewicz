@@ -6,8 +6,8 @@ namespace alukasiewicz.api.Module.Matchings.Interfaces
     {
         Task<Matching> Add(Matching matching);
         Task<Matching> Get(Guid id);
-        Task<Matching> GetForEntity(Guid entityId);
-        Task<Matching> GetForGroup(Guid groupId);
+        Task<IQueryable<Matching>> GetForEntity(Guid entityId);
+        Task<IQueryable<Matching>> GetForGroup(Guid groupId);
         Task<bool> Remove(Guid id);
     }
 }

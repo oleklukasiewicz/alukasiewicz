@@ -16,17 +16,17 @@ namespace alukasiewicz.api.Module.Matchings.Services
         {
             return await _dbContext.Matchings.FirstOrDefaultAsync(x => x.Id == id);
         }
-        public async Task<Matching> GetForEntity(Guid entityId)
+        public async Task<IQueryable<Matching>> GetForEntity(Guid entityId)
         {
-            return await _dbContext.Matchings.FirstOrDefaultAsync(x => x.EntityId == entityId);
+            return _dbContext.Matchings.Where(x => x.EntityId == entityId);
         }
-        public async Task<Matching> GetForGroup(Guid groupId)
+        public async Task<IQueryable<Matching>> GetForGroup(Guid groupId)
         {
-            return await _dbContext.Matchings.FirstOrDefaultAsync(x => x.GroupId == groupId);
+            return _dbContext.Matchings.Where(x => x.GroupId == groupId);
         }
         public async Task<Matching> Add(Matching matching)
         {
-            var existingForEntity = await _dbContext.Matchings.Where(x => x.EntityId == matching.EntityId && x.Type == matching.Type).FirstOrDefaultAsync();
+            var existingForEntity = await _dbContext.Matchings.Where(x => x.EntityId == matching.EntityId && x.Type == matching.Type && x.GroupId == matching.GroupId).FirstOrDefaultAsync();
             if (existingForEntity != null)
                 return existingForEntity;
 

@@ -1,5 +1,5 @@
-const cacheName = "2.2.2.5";
-const serviceWorkerVersion = "30-03-25-v1";
+const cacheName = "2.2.2.6";
+const serviceWorkerVersion = "01-04-25-v1";
 
 const networkOnlyResources =
     [
@@ -7,7 +7,8 @@ const networkOnlyResources =
     ];
 const alwaysFreshResources =
     [
-        "/item/"
+        "/item/",
+        "/api/"
     ];
 
 const cacheListApp =
