@@ -14,6 +14,7 @@ namespace alukasiewicz.api.Module.Groups.Entity
         public DateTime? UpdatedAt { get; set; }
         public List<Item> Items { get; set; }
         public List<Group> SubGroups { get; set; }
+        public bool IsDefault { get; set; }
     }
     public class GroupEntityConfig : IEntityTypeConfiguration<Group>
     {
@@ -42,6 +43,7 @@ namespace alukasiewicz.api.Module.Groups.Entity
                 Description = group.Description,
                 CreatedAt = group.CreatedAt,
                 UpdatedAt = group.UpdatedAt,
+                IsDefault = group.IsDefault,
                 Items = group.Items?.Select(x => x.ToListItemResponseModel()).ToList(),
                 SubGroups = depth > 1 ? group.SubGroups?.Select(x => x.ToResponseModel(depth--)).ToList() : new List<GroupResponseModel>()
             };

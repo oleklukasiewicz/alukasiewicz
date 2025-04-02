@@ -607,6 +607,8 @@ const landingView = new View(
         .remove();
     },
     onLoad: async function () {
+      const group = await GetDefaultGroup();
+
       this.rootNode.classList.add(GLOBAL.loading);
 
       //display items from landing group
@@ -624,7 +626,7 @@ const landingView = new View(
     },
   },
   true,
-  ViewController.loadingModes.single
+  ViewController.loadingModes.always
 );
 const profileView = new View(
   APP.route.profile,

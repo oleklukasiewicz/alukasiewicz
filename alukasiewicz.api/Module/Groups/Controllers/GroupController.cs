@@ -49,5 +49,15 @@ namespace alukasiewicz.api.Module.Groups.Controllers
             }
             return Ok();
         }
+        [HttpGet("Default")]
+        public async Task<IActionResult> GetDefault()
+        {
+            var group = await _groupService.GetDefault();
+            if (group == null)
+            {
+                return NotFound();
+            }
+            return Ok(group.ToResponseModel());
+        }
     }
 }

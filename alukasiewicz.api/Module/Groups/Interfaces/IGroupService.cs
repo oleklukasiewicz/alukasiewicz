@@ -8,5 +8,6 @@ namespace alukasiewicz.api.Module.Groups.Interfaces
         Task<Group> Get(Guid groupId);
         Task<bool> Remove(Guid groupId);
         Task<Group> Update(Group group);
+        Task<Group> GetDefault();
     }
 }

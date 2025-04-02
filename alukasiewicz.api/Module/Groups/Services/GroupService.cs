@@ -1,6 +1,7 @@
 ﻿using alukasiewicz.api.Database;
 using alukasiewicz.api.Module.Groups.Entity;
 using alukasiewicz.api.Module.Groups.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace alukasiewicz.api.Module.Groups.Services
 {
@@ -43,6 +44,11 @@ namespace alukasiewicz.api.Module.Groups.Services
 
             await _context.SaveChangesAsync();
             return existing;
+        }
+        public async Task<Group> GetDefault()
+        {
+            var defaultgroup = await _context.Groups.FirstOrDefaultAsync(x => x.IsDefault);
+            return await Get(defaultgroup.Id);
         }
     }
 }

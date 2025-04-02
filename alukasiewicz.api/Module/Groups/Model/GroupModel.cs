@@ -7,8 +7,7 @@ namespace alukasiewicz.api.Module.Groups.Model
         public Guid Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
-        public DateTime CreatedAt { get; set; }
-        public DateTime? UpdatedAt { get; set; }
+        public bool IsDefault { get; set; }
     }
     public static class GorupModelExtensions
     {
@@ -19,8 +18,7 @@ namespace alukasiewicz.api.Module.Groups.Model
                 Id = group.Id,
                 Name = group.Name,
                 Description = group.Description,
-                CreatedAt = group.CreatedAt,
-                UpdatedAt = group.UpdatedAt
+                IsDefault = group.IsDefault,
             };
         }
     }

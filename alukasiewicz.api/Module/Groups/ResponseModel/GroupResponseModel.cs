@@ -12,5 +12,6 @@ namespace alukasiewicz.api.Module.Groups.ResponseModel
         public DateTime? UpdatedAt { get; set; }
         public List<ItemListItemResponseModel> Items { get; set; }
         public List<GroupResponseModel> SubGroups { get; set; }
+        public bool IsDefault { get; set; }
     }
 }
