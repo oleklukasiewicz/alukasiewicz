@@ -16,6 +16,7 @@ const CREATE_HASH = function (str, seed = 0) {
   let _s = 4294967296 * (2097151 & _h2) + (_h1 >>> 0);
   return _s;
 };
+const GetResourcePath = (id) => "/api/Resources/" + id + "/content";
 
 //resource classes declaration
 const Resource = function (src, type, hash = CREATE_HASH(src), props = {}) {
@@ -118,6 +119,13 @@ const ItemDate = function (day, month, year) {
     if (_intDate > parseInt(bDate)) return -1;
     else if (_intDate < parseInt(bDate)) return 1;
     else return 0;
+  };
+  this.fromDate = function (date) {
+    if (typeof date == "string") date = new Date(date);
+    this.day = date.getDate();
+    this.month = date.getMonth() + 1;
+    this.year = date.getFullYear();
+    return this;
   };
   this.diff = function (date) {
     let _date = this.toDate();
@@ -607,18 +615,11 @@ const landingView = new View(
         .remove();
     },
     onLoad: async function () {
-      const group = await GetDefaultGroup();
-
       this.rootNode.classList.add(GLOBAL.loading);
 
+      const homeGroup = await GetDefaultGroup();
+      StorageResponseBuilder(homeGroup, this.data.iList, 1, -1);
       //display items from landing group
-      if (ItemController.isItemsLoaded && ItemController.isGroupsLoaded)
-        StorageResponseBuilder(
-          await ItemController.getGroupById("landing"),
-          this.data.iList,
-          1,
-          -1
-        );
     },
     onError: function (err) {
       this.rootNode.classList.add(GLOBAL.error);
@@ -997,7 +998,7 @@ const createItemTile = async function (node, item) {
     node = document.createElement("A");
     oldNode.parentElement.replaceChild(node, oldNode);
   }
-  let imageSrc = ITEM.folder + item.folder + item.tile.image;
+  let imageSrc = GetResourcePath(item.tileImageResourceId);
   node.className =
     "item " +
     GLOBAL.dataNode +
@@ -1020,14 +1021,15 @@ const createItemTile = async function (node, item) {
   nodeTitle.classList.add("font-subtitle");
   nodeTitle.innerHTML = item.title;
 
-  if (item.dev) {
+  if (item.isPublished == false) {
     let _betabadge = document.createElement("SPAN");
     _betabadge.classList.add("dev-badge");
     _betabadge.classList.add("badge");
     _betabadge.innerHTML = "BETA";
     nodeTitle.appendChild(_betabadge);
   }
-  const targetDate = item.modifyDate || item.createDate;
+  const targetDate = new ItemDate().fromDate(item.updatedAt || item.createdAt);
+
   const dateDiffrence = targetDate.diff(new Date());
   if (dateDiffrence.days < 30) {
     let _betabadge = document.createElement("SPAN");
@@ -1038,7 +1040,7 @@ const createItemTile = async function (node, item) {
 
   let nodeContent = document.createElement("SPAN");
   nodeContent.classList.add("font-base");
-  nodeContent.innerHTML = item.tile.content;
+  nodeContent.innerHTML = item.description;
 
   let nodeLabels = document.createElement("DIV");
   nodeLabels.classList.add("labels");
@@ -1052,14 +1054,13 @@ const createItemTile = async function (node, item) {
 
   nodeLabels.appendChild(nodeButton);
 
-  let date = item.modifyDate || item.createDate;
   let nodeUpdateLabel = document.createElement("DIV");
   nodeUpdateLabel.classList.add("label", "font-caption");
   let nodeUpdateLabelIcon = document.createElement("I");
 
   if (item.modifyDate) nodeUpdateLabelIcon.classList.add("mi", "mi-Update");
 
-  nodeUpdateLabel.innerHTML = " &nbsp;&nbsp;" + date.toHTMLString();
+  nodeUpdateLabel.innerHTML = " &nbsp;&nbsp;" + targetDate.toHTMLString();
   nodeUpdateLabel.insertBefore(nodeUpdateLabelIcon, nodeUpdateLabel.firstChild);
   nodeLabels.appendChild(nodeUpdateLabel);
 
@@ -1085,7 +1086,8 @@ const createItemTile = async function (node, item) {
       }
     );
   } catch (e) {
-    console.error(`Cannot load image ${item.tile.image}`);
+    if (item.tileImageResourceId)
+      console.error(`Cannot load image ${item.tileImageResourceId}`);
   }
 
   //settings up events
@@ -1114,7 +1116,7 @@ const createGroupTile = function (node, group) {
 
   let nodeTitle = document.createElement("SPAN");
   nodeTitle.classList.add("font-title");
-  nodeTitle.innerHTML = group.title;
+  nodeTitle.innerHTML = group.name;
 
   let nodeButton = createButton("mi-ShowAll", "Show all");
 
@@ -1131,116 +1133,50 @@ const createGroupTile = function (node, group) {
 };
 
 //storage response display helpers
-const StorageResponseIndexer = function (
-  response,
-  depth = 1,
-  limit = 3,
-  startIndex = 0,
-  limitOfDepth = 3
-) {
+const StorageResponseIndexer = function (response) {
   let _indexedItems = [];
-  let _groupItemIndex = 0;
-  let _groupIndex = 0;
-  let _currentIndex = startIndex;
-
-  const _addIntoResponse = function (entry) {
-    if (!entry || entry.hidden) return;
-    entry.isIndexed = true;
-
-    //adding item into response
+  const _groups = response.subGroups;
+  const _items = response.items;
+  for (let i = 0; i < _groups.length; i++) {
+    let group = _groups[i];
+    const indexedContent = StorageResponseIndexer(group, _indexedItems.length);
     _indexedItems.push({
-      index: _currentIndex,
-      obj: entry,
-      groupItemIndex: _groupItemIndex,
+      type: GLOBAL.group,
+      entity: group,
     });
-    _groupItemIndex += 1;
-    if (limit > 0) limit -= 1;
-    _currentIndex += 1;
-  };
-  const _addGroupIntoResponse = function (entry) {
-    if (!entry) return;
-    _groupItemIndex = 0;
-    _groupIndex += 1;
-    entry.isIndexed = true;
-    if (depth > 0) {
-      //adding group into response
-      _indexedItems.push({
-        index: _currentIndex,
-        obj: entry,
-        groupIndex: _groupIndex,
-      });
-      //getting nested groups into response
-      _indexedItems = _indexedItems.concat(
-        StorageResponseIndexer(
-          entry,
-          depth - 1,
-          limitOfDepth,
-          _currentIndex + 1
-        )
-      );
-      //setting current index into index of last item from recursion
-      _currentIndex = _indexedItems[_indexedItems.length - 1].index + 1;
-    }
-  };
-
-  //display items or groups from arguments
-  if (depth == 0)
-    response.arg?.itemsOrder?.forEach((value, index) => {
-      var item =
-        typeof value == "number"
-          ? response.content[value]
-          : ItemController.getItemSnapshotById(value);
-      if (item?.groups?.includes(response.id)) _addIntoResponse(item);
+    if (indexedContent.length > 0) _indexedItems.push(...indexedContent);
+  }
+  for (let i = 0; i < _items.length; i++) {
+    let item = _items[i];
+    _indexedItems.push({
+      type: GLOBAL.item,
+      entity: item,
     });
-  response.arg?.groupsOrder?.forEach((value, index) =>
-    _addGroupIntoResponse(
-      response.content.find(
-        (contentEntry) =>
-          contentEntry.id == value && contentEntry.type == GLOBAL.group
-      )
-    )
-  );
-
-  response.content?.forEach((entry, index) => {
-    if (entry.type == GLOBAL.group) {
-      if (!entry.isIndexed) _addGroupIntoResponse(entry);
-      return;
-    }
-    //checking is item count in group display limit, getting only not indexed items or required to fill group
-    if (
-      (limit > 0 &&
-        (!entry.isIndexed || response.content.length - index <= limit)) ||
-      limit == -1
-    )
-      _addIntoResponse(entry);
+  }
+  //add indexes
+  _indexedItems.forEach((entry, index) => {
+    entry.index = index;
   });
   return _indexedItems;
 };
 const StorageResponseBuilder = async function (
   response,
-  targetNode = document.createElement("DIV"),
-  depth = 1,
-  limit = 3
+  targetNode = document.createElement("DIV")
 ) {
   let _items = [...targetNode.getElementsByClassName(GLOBAL.dataNode)];
-  let _indexedItems = StorageResponseIndexer(response, depth, limit, 0);
+  let _indexedItems = StorageResponseIndexer(response);
   await Promise.all(
     _indexedItems.map(async (entry) => {
-      entry.obj.isIndexed = false;
-      entry.obj.responseIndex =
-        entry.groupItemIndex == undefined
-          ? entry.groupIndex
-          : entry.groupItemIndex;
-      entry.obj.type == GLOBAL.group
+      entry.type == GLOBAL.group
         ? await createGroupTile(
             _items[entry.index] ||
               targetNode.appendChild(document.createElement("div")),
-            entry.obj
+            entry.entity
           )
         : await createItemTile(
             _items[entry.index] ||
               targetNode.appendChild(document.createElement("a")),
-            entry.obj
+            entry.entity
           );
     })
   );

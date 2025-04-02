@@ -10,5 +10,6 @@
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public bool IsLink { get; set; }
+        public bool IsPublished { get; set; }
     }
 }

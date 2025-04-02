@@ -37,5 +37,11 @@ namespace alukasiewicz.api.Module.Resources.Controllers
             var result = await _resourceService.Remove(id);
             return Ok(result);
         }
+        [HttpGet("{id}/Content")]
+        public async Task<IActionResult> GetContent(Guid id)
+        {
+            var resource = await _resourceService.Get(id);
+            return Ok(resource.Content);
+        }
     }
 }

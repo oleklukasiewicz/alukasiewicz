@@ -68,7 +68,8 @@ namespace alukasiewicz.api.Module.Posts.Entity
                 Href = item.IsLink ? item.Content : item.Id.ToString(),
                 CreatedAt = item.CreatedAt,
                 UpdatedAt = item.UpdatedAt,
-                IsLink = item.IsLink
+                IsLink = item.IsLink,
+                IsPublished = item.IsPublished
             };
         }
     }
