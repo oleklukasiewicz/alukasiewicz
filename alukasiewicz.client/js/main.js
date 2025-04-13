@@ -607,8 +607,6 @@ const landingView = new View(
         .remove();
     },
     onLoad: async function () {
-      const group = await GetDefaultGroup();
-
       this.rootNode.classList.add(GLOBAL.loading);
 
       //display items from landing group

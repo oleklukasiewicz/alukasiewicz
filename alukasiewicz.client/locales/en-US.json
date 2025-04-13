@@ -1,0 +1,13 @@
+{
+  "navigation": {
+    "home": "Home",
+    "about": "About",
+    "work": "Work",
+    "search": "Search"
+  },
+  "landing": {
+    "header": "Hi, I'm Aleksander!",
+    "subheader": "Web and .NET developer <br> Beginning pixel art artist",
+    "about_me": "About me"
+  }
+}
