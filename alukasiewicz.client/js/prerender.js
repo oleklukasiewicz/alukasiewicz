@@ -72,23 +72,86 @@ const Translate = async function (locale) {
     return;
   }
   const targets = document.querySelectorAll("[data-translate]");
-  for (let i = 0; i < targets.length; i++) {
-    const target = targets[i];
-    const key = target.getAttribute("data-translate");
-    const keys = key.split(".");
-    let translation = locale;
-    for (let j = 0; j < keys.length; j++) {
-      translation = translation[keys[j]];
-      if (!translation) break;
-    }
-    if (translation) {
-      target.innerHTML = translation;
+  for (const target of targets) {
+    const path = target.getAttribute("data-translate");
+    if (path) {
+      await TranslateNode(target, path);
     } else {
-      console.warn(`Translation not found for key: ${key}`);
+      console.warn("No translation path found for node:", target);
+    }
+  }
+  const titleTargets = document.querySelectorAll("[data-translate-title]");
+  for (const target of titleTargets) {
+    const path = target.getAttribute("data-translate-title");
+    if (path) {
+      await TranslateTitleNode(target, path);
+    } else {
+      console.warn("No title translation path found for node:", target);
     }
   }
 };
-
+const TranslateNode = async function (node, path) {
+  if (!node || !path) {
+    console.error("Node or path not provided for translation");
+    return;
+  }
+  const keys = path.split(".");
+  let translation = LOCALE;
+  for (let i = 0; i < keys.length; i++) {
+    translation = translation[keys[i]];
+    if (!translation) break;
+  }
+  if (translation) {
+    node.innerText = translation;
+  } else {
+    console.warn(`Translation not found for path: ${path}`);
+  }
+};
+const TranslateTitleNode = async function (node, path) {
+  if (!node || !path) {
+    console.error("Node or path not provided for title translation");
+    return;
+  }
+  const keys = path.split(".");
+  let translation = LOCALE;
+  for (let i = 0; i < keys.length; i++) {
+    translation = translation[keys[i]];
+    if (!translation) break;
+  }
+  if (translation) {
+    node.setAttribute("title", translation);
+  } else {
+    console.warn(`Title translation not found for path: ${path}`);
+  }
+};
+const AddTranslation = async function (key, value) {
+  if (!LOCALE) {
+    console.error("Locale not loaded, cannot add translation");
+    return;
+  }
+  const keys = key.split(".");
+  let current = LOCALE;
+  for (let i = 0; i < keys.length - 1; i++) {
+    if (!current[keys[i]]) {
+      current[keys[i]] = {};
+    }
+    current = current[keys[i]];
+  }
+  current[keys[keys.length - 1]] = value;
+  console.log(`Added translation: ${key} -> ${value}`);
+};
+const GetCurrentTranslationFromLocale = async function (locale) {
+  if (!locale) {
+    return;
+  }
+  locale[LANG] = locale[LANG] || locale["en-US"];
+  const currentTranslation = locale[LANG];
+  if (!currentTranslation) {
+    console.error(`No translation found for language: ${LANG}`);
+    return;
+  }
+  return currentTranslation;
+};
 const LANG =
   navigator.browserLanguage ||
   navigator.language ||

@@ -7,7 +7,10 @@
   },
   "landing": {
     "header": "Hi, I'm Aleksander!",
-    "subheader": "Web and .NET developer <br> Beginning pixel art artist",
+    "subheader": "Web and .NET developer \n Beginning pixel art artist",
     "about_me": "About me"
-  }
+  },
+  "show_all": "Show all!",
+  "groups": {},
+  "items": {}
 }

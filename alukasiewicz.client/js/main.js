@@ -454,6 +454,10 @@ const ItemController = (function () {
       groups.map(async (group) => {
         if (group.dev === true && !DEVELOPMENT) return;
         _generateGroup(group);
+        AddTranslation(
+          "group." + group.id,
+          await GetCurrentTranslationFromLocale(group.locale)
+        );
         _storage.push(group);
         group.aliases?.forEach((source) =>
           _groupRoutes.push(new Route(source, group))
@@ -474,6 +478,10 @@ const ItemController = (function () {
     await Promise.all(
       items.map(async (item) => {
         _generateValidStorageObject(item);
+        await AddTranslation(
+          "item." + item.id,
+          await GetCurrentTranslationFromLocale(item.locale)
+        );
         item.type = GLOBAL.item;
         _routes.push(new Route(item.id, item));
       })
@@ -1017,6 +1025,7 @@ const createItemTile = async function (node, item) {
   let nodeTitle = document.createElement("B");
   nodeTitle.classList.add("font-subtitle");
   nodeTitle.innerHTML = item.title;
+  await TranslateNode(nodeTitle, "item." + item.id + ".title");
 
   if (item.dev) {
     let _betabadge = document.createElement("SPAN");
@@ -1037,6 +1046,7 @@ const createItemTile = async function (node, item) {
   let nodeContent = document.createElement("SPAN");
   nodeContent.classList.add("font-base");
   nodeContent.innerHTML = item.tile.content;
+  await TranslateNode(nodeContent, "item." + item.id + ".content");
 
   let nodeLabels = document.createElement("DIV");
   nodeLabels.classList.add("labels");
@@ -1101,7 +1111,7 @@ const createItemTile = async function (node, item) {
   Effect.reveal.add(revealLayer, true);
   return node;
 };
-const createGroupTile = function (node, group) {
+const createGroupTile = async function (node, group) {
   if (node.nodeName != "DIV") {
     let oldNode = node;
     node = document.createElement("DIV");
@@ -1113,8 +1123,11 @@ const createGroupTile = function (node, group) {
   let nodeTitle = document.createElement("SPAN");
   nodeTitle.classList.add("font-title");
   nodeTitle.innerHTML = group.title;
+  await TranslateNode(nodeTitle, "group." + group.id + ".title");
 
   let nodeButton = createButton("mi-ShowAll", "Show all");
+  var btnSpan = nodeButton.querySelector("span");
+  await TranslateNode(btnSpan, "show_all");
 
   node.appendChild(nodeTitle);
   node.appendChild(nodeButton);
