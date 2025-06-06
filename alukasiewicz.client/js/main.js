@@ -99,7 +99,19 @@ const ItemDate = function (day, month, year) {
       "Dec",
     ]
   ) {
-    return months[this.month - 1] + "&nbsp;" + this.day + ",&nbsp;" + this.year;
+    const translation = GetTranslation(
+      "calendar." + months[this.month - 1].toLocaleLowerCase()
+    );
+    return (
+      "<span data-translate='calendar." +
+      months[this.month - 1].toLocaleLowerCase() +
+      "'>" +
+      translation +
+      "</span>&nbsp;" +
+      this.day +
+      ",&nbsp;" +
+      this.year
+    );
   };
   this.toNormalizedString = function (date) {
     var year = date.year;
@@ -455,8 +467,8 @@ const ItemController = (function () {
         if (group.dev === true && !DEVELOPMENT) return;
         _generateGroup(group);
         AddTranslation(
-          "group." + group.id,
-          await GetCurrentTranslationFromLocale(group.locale)
+          "groups." + group.id,
+          GetCurrentTranslationFromLocale(group.locale)
         );
         _storage.push(group);
         group.aliases?.forEach((source) =>
@@ -478,9 +490,9 @@ const ItemController = (function () {
     await Promise.all(
       items.map(async (item) => {
         _generateValidStorageObject(item);
-        await AddTranslation(
-          "item." + item.id,
-          await GetCurrentTranslationFromLocale(item.locale)
+        AddTranslation(
+          "items." + item.id,
+          GetCurrentTranslationFromLocale(item.locale)
         );
         item.type = GLOBAL.item;
         _routes.push(new Route(item.id, item));
@@ -554,6 +566,30 @@ const ItemController = (function () {
     findResourceByHash: {
       value: (resourceDictionary, hash) =>
         _getResourceGroupByHash(resourceDictionary, hash),
+    },
+    translateGroups: {
+      value: function () {
+        _storage.forEach((group) => {
+          if (group.locale) {
+            AddTranslation(
+              "groups." + group.id,
+              GetCurrentTranslationFromLocale(group.locale)
+            );
+          }
+        });
+      },
+    },
+    translateItems: {
+      value: function () {
+        _routes.forEach((route) => {
+          if (route.target.locale) {
+            AddTranslation(
+              "items." + route.target.id,
+              GetCurrentTranslationFromLocale(route.target.locale)
+            );
+          }
+        });
+      },
     },
   });
   return _controller;
@@ -804,13 +840,24 @@ const groupView = new View(
       //preparing group info
       this.data.currentGroup = group;
       this.data.groupTitle.innerHTML = group.title;
+      await TranslateNode(
+        this.data.groupTitle,
+        "groups." + group.id + ".title"
+      );
       document.title = group.title + " - " + APP.name;
       this.data.groupInfo.innerHTML =
         group.createDate.toHTMLString() +
         " <u class='dotted-separator'></u> " +
         group.content.length +
-        "&nbsp;" +
-        (group.content.length != 1 ? "items" : "item");
+        "&nbsp;<span>" +
+        (group.content.length != 1 ? "items" : "item") +
+        "</span>";
+      const groupInfoSpan2 =
+        this.data.groupInfo.querySelector("span:last-child");
+      await TranslateNode(
+        groupInfoSpan2,
+        "group." + (group.content.length != 1 ? "items" : "item")
+      );
       this.data.groupData.classList.remove(GLOBAL.loading);
 
       //loading items of group
@@ -1025,7 +1072,7 @@ const createItemTile = async function (node, item) {
   let nodeTitle = document.createElement("B");
   nodeTitle.classList.add("font-subtitle");
   nodeTitle.innerHTML = item.title;
-  await TranslateNode(nodeTitle, "item." + item.id + ".title");
+  await TranslateNode(nodeTitle, "items." + item.id + ".title");
 
   if (item.dev) {
     let _betabadge = document.createElement("SPAN");
@@ -1046,7 +1093,7 @@ const createItemTile = async function (node, item) {
   let nodeContent = document.createElement("SPAN");
   nodeContent.classList.add("font-base");
   nodeContent.innerHTML = item.tile.content;
-  await TranslateNode(nodeContent, "item." + item.id + ".content");
+  await TranslateNode(nodeContent, "items." + item.id + ".content");
 
   let nodeLabels = document.createElement("DIV");
   nodeLabels.classList.add("labels");
@@ -1125,7 +1172,7 @@ const createGroupTile = async function (node, group) {
   let nodeTitle = document.createElement("SPAN");
   nodeTitle.classList.add("font-title");
   nodeTitle.innerHTML = group.title;
-  await TranslateNode(nodeTitle, "group." + group.id + ".title");
+  await TranslateNode(nodeTitle, "groups." + group.id + ".title");
 
   let nodeButton = createButton("mi-ShowAll", "Show all");
   var btnSpan = nodeButton.querySelector("span");
@@ -1673,6 +1720,14 @@ const ConfigureDOM = function () {
     ViewController.navigateToDefaultView();
   });
 
+  getById("lang-switch").addEventListener("click", async (e) => {
+    e.preventDefault();
+    if (LOCALE.lang == "pl-PL") LOCALE = await FetchLocale("en-US");
+    else LOCALE = await FetchLocale("pl-PL");
+    ItemController.translateGroups();
+    ItemController.translateItems();
+    await Translate(LOCALE);
+  });
   getById("main-header-icons").classList.remove(GLOBAL.disabled);
 
   const aboutButton = getById("main-header-about-button");

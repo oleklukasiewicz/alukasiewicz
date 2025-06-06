@@ -806,6 +806,15 @@ u.dotted-separator {
 #group-data.loading #group-gallery-button {
   display: none;
 }
+#lang-switch {
+  margin: 4px;
+  padding: 4px 8px;
+  box-sizing: border-box;
+  cursor: pointer;
+  font-size: var(--size-font-base);
+  font-weight: 500;
+  background-color: var(--color-theme-hover);
+}
 @supports not (backdrop-filter: var(--acrylic)) {
   #main-header-base {
     backdrop-filter: none;

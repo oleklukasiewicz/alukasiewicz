@@ -1,42 +1,47 @@
 {
+  "lang": "en-US",
   "navigation": {
-    "home": "Strona główna",
-    "about": "O mnie",
-    "work": "Projekty",
+    "home": "Home",
+    "about": "About Me",
+    "work": "Projects",
     "search": "Search"
   },
   "landing": {
-    "header": "Cześć, jestem Aleksader",
-    "subheader": "Programista .Net oraz Stron Internetowych \n Początkujacy artysta pixel art",
-    "about_me": "O mnie"
+    "header": "Hi, I'm Aleksander",
+    "subheader": ".Net and Web Developer \n Beginner pixel art artist",
+    "about_me": "About Me"
   },
   "about": {
-    "header": "O mnie",
-    "subheader": "Witaj świecie, jestem Aleksander.",
-    "description": "Jestem programistą z doświadczeniem w tworzeniu aplikacji internetowych i rozwoju oprogramowania. Moje umiejętności obejmują .NET, C#, JavaScript, HTML, CSS i wiele innych technologii. W wolnym czasie tworzę projekty open source i uczę się nowych technologii.",
-    "description2": "Obecnie posiadam tylko certyfikat AZ-900, ale jestem pewien, że ta lista wkrótce się powiększy!",
-    "description3": "Tworząc pixel art staram się tworzyć małe, ale dokładne obrazy. Uwielbiam eksperymentować z kolorami i stylem. Moje główne tematy do rysowania to kwiaty i wszelkiego rodzaju rośliny."
+    "header": "About Me",
+    "subheader": "Hello world, I'm Aleksander.",
+    "description": "I'm a developer with experience in building web applications and software development. My skills include .NET, C#, JavaScript, HTML, CSS, and many other technologies. In my free time, I work on open-source projects and learn new technologies.",
+    "description2": "Currently, I only have the AZ-900 certification, but I’m sure that list will grow soon!",
+    "description3": "When creating pixel art, I try to make small but detailed images. I love experimenting with colors and style. My main drawing themes are flowers and all kinds of plants."
   },
   "calendar": {
-    "Jan": "Sty",
-    "Feb": "Lut",
-    "Mar": "Mar",
-    "Apr": "Kwi",
-    "May": "Maj",
-    "Jun": "Cze",
-    "Jul": "Lip",
-    "Aug": "Sie",
-    "Sep": "Wrz",
-    "Oct": "Paź",
-    "Nov": "Lis",
-    "Dec": "Gru"
+    "jan": "Jan",
+    "feb": "Feb",
+    "mar": "Mar",
+    "apr": "Apr",
+    "may": "May",
+    "jun": "Jun",
+    "jul": "Jul",
+    "aug": "Aug",
+    "sep": "Sep",
+    "oct": "Oct",
+    "nov": "Nov",
+    "dec": "Dec"
   },
-  "skills": "Umiejętności",
-  "join_me": "Dołącz do mnie",
-  "footer": "Praca jest licencjonowana na zasadach",
-  "show_all": "Pokaż wszystko",
-  "read_more": "Więcej",
-  "open_link": "Otwórz link",
+  "group": {
+    "item": "item",
+    "items": "items"
+  },
+  "skills": "Skills",
+  "join_me": "Join Me",
+  "footer": "Work is licensed under",
+  "show_all": "Show All",
+  "read_more": "Read More",
+  "open_link": "Open Link",
   "groups": {},
   "items": {}
 }

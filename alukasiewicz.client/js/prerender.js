@@ -95,39 +95,26 @@ const TranslateNode = async function (node, path) {
     console.error("Node or path not provided for translation");
     return;
   }
-  const keys = path.split(".");
-  let translation = LOCALE;
-  for (let i = 0; i < keys.length; i++) {
-    translation = translation[keys[i]];
-    if (!translation) break;
-  }
+  const translation = GetTranslation(path, LOCALE);
   if (translation) {
     node.innerText = translation;
     //add custom data attribute for the translation
-    node.setAttribute("data-translation", path);
-  } else {
-    console.warn(`Translation not found for path: ${path}`);
   }
+  node.setAttribute("data-translate", path);
 };
 const TranslateTitleNode = async function (node, path) {
   if (!node || !path) {
     console.error("Node or path not provided for title translation");
     return;
   }
-  const keys = path.split(".");
-  let translation = LOCALE;
-  for (let i = 0; i < keys.length; i++) {
-    translation = translation[keys[i]];
-    if (!translation) break;
-  }
+  const translation = GetTranslation(path, LOCALE);
   if (translation) {
     node.setAttribute("title", translation);
     //add custom data attribute for the title translation
-  } else {
-    console.warn(`Title translation not found for path: ${path}`);
   }
+  node.setAttribute("data-translate-title", path);
 };
-const AddTranslation = async function (key, value) {
+const AddTranslation = function (key, value) {
   if (!LOCALE) {
     console.error("Locale not loaded, cannot add translation");
     return;
@@ -141,19 +128,55 @@ const AddTranslation = async function (key, value) {
     current = current[keys[i]];
   }
   current[keys[keys.length - 1]] = value;
-  console.log(`Added translation: ${key} -> ${value}`);
 };
-const GetCurrentTranslationFromLocale = async function (locale) {
+const GetTranslation = function (key, locale = LOCALE) {
+  if (!LOCALE) {
+    console.error("Locale not loaded, cannot get translation");
+    return;
+  }
+  const keys = key.split(".");
+  let translation = locale || LOCALE;
+  for (let i = 0; i < keys.length; i++) {
+    translation = translation[keys[i]];
+    if (!translation) break;
+  }
+  if (translation) {
+    return translation;
+  }
+  return null;
+};
+const GetCurrentTranslationFromLocale = function (locale) {
   if (!locale) {
     return;
   }
-  locale[LANG] = locale[LANG] || locale["en-US"];
-  const currentTranslation = locale[LANG];
+  locale[LOCALE.lang] = locale[LOCALE.lang] || locale["en-US"];
+  const currentTranslation = locale[LOCALE.lang];
   if (!currentTranslation) {
-    console.error(`No translation found for language: ${LANG}`);
     return;
   }
   return currentTranslation;
+};
+const FetchLocale = async function (lang) {
+  if (!lang) {
+    console.error("Language not provided for fetching locale");
+    return;
+  }
+  const localeUrl = `/locales/${lang}.json`;
+  try {
+    const response = await fetch(localeUrl);
+    if (!response.ok) {
+      throw new Error("Network response was not ok " + response.statusText);
+    }
+    let data = {};
+    try {
+      data = await response.json();
+    } catch (jsonError) {
+      return;
+    }
+    return data;
+  } catch (error) {
+    console.error("Error fetching locale file:", error);
+  }
 };
 const LANG =
   navigator.browserLanguage ||
@@ -161,27 +184,16 @@ const LANG =
   navigator.userLanguage ||
   "en-US";
 //fetch locale file
-const LOCALE = {};
-const LOCALE_URL = `locales/${LANG}.json`;
-fetch(LOCALE_URL)
-  .then((response) => {
-    if (!response.ok) {
-      throw new Error("Network response was not ok " + response.statusText);
-    }
-    return response.json();
-  })
-  .then(async (data) => {
-    Object.assign(LOCALE, data);
-
-    //check if dom is ready and stop rendering before transltion si scompelted
-    if (document.readyState === "loading") {
-      document.addEventListener("DOMContentLoaded", async () => {
-        await Translate(LOCALE);
-      });
-    } else {
+let LOCALE = {};
+const LOCALE_URL = `/locales/${LANG}.json`;
+FetchLocale(LANG).then(async (data) => {
+  Object.assign(LOCALE, data);
+  //check if dom is ready and stop rendering before transltion si scompelted
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", async () => {
       await Translate(LOCALE);
-    }
-  })
-  .catch((error) => {
-    console.error("Error fetching locale file:", error);
-  });
+    });
+  } else {
+    await Translate(LOCALE);
+  }
+});

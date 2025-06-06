@@ -22,12 +22,6 @@
         <link rel="stylesheet" href="/css/global.css" media="screen" />
     </noscript>
 
-    <link rel="preload" href="/img/dark/landing-banner/bg1.webp" as="image" type="image/webp" />
-    <link rel="preload" href="/img/dark/landing-banner/profile-picture.webp" as="image" type="image/webp" />
-
-    <link rel="preload" href="/img/light/landing-banner/bg1.webp" as="image" type="image/webp" />
-    <link rel="preload" href="/img/light/landing-banner/profile-picture.webp" as="image" type="image/webp" />
-
     <script src="/js/api.js" async></script>
     <script src="/js/main.js" async></script>
     <script src="/js/extension/showdown.js" defer></script>
@@ -38,7 +32,6 @@
         <link rel="stylesheet" href="/css/item.css">
     </noscript>
 
-    <link rel="preload" href="/img/image_error.webp" as="image" type="image/webp" />
     <link rel="manifest" href="/manifest.webmanifest">
     <script src="/serviceworker.js" async></script>
     <link rel="shortcut icon" href="/icon/favicon-32x32.png" />
@@ -62,8 +55,11 @@
                 <div class="offline-badge badge">
                     Offline
                 </div>
+                <div id="lang-switch"><span>PL</span> <span>EN</span></div>
             </div>
+              
             <div id="main-header-icons" style="float: right;" class="disabled">
+               
                  <div id="main-header-nav-button" class="icon-button"><i class="mi mi-Navigation"></i></div>
                 <div id="main-header-navigation">
                     <a id="main-header-work-button" class="icon-button" href="/group/work" title="Work" data-translate-title="navigation.work"><i
@@ -71,6 +67,7 @@
                     <a id="main-header-about-button" class="icon-button" href="/about" title="About me" data-translate-title="navigation.about"><i
                             class="mi mi-Contact"></i><span data-translate="navigation.about">About</span></a>
                 </div>
+               
             </div>
         </div>
     </div>
