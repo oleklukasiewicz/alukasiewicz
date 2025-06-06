@@ -103,6 +103,8 @@ const TranslateNode = async function (node, path) {
   }
   if (translation) {
     node.innerText = translation;
+    //add custom data attribute for the translation
+    node.setAttribute("data-translation", path);
   } else {
     console.warn(`Translation not found for path: ${path}`);
   }
@@ -120,6 +122,7 @@ const TranslateTitleNode = async function (node, path) {
   }
   if (translation) {
     node.setAttribute("title", translation);
+    //add custom data attribute for the title translation
   } else {
     console.warn(`Title translation not found for path: ${path}`);
   }

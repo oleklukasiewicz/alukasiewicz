@@ -1,16 +1,42 @@
 {
   "navigation": {
-    "home": "Home",
-    "about": "About",
-    "work": "Work",
+    "home": "Strona główna",
+    "about": "O mnie",
+    "work": "Projekty",
     "search": "Search"
   },
   "landing": {
-    "header": "Hi, I'm Aleksander!",
-    "subheader": "Web and .NET developer \n Beginning pixel art artist",
-    "about_me": "About me"
+    "header": "Cześć, jestem Aleksader",
+    "subheader": "Programista .Net oraz Stron Internetowych \n Początkujacy artysta pixel art",
+    "about_me": "O mnie"
   },
-  "show_all": "Show all!",
+  "about": {
+    "header": "O mnie",
+    "subheader": "Witaj świecie, jestem Aleksander.",
+    "description": "Jestem programistą z doświadczeniem w tworzeniu aplikacji internetowych i rozwoju oprogramowania. Moje umiejętności obejmują .NET, C#, JavaScript, HTML, CSS i wiele innych technologii. W wolnym czasie tworzę projekty open source i uczę się nowych technologii.",
+    "description2": "Obecnie posiadam tylko certyfikat AZ-900, ale jestem pewien, że ta lista wkrótce się powiększy!",
+    "description3": "Tworząc pixel art staram się tworzyć małe, ale dokładne obrazy. Uwielbiam eksperymentować z kolorami i stylem. Moje główne tematy do rysowania to kwiaty i wszelkiego rodzaju rośliny."
+  },
+  "calendar": {
+    "Jan": "Sty",
+    "Feb": "Lut",
+    "Mar": "Mar",
+    "Apr": "Kwi",
+    "May": "Maj",
+    "Jun": "Cze",
+    "Jul": "Lip",
+    "Aug": "Sie",
+    "Sep": "Wrz",
+    "Oct": "Paź",
+    "Nov": "Lis",
+    "Dec": "Gru"
+  },
+  "skills": "Umiejętności",
+  "join_me": "Dołącz do mnie",
+  "footer": "Praca jest licencjonowana na zasadach",
+  "show_all": "Pokaż wszystko",
+  "read_more": "Więcej",
+  "open_link": "Otwórz link",
   "groups": {},
   "items": {}
 }

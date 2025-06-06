@@ -1057,6 +1057,8 @@ const createItemTile = async function (node, item) {
     "DIV",
     true
   );
+  let nodeButtonSpan = nodeButton.querySelector("span");
+  await TranslateNode(nodeButtonSpan, item.isLink ? "open_link" : "read_more");
 
   nodeLabels.appendChild(nodeButton);
 
@@ -1714,7 +1716,6 @@ ViewController.addEventListener("navigateFromView", async (lastView) => {
 });
 ViewController.addEventListener("navigationRequest", () => {
   closeNavigation();
-  closeSearch();
 });
 
 window.addEventListener("popstate", (event) =>

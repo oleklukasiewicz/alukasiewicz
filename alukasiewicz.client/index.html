@@ -50,7 +50,7 @@
         <div id="main-header-navigation-close-space"></div>
         <div id="main-header" style="width:100%;position: relative;z-index: 12;">
             <div id="main-header-icons-left" style="float: left;">
-                <a class="al-logo anim" id="home-button" title="Home page" href="/">
+                <a class="al-logo anim" id="home-button" title="Home page" href="/" data-translate-title="navigation.home">
                     <div class="l"></div>
                     <div class="l"></div>
                     <div class="l"></div>
@@ -64,104 +64,12 @@
                 </div>
             </div>
             <div id="main-header-icons" style="float: right;" class="disabled">
-                <div class="icon-button" id="main-header-search"><i class="mi mi-Search"></i><span data-translate="navigation.search">Search</span></div>
-                <u class="separator vertical" id="main-header-search-separator"></u>
-                <div id="main-header-nav-button" class="icon-button"><i class="mi mi-Navigation"></i></div>
+                 <div id="main-header-nav-button" class="icon-button"><i class="mi mi-Navigation"></i></div>
                 <div id="main-header-navigation">
-                    <a id="main-header-work-button" class="icon-button" href="/group/work" title="Work"><i
+                    <a id="main-header-work-button" class="icon-button" href="/group/work" title="Work" data-translate-title="navigation.work"><i
                             class="mi mi-Set"></i><span data-translate="navigation.work">Work</span></a>
-                    <a id="main-header-about-button" class="icon-button" href="/about" title="About me"><i
+                    <a id="main-header-about-button" class="icon-button" href="/about" title="About me" data-translate-title="navigation.about"><i
                             class="mi mi-Contact"></i><span data-translate="navigation.about">About</span></a>
-                </div>
-            </div>
-        </div>
-        <div id="search">
-            <div id="search-input">
-                <input type="text" id="search-text" placeholder="Search posts, groups and resources" />
-                <a id="search-btn" class="icon-button"><i class="mi mi-BackMirrored"></i></a>
-            </div>
-            <div id="search-results">
-                <div id="search-result-items">
-                    <div class="search-item">
-                        <div class="search-item-img"></div>
-                        <div class="search-item-data">
-                            <span class="font-base search-item-title">Title</span>
-                            <span class="search-item-type">Item</span>
-                        </div>
-                        <a class="icon-button"><i class="mi mi-BackMirrored"></i></a>
-                    </div>
-                    <div class="search-item">
-                        <div class="search-item-img"></div>
-                        <div class="search-item-data">
-                            <span class="font-base search-item-title">Title</span>
-                            <span class="search-item-type">Item</span>
-                        </div>
-                        <a class="icon-button"><i class="mi mi-BackMirrored"></i></a>
-                    </div>
-                    <div class="search-item">
-                        <div class="search-item-img"></div>
-                        <div class="search-item-data">
-                            <span class="font-base search-item-title">Title</span>
-                            <span class="search-item-type">Item</span>
-                        </div>
-                        <a class="icon-button"><i class="mi mi-BackMirrored"></i></a>
-                    </div>
-                    <div class="search-item">
-                        <div class="search-item-img"></div>
-                        <div class="search-item-data">
-                            <span class="font-base search-item-title">Title</span>
-                            <span class="search-item-type">Item</span>
-                        </div>
-                        <a class="icon-button"><i class="mi mi-BackMirrored"></i></a>
-                    </div>
-                    <div class="search-item">
-                        <div class="search-item-img"></div>
-                        <div class="search-item-data">
-                            <span class="font-base search-item-title">Title</span>
-                            <span class="search-item-type">Item</span>
-                        </div>
-                        <a class="icon-button"><i class="mi mi-BackMirrored"></i></a>
-                    </div>
-                    <div class="search-item">
-                        <div class="search-item-img"></div>
-                        <div class="search-item-data">
-                            <span class="font-base search-item-title">Title</span>
-                            <span class="search-item-type">Item</span>
-                        </div>
-                        <a class="icon-button"><i class="mi mi-BackMirrored"></i></a>
-                    </div>
-                    <div class="search-item">
-                        <div class="search-item-img"></div>
-                        <div class="search-item-data">
-                            <span class="font-base search-item-title">Title</span>
-                            <span class="search-item-type">Item</span>
-                        </div>
-                        <a class="icon-button"><i class="mi mi-BackMirrored"></i></a>
-                    </div>
-                    <div class="search-item">
-                        <div class="search-item-img"></div>
-                        <div class="search-item-data">
-                            <span class="font-base search-item-title">Title</span>
-                            <span class="search-item-type">Item</span>
-                        </div>
-                        <a class="icon-button"><i class="mi mi-BackMirrored"></i></a>
-                    </div>
-                    <div class="search-item">
-                        <div class="search-item-img"></div>
-                        <div class="search-item-data">
-                            <span class="font-base search-item-title">Title</span>
-                            <span class="search-item-type">Item</span>
-                        </div>
-                        <a class="icon-button"><i class="mi mi-BackMirrored"></i></a>
-                    </div>
-                    <div class="search-item">
-                        <div class="search-item-img"></div>
-                        <div class="search-item-data">
-                            <span class="font-base search-item-title">Title</span>
-                            <span class="search-item-type">Item</span>
-                        </div>
-                        <a class="icon-button"><i class="mi mi-BackMirrored"></i></a>
-                    </div>
                 </div>
             </div>
         </div>
@@ -282,16 +190,17 @@
                     </div>
                 </div>
                 <div id="about-data">
-                    <h1 class="font-title">About me</h1>
+                    <h1 class="font-title" data-translate="about.header">About me</h1>
                     <div id="about-content" class="font-base">
-                        <h2 class="font-subtitle">Hello world, my name is Aleksander!</h2>
-                        I am a web and .NET developer and a beginning pixel art artist. I create polished designs
+                        <h2 class="font-subtitle" data-translate="about.subheader">Hello world, my name is Aleksander!</h2>
+                        <span data-translate="about.description">I am a web and .NET developer and a beginning pixel art artist. I create polished designs
                         using
                         pure JavaScript and CSS. I'm currently trying to develop my skills in these technologies, but
                         I'm
                         also learning new ones like Svelte and Vue.
+                        </span>
                         <br><br>
-                        <b class="font-bold-header">Skills</b>
+                        <b class="font-bold-header" data-translate="skills">Skills</b>
                         <div id="langs">
                             <a class="lang-logo" href="https://svelte.dev/" target="_blank" title="Svelte">
                                 <img src="/img/logo/svelte.svg"></img></a>
@@ -313,13 +222,13 @@
                                 <img src="/img/logo/firebase.svg"></img></a>
                         </div>
                         <br>
-                        I currently only have an AZ-900 certificate but I'm sure that list will grow soon!
-                        <br><br>
-                        When creating pixel art I try to create small but accurate pictures. I love to experiment with
+                        <span data-translate="about.description2">I currently only have an AZ-900 certificate but I'm sure that list will grow soon!
+                        </span><br><br>
+                       <span data-translate="about.description3"> When creating pixel art I try to create small but accurate pictures. I love to experiment with
                         colors
                         and style. My main subjects for drawing are flowers and all kinds of plants.
-                        <br><br>
-                        <b class="font-bold-header">Join me</b>
+                        </span><br><br>
+                        <b class="font-bold-header" data-translate="join_me">Join me</b>
                     </div>
                     <div id="about-links">
                         <a href="https://discord.com/users/512282863706832943" target="_blank" rel="noopener"
@@ -422,7 +331,7 @@
             </div>
         </main>
         <footer id="footer" class="font-caption">
-            <div>© 2024 This work is licensed under<br> <a rel="license nofollow"
+            <div >© 2025 <span data-translate="footer">This work is licensed under</span><br> <a rel="license nofollow"
                     href="https://creativecommons.org/licenses/by-nc-nd/4.0">CC BY-NC-ND 4.0</a> <svg
                     viewBox="5.5 -3.5 64 64">
                     <path
