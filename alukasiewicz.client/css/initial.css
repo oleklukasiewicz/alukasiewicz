@@ -440,6 +440,23 @@ u.dotted-separator {
   display: flex;
   overflow: hidden;
 }
+.list-view > .item {
+  max-width: 100%;
+  min-width: 10px;
+  text-decoration: none;
+  display: grid;
+  grid-template-rows: auto auto 1fr auto;
+  grid-template-columns: 100%;
+  border-radius: var(--border-radius);
+  user-select: none;
+  transition: box-shadow var(--time-A1) cubic-bezier(0.16, 1, 0.29, 0.99),
+    transform var(--time-A1) cubic-bezier(0.16, 1, 0.29, 0.99),
+    opacity var(--time), background-color var(--time);
+  color: var(--color-font);
+  cursor: pointer;
+  position: relative;
+  border: 0;
+}
 .list-view > .group > span {
   text-overflow: ellipsis;
   overflow: hidden;
