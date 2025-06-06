@@ -527,17 +527,6 @@
   line-height: 32px;
   flex: 1;
 }
-.list-view > .group {
-  grid-column-start: 1;
-  grid-column-end: 4;
-  box-sizing: border-box;
-  padding: 12px 16px;
-  font-weight: 700;
-  user-select: none;
-  width: 100%;
-  display: flex;
-  overflow: hidden;
-}
 .list-view > .group > span {
   text-overflow: ellipsis;
   overflow: hidden;
@@ -602,18 +591,4 @@
   animation-delay: 0.7s;
   background-image: var(--src-about-banner-l6);
   z-index: 5;
-}
-@media only screen and (max-width: 700px) {
-  .list-view > .group {
-    grid-column-start: 1;
-    grid-column-end: 3;
-    padding: 20px 12px;
-  }
-}
-@media only screen and (max-width: 470px) {
-  .list-view > .group {
-    grid-column-start: 1;
-    grid-column-end: 2;
-    padding: 16px 12px;
-  }
 }
