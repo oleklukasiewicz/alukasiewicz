@@ -440,6 +440,59 @@ u.dotted-separator {
   display: flex;
   overflow: hidden;
 }
+.list-view > .group > span {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  width: calc(100% - 82px);
+  flex: 1;
+  margin-right: 24px;
+}
+.list-view > .group > .button {
+  float: right;
+  font-weight: 400;
+  padding: 9px 9px;
+  height: 34px;
+}
+.list-view > .item > .labels {
+  padding: 20px;
+  display: flex;
+  height: 72px;
+  box-sizing: border-box;
+}
+.list-view > .item > span {
+  margin: 12px 20px 0;
+  text-align: justify;
+  letter-spacing: 0.1px;
+}
+.list-view > .item > b {
+  font-weight: 700;
+  margin: 20px 20px 0;
+}
+.list-view > .item > .labels > .button {
+  transition: var(--transition-bg-only);
+  width: 118px;
+  z-index: 3;
+}
+.list-view > .item > .labels > .button > i {
+  float: right;
+}
+.list-view > .item > .labels > .label > i {
+  transform: translateY(1px);
+  min-width: 13px;
+  min-height: 13px;
+  display: inline-table;
+}
+.list-view > .item > .labels > .label {
+  color: var(--color-font);
+  margin-left: 20px;
+  text-align: right;
+  overflow: hidden;
+  max-height: 32px;
+  box-sizing: border-box;
+  line-height: 32px;
+  flex: 1;
+}
 .list-view > .item.loading {
   animation-name: Blink;
   animation-iteration-count: infinite;
