@@ -11,7 +11,7 @@
           "author": "Microsoft"
         },
         "pl-PL": {
-          "content": "Naturalne na każdym urządzeniu",
+          "content": "Naturalny na każdym urządzeniu",
           "author": "Microsoft"
         }
       }
@@ -19,8 +19,12 @@
     {
       "content": "The idea of establishing a design system at Microsoft started a decade ago when several product teams merged and a handful of design pioneers started working together. Their work gave rise to our first shared design language — a bold achievement given that design was in its infancy at Microsoft and the company’s success at that time was built on a myriad of siloed products.",
       "locale": {
-        "en-US": "The idea of establishing a design system at Microsoft started a decade ago when several product teams merged and a handful of design pioneers started working together. Their work gave rise to our first shared design language — a bold achievement given that design was in its infancy at Microsoft and the company’s success at that time was built on a myriad of siloed products.",
-        "pl-PL": "Pomysł stworzenia systemu projektowania w Microsoft zrodził się dekadę temu, kiedy kilka zespołów produktowych połączyło siły, a garstka pionierów projektowania zaczęła współpracować. Ich praca dała początek naszemu pierwszemu wspólnemu językowi projektowania — odważne osiągnięcie, biorąc pod uwagę, że projektowanie było wówczas w powijakach, a sukces firmy opierał się na niezliczonych produktach działających w silosach."
+        "en-US": {
+          "content": "The idea of establishing a design system at Microsoft started a decade ago when several product teams merged and a handful of design pioneers started working together. Their work gave rise to our first shared design language — a bold achievement given that design was in its infancy at Microsoft and the company’s success at that time was built on a myriad of siloed products."
+        },
+        "pl-PL": {
+          "content": "Pomysł ustanowienia systemu projektowania w Microsoft rozpoczął się dekadę temu, kiedy kilka zespołów produktowych połączyło się, a garstka pionierów projektowania zaczęła pracować razem. Ich praca dała początek naszemu pierwszemu wspólnemu językowi projektowania — odważne osiągnięcie, biorąc pod uwagę, że projektowanie było w swoim dzieciństwie w Microsoft, a sukces firmy w tym czasie opierał się na niezliczonych produktach działających w silosach."
+        }
       }
     },
     {
@@ -51,8 +55,12 @@
       "type": "section",
       "content": "Fluent becomes the best version of itself when there is clarity around what it is, what it could be, and why that’s important. Today, we aspire to make Fluent a collective, open design system that connects us, inspiring and influencing everything we create.",
       "locale": {
-        "en-US": "Fluent becomes the best version of itself when there is clarity around what it is, what it could be, and why that’s important. Today, we aspire to make Fluent a collective, open design system that connects us, inspiring and influencing everything we create.",
-        "pl-PL": "Fluent staje się najlepszą wersją samego siebie, gdy istnieje jasność co do tego, czym jest, czym może być i dlaczego jest to ważne. Dziś dążymy do tego, aby Fluent stał się zbiorowym, otwartym systemem projektowania, który nas łączy, inspiruje i wpływa na wszystko, co tworzymy."
+        "en-US": {
+          "content": "Fluent becomes the best version of itself when there is clarity around what it is, what it could be, and why that’s important. Today, we aspire to make Fluent a collective, open design system that connects us, inspiring and influencing everything we create."
+        },
+        "pl-PL": {
+          "content": "Fluent staje się najlepszą wersją samego siebie, gdy istnieje jasność co do tego, czym jest, czym może być i dlaczego jest to ważne. Dziś dążymy do tego, aby Fluent stał się zbiorowym, otwartym systemem projektowania, który nas łączy, inspirując i wpływając na wszystko, co tworzymy."
+        }
       }
     },
     {
@@ -198,8 +206,12 @@
     {
       "content": "Rising to this challenge will take a lot of time and effort, and we all have day jobs in specific products. But it’s going to pay dividends along the way. Over time it can bring our culture, our business, our technology, and our experiences together.",
       "locale": {
-        "en-US": "Rising to this challenge will take a lot of time and effort, and we all have day jobs in specific products. But it’s going to pay dividends along the way. Over time it can bring our culture, our business, our technology, and our experiences together.",
-        "pl-PL": "Stawienie czoła temu wyzwaniu zajmie dużo czasu i wysiłku, a wszyscy mamy codzienne obowiązki w konkretnych produktach. Ale przyniesie to korzyści w miarę postępu. Z biegiem czasu może to połączyć naszą kulturę, nasz biznes, naszą technologię i nasze doświadczenia."
+        "en-US": {
+          "content": "Rising to this challenge will take a lot of time and effort, and we all have day jobs in specific products. But it’s going to pay dividends along the way. Over time it can bring our culture, our business, our technology, and our experiences together."
+        },
+        "pl-PL": {
+          "content": "Stawienie czoła temu wyzwaniu zajmie dużo czasu i wysiłku, a wszyscy mamy codzienne obowiązki w konkretnych produktach. Ale przyniesie to korzyści po drodze. Z biegiem czasu może to połączyć naszą kulturę, nasz biznes, naszą technologię i nasze doświadczenia."
+        }
       }
     },
     {
@@ -209,36 +221,36 @@
         {
           "content": "Light",
           "locale": {
-            "en-US": "Light",
-            "pl-PL": "Światło"
+            "en-US": { "content": "Light" },
+            "pl-PL": { "content": "Światło" }
           }
         },
         {
           "content": "Motion",
           "locale": {
-            "en-US": "Motion",
-            "pl-PL": "Ruch"
+            "en-US": { "content": "Motion" },
+            "pl-PL": { "content": "Ruch" }
           }
         },
         {
           "content": "Depth",
           "locale": {
-            "en-US": "Depth",
-            "pl-PL": "Głębia"
+            "en-US": { "content": "Depth" },
+            "pl-PL": { "content": "Głębia" }
           }
         },
         {
           "content": "Material",
           "locale": {
-            "en-US": "Material",
-            "pl-PL": "Materiał"
+            "en-US": { "content": "Material" },
+            "pl-PL": { "content": "Materiał" }
           }
         },
         {
           "content": "Scale",
           "locale": {
-            "en-US": "Scale",
-            "pl-PL": "Skala"
+            "en-US": { "content": "Scale" },
+            "pl-PL": { "content": "Skala" }
           }
         }
       ]
@@ -290,8 +302,12 @@
     {
       "content": "Historically, Microsoft designers have valued product-level expertise, innovation, and experience. As a discipline, we've focused on building design culture, having a seat at the table, and working more closely alongside engineers to learn, to grow, to craft and build together. These engineering partnerships inspired us to think like a network as designers. And to wonder how we could build on the collective cross-disciplinary excellence of our Microsoft design and engineering community — a key component of Fluent.",
       "locale": {
-        "en-US": "Historically, Microsoft designers have valued product-level expertise, innovation, and experience. As a discipline, we've focused on building design culture, having a seat at the table, and working more closely alongside engineers to learn, to grow, to craft and build together. These engineering partnerships inspired us to think like a network as designers. And to wonder how we could build on the collective cross-disciplinary excellence of our Microsoft design and engineering community — a key component of Fluent.",
-        "pl-PL": "Historycznie projektanci Microsoftu cenili sobie wiedzę na poziomie produktu, innowacyjność i doświadczenie. Jako dyscyplina skupiliśmy się na budowaniu kultury projektowania, zajmowaniu miejsca przy stole i ściślejszej współpracy z inżynierami w celu nauki, rozwoju, tworzenia i budowania razem. Te partnerstwa inżynieryjne zainspirowały nas do myślenia jak sieć jako projektanci. I do zastanowienia się, jak możemy zbudować na zbiorowej doskonałości międzydyscyplinarnej naszej społeczności projektowej i inżynieryjnej Microsoftu — kluczowego elementu Fluent."
+        "en-US": {
+          "content": "Historically, Microsoft designers have valued product-level expertise, innovation, and experience. As a discipline, we've focused on building design culture, having a seat at the table, and working more closely alongside engineers to learn, to grow, to craft and build together. These engineering partnerships inspired us to think like a network as designers. And to wonder how we could build on the collective cross-disciplinary excellence of our Microsoft design and engineering community — a key component of Fluent."
+        },
+        "pl-PL": {
+          "content": "Historycznie projektanci Microsoftu cenili sobie wiedzę na poziomie produktu, innowacyjność i doświadczenie. Jako dyscyplina skupiliśmy się na budowaniu kultury projektowania, zajmowaniu miejsca przy stole i ściślejszej współpracy z inżynierami, aby uczyć się, rozwijać, tworzyć i budować razem. Te partnerstwa inżynieryjne zainspirowały nas do myślenia jak sieć jako projektanci. I zastanawiania się, jak możemy zbudować na zbiorowej doskonałości międzydyscyplinarnej naszej społeczności projektantów i inżynierów Microsoft — kluczowego składnika Fluent."
+        }
       }
     }
   ],

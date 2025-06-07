@@ -43,6 +43,9 @@
   "read_more": "Więcej",
   "open_link": "Otwórz link",
   "updated": "Aktualizacja",
+  "next": "Następny",
+  "previous": "Poprzedni",
+  "close": "Zamknij",
   "groups": {},
   "items": {}
 }
