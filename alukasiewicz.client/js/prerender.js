@@ -215,12 +215,10 @@ const FetchLocale = async function (lang) {
     console.error("Error fetching locale file:", error);
   }
 };
-let LANG =
-  navigator.browserLanguage ||
-  navigator.language ||
-  navigator.userLanguage ||
-  "en-US";
-if (LANG != "en-US" && LANG != "pl-PL") {
+let LANG = navigator.language || "en-US";
+if (LANG == "pl-PL" || LANG == "pl") {
+  LANG = "pl-PL";
+} else {
   LANG = "en-US";
 }
 //fetch locale file
