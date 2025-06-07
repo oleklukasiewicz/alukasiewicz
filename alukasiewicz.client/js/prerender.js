@@ -68,7 +68,6 @@ const DEVELOPMENT =
 
 const Translate = async function (locale) {
   if (!locale) {
-    console.error("Locale not found");
     return;
   }
   //load from cache
@@ -85,8 +84,6 @@ const Translate = async function (locale) {
     const path = target.getAttribute("data-translate");
     if (path) {
       await TranslateNode(target, path);
-    } else {
-      console.warn("No translation path found for node:", target);
     }
   }
   const titleTargets = document.querySelectorAll("[data-translate-title]");
@@ -94,14 +91,11 @@ const Translate = async function (locale) {
     const path = target.getAttribute("data-translate-title");
     if (path) {
       await TranslateTitleNode(target, path);
-    } else {
-      console.warn("No title translation path found for node:", target);
     }
   }
 };
 const TranslateNode = async function (node, path) {
   if (!node || !path) {
-    console.error("Node or path not provided for translation");
     return;
   }
   const translation = GetTranslation(path, LOCALE);
@@ -133,7 +127,6 @@ const TranslateNode = async function (node, path) {
 };
 const TranslateTitleNode = async function (node, path) {
   if (!node || !path) {
-    console.error("Node or path not provided for title translation");
     return;
   }
   const translation = GetTranslation(path, LOCALE);
@@ -145,7 +138,6 @@ const TranslateTitleNode = async function (node, path) {
 };
 const AddTranslation = function (key, value) {
   if (!LOCALE) {
-    console.error("Locale not loaded, cannot add translation");
     return;
   }
   const keys = key.split(".");
@@ -168,7 +160,6 @@ const AddTranslationWithCache = async function (key, value) {
 };
 const GetTranslation = function (key, locale = LOCALE) {
   if (!LOCALE) {
-    console.error("Locale not loaded, cannot get translation");
     return;
   }
   const keys = key.split(".");
@@ -195,7 +186,6 @@ const GetCurrentTranslationFromLocale = function (locale) {
 };
 const FetchLocale = async function (lang) {
   if (!lang) {
-    console.error("Language not provided for fetching locale");
     return;
   }
   const localeUrl = `/locales/${lang}.json`;
