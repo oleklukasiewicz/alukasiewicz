@@ -74,7 +74,6 @@ const storageGroups = () => [
   {
     id: "dungeons-builds",
     aliases: ["builds"],
-    dev: true,
     title: "Minecraft Dungeons Builds",
     locale: {
       "en-US": {
@@ -87,7 +86,6 @@ const storageGroups = () => [
   },
   {
     id: "projects",
-    dev: true,
     title: "Projects",
     arg: {
       itemsOrder: ["fluent-pad", "minerobe", "fluent-design-system"],
@@ -428,7 +426,6 @@ const storageItems = () => [
   {
     id: "fluent-design-system",
     folder: "/beta",
-    dev: true,
     title: "Fluent Design System",
     tile: {
       image: "/fluent.webp",
@@ -461,7 +458,6 @@ const storageItems = () => [
   },
   {
     id: "sparkler-build",
-    dev: true,
     folder: "/sparkler",
     format: "md",
     title: "The Sparkler",
@@ -491,7 +487,6 @@ const storageItems = () => [
   },
   {
     id: "fluent-pad",
-    dev: true,
     folder: "/fluent-pad",
     title: "Fluent pad",
     isLink: "https://fluent-pad.vercel.app",
@@ -521,7 +516,6 @@ const storageItems = () => [
   },
   {
     id: "minerobe",
-    dev: true,
     folder: "/minerobe",
     title: "Minerobe",
     isLink: "https://minerobe.alukasiewicz.online",
