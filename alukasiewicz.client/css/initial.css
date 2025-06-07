@@ -701,9 +701,6 @@ u.dotted-separator {
   max-width: var(--size-max-width);
   margin: 0 auto 40px;
 }
-#item-content.markdown {
-  display: block;
-}
 #item #item-content-loading {
   display: none;
 }

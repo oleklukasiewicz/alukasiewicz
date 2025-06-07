@@ -457,35 +457,6 @@ const storageItems = () => [
     },
   },
   {
-    id: "sparkler-build",
-    folder: "/sparkler",
-    format: "md",
-    title: "The Sparkler",
-    tile: {
-      image: "/sparkler.webp",
-      content:
-        "Healing and damage focused build for Minecraft Dungeons made in spooky theme.",
-    },
-    createDate: {
-      day: 21,
-      month: 10,
-      year: 2022,
-    },
-    groups: ["builds"],
-    locale: {
-      "en-US": {
-        title: "The Sparkler",
-        content:
-          "Healing and damage focused build for Minecraft Dungeons made in spooky theme.",
-      },
-      "pl-PL": {
-        title: "Iskierka",
-        content:
-          "Budowa skoncentrowana na leczeniu i obrażeniach w Minecraft Dungeons, wykonana w mrocznym motywie.",
-      },
-    },
-  },
-  {
     id: "fluent-pad",
     folder: "/fluent-pad",
     title: "Fluent pad",

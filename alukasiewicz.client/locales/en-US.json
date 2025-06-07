@@ -2,17 +2,17 @@
   "lang": "en-US",
   "navigation": {
     "home": "Home",
-    "about": "About Me",
-    "work": "Projects",
+    "about": "About",
+    "work": "Work",
     "search": "Search"
   },
   "landing": {
     "header": "Hi, I'm Aleksander",
     "subheader": ".Net and Web Developer \n Beginner pixel art artist",
-    "about_me": "About Me"
+    "about_me": "About me"
   },
   "about": {
-    "header": "About Me",
+    "header": "About me",
     "subheader": "Hello world, I'm Aleksander.",
     "description": "I'm a developer with experience in building web applications and software development. My skills include .NET, C#, JavaScript, HTML, CSS, and many other technologies. In my free time, I work on open-source projects and learn new technologies.",
     "description2": "Currently, I only have the AZ-900 certification, but I’m sure that list will grow soon!",

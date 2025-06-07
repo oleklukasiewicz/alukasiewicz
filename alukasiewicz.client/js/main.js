@@ -415,14 +415,9 @@ const ItemController = (function () {
   const _downloadItemContent = async function (item) {
     return new Promise((resolve, reject) =>
       fetch(
-        ITEM.folder +
-          item.folder +
-          ITEM.resourceFolder +
-          "/" +
-          (item.format == "md" ? ITEM.fileNameMd : ITEM.fileName)
+        ITEM.folder + item.folder + ITEM.resourceFolder + "/" + ITEM.fileName
       )
         .then((respond) => {
-          if (item.format == "md") return resolve(respond.text());
           resolve(respond.json());
         })
         .catch((err) => {
@@ -526,8 +521,7 @@ const ItemController = (function () {
     if (!item.isLink && !item.isContentCached) {
       //getting item content
       let _content = await _downloadItemContent(item, item.folder);
-      if (item.format == "md") item.content = ItemMarkdownBuilder(_content);
-      else ItemStuctureBuilder(item, _content);
+      ItemStuctureBuilder(item, _content);
 
       //indicating content is cached
       item.isContentCached = true;
@@ -765,7 +759,7 @@ const itemView = new View(
       //preparing item info
       document.title = item.title + " - " + APP.name;
       this.data.iTitle.innerHTML = item.title;
-      await TranslateNode(this.data.iTitle, "items." + item.id+".title");
+      await TranslateNode(this.data.iTitle, "items." + item.id + ".title");
       this.data.iInfo.innerHTML =
         item.createDate.toHTMLString() +
         (item.modifyDate
@@ -775,15 +769,9 @@ const itemView = new View(
       const itemInfoSpan2 = this.data.iInfo.querySelector("span:nth-child(3)");
       await TranslateNode(itemInfoSpan2, "updated");
       //clear content
-      this.data.iContent.classList.remove("markdown");
       this.data.iContent.innerHTML = "";
 
       //render item
-      if (item.format == "md") {
-        this.data.iContent.classList.add("markdown");
-        this.data.iContent.innerHTML = item.content;
-        return;
-      }
       this.data.iContent.append(
         await ItemComponentBuilder(item.content, item.folder, item)
       );
