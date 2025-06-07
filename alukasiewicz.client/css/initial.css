@@ -815,6 +815,7 @@ u.dotted-separator {
   font-size: var(--size-font-base);
   font-weight: 500;
   background-color: var(--color-theme-hover);
+  color: var(--color-font) ;
 }
 #lang-switch > span {
   padding: 3px 8px;
@@ -822,7 +823,7 @@ u.dotted-separator {
 }
 #lang-switch.pl > span:first-child,
 #lang-switch.en > span:nth-child(2) {
-  background-color: var(--color-accent-A2);
+  background-color: var(--color-accent);
   color: var(--color-font-accent);
 }
 @supports not (backdrop-filter: var(--acrylic)) {

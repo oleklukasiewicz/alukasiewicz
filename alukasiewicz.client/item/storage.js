@@ -89,9 +89,8 @@ const storageGroups = () => [
     id: "projects",
     dev: true,
     title: "Projects",
-    groups: ["home"],
     arg: {
-      itemsOrder: ["fluent-pad", "ancient-temple", "fluent-design-system"],
+      itemsOrder: ["fluent-pad", "minerobe", "fluent-design-system"],
     },
     locale: {
       "en-US": {
@@ -516,7 +515,7 @@ const storageItems = () => [
       "pl-PL": {
         title: "Fluent Pad",
         content:
-          "Prosta aplikacja notatnika z systemem kontroli wersji podobnym do gita. Wykonana w Svelte, Fluent-Svelte i Firebase.",
+          "Prosta aplikacja notatnika z systemem kontroli wersji. Wykonana w Svelte, Fluent-Svelte i Firebase.",
       },
     },
   },
