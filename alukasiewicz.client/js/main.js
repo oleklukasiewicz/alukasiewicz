@@ -526,7 +526,6 @@ const ItemController = (function () {
     if (!item.isLink && !item.isContentCached) {
       //getting item content
       let _content = await _downloadItemContent(item, item.folder);
-      //TODO: check content component version if newer -> download new version of item.css and js
       if (item.format == "md") item.content = ItemMarkdownBuilder(_content);
       else ItemStuctureBuilder(item, _content);
 
@@ -766,13 +765,15 @@ const itemView = new View(
       //preparing item info
       document.title = item.title + " - " + APP.name;
       this.data.iTitle.innerHTML = item.title;
+      await TranslateNode(this.data.iTitle, "items." + item.id+".title");
       this.data.iInfo.innerHTML =
         item.createDate.toHTMLString() +
         (item.modifyDate
-          ? " <u class='dotted-separator'></u> Updated " +
+          ? " <u class='dotted-separator'></u> <span>Updated</span> " +
             item.modifyDate.toHTMLString()
           : "");
-
+      const itemInfoSpan2 = this.data.iInfo.querySelector("span:nth-child(3)");
+      await TranslateNode(itemInfoSpan2, "updated");
       //clear content
       this.data.iContent.classList.remove("markdown");
       this.data.iContent.innerHTML = "";
@@ -1727,6 +1728,9 @@ const ConfigureDOM = function () {
     ItemController.translateGroups();
     ItemController.translateItems();
     await Translate(LOCALE);
+    const target = getById("lang-switch");
+    target.classList.toggle("pl", LOCALE.lang == "pl-PL");
+    target.classList.toggle("en", LOCALE.lang != "pl-PL");
   });
   getById("main-header-icons").classList.remove(GLOBAL.disabled);
 

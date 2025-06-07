@@ -71,6 +71,15 @@ const Translate = async function (locale) {
     console.error("Locale not found");
     return;
   }
+  //load from cache
+  if (LOCALE_CACHE.length > 0) {
+    for (const item of LOCALE_CACHE) {
+      var value = GetCurrentTranslationFromLocale(item.value);
+      if (value) {
+        AddTranslation(item.key, value);
+      }
+    }
+  }
   const targets = document.querySelectorAll("[data-translate]");
   for (const target of targets) {
     const path = target.getAttribute("data-translate");
@@ -97,7 +106,27 @@ const TranslateNode = async function (node, path) {
   }
   const translation = GetTranslation(path, LOCALE);
   if (translation) {
-    node.innerText = translation;
+    //check if tranlation is array
+    if (Array.isArray(translation)) {
+      //replace text subnodes with translation
+      const chilkdNodes = node.childNodes;
+      if (chilkdNodes.length > 0) {
+        let localeIndex = 0;
+        chilkdNodes.forEach((childNode, index) => {
+          //check if childNode is text node
+          if (childNode.nodeType === Node.TEXT_NODE) {
+            //replace text node with translation
+            if (translation[localeIndex]) {
+              childNode.textContent = translation[localeIndex];
+
+              localeIndex++;
+            }
+          }
+        });
+      }
+    } else {
+      node.innerText = translation;
+    }
     //add custom data attribute for the translation
   }
   node.setAttribute("data-translate", path);
@@ -128,6 +157,14 @@ const AddTranslation = function (key, value) {
     current = current[keys[i]];
   }
   current[keys[keys.length - 1]] = value;
+};
+const AddTranslationWithCache = async function (key, value) {
+  //check if existing translation is in cache
+  const existing = LOCALE_CACHE.find((item) => item.key === key);
+  if (existing) return existing.value;
+  //if not, add to cache and to locale
+  LOCALE_CACHE.push({ key, value });
+  AddTranslation(key, GetCurrentTranslationFromLocale(value));
 };
 const GetTranslation = function (key, locale = LOCALE) {
   if (!LOCALE) {
@@ -178,14 +215,18 @@ const FetchLocale = async function (lang) {
     console.error("Error fetching locale file:", error);
   }
 };
-const LANG =
+let LANG =
   navigator.browserLanguage ||
   navigator.language ||
   navigator.userLanguage ||
   "en-US";
+if (LANG != "en-US" && LANG != "pl-PL") {
+  LANG = "en-US";
+}
+LANG = "pl-PL"; //force pl-PL for now, until all translations are done
 //fetch locale file
+let LOCALE_CACHE = [];
 let LOCALE = {};
-const LOCALE_URL = `/locales/${LANG}.json`;
 FetchLocale(LANG).then(async (data) => {
   Object.assign(LOCALE, data);
   //check if dom is ready and stop rendering before transltion si scompelted

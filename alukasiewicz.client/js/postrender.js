@@ -129,3 +129,7 @@ window.addEventListener(
   },
   { passive: true }
 );
+//setup lang
+const target = getById("lang-switch");
+target.classList.toggle("pl", LOCALE.lang == "pl-PL");
+target.classList.toggle("en", LOCALE.lang != "pl-PL");

@@ -807,13 +807,23 @@ u.dotted-separator {
   display: none;
 }
 #lang-switch {
+  float: right;
   margin: 4px;
-  padding: 4px 8px;
+  display: inline-flex;
   box-sizing: border-box;
   cursor: pointer;
   font-size: var(--size-font-base);
   font-weight: 500;
   background-color: var(--color-theme-hover);
+}
+#lang-switch > span {
+  padding: 3px 8px;
+  box-sizing: border-box;
+}
+#lang-switch.pl > span:first-child,
+#lang-switch.en > span:nth-child(2) {
+  background-color: var(--color-accent-A2);
+  color: var(--color-font-accent);
 }
 @supports not (backdrop-filter: var(--acrylic)) {
   #main-header-base {

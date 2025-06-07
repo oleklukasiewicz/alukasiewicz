@@ -1,12 +1,24 @@
 const COMPONENTS_VERSION = 1;
 
 //Item component builder for basic content components (recurence)
-const ItemComponentBuilder = async function (component, itemFolder, item) {
+const ItemComponentBuilder = async function (
+  component,
+  itemFolder,
+  item,
+  index = 0
+) {
   if (typeof component === "string") return component;
   let _type = component.type;
   let _arg = component.props || component.arg || {};
   let _finalComponent;
   if (component.dontRender) _type = "none";
+  //add translation to component if exist
+  if (component.locale != null) {
+    AddTranslationWithCache(
+      "items." + item.id + ".item_content.i" + index,
+      component.locale
+    );
+  }
   //generating nodes
   switch (_type) {
     default:
@@ -24,15 +36,37 @@ const ItemComponentBuilder = async function (component, itemFolder, item) {
           let _title = document.createElement("DIV");
           _title.classList.add("section-title", "font-subtitle");
           _title.innerText = component.title;
+          await TranslateNode(
+            _title,
+            "items." + item.id + ".item_content.i" + index + ".title"
+          );
           _finalComponent.append(_title);
         }
       }
-      if (typeof _text === "string") _finalComponent.append(_text);
-      else
-        for (content of _text)
+      if (typeof _text === "string") {
+        _finalComponent.append(_text);
+        await TranslateNode(
+          _finalComponent,
+          "items." + item.id + ".item_content.i" + index
+        );
+      } else {
+        let subIndex = 0;
+        for (content of _text) {
+          subIndex++;
           _finalComponent.append(
-            await ItemComponentBuilder(content, itemFolder, item)
+            await ItemComponentBuilder(
+              content,
+              itemFolder,
+              item,
+              index * 10 + subIndex
+            )
           );
+        }
+      }
+      await TranslateNode(
+        _finalComponent,
+        "items." + item?.id + ".item_content.i" + index + ".content"
+      );
       break;
     case "quote":
       _finalComponent = document.createElement("DIV");
@@ -41,6 +75,10 @@ const ItemComponentBuilder = async function (component, itemFolder, item) {
       let _quoteText = document.createElement("DIV");
       _quoteText.className = "font-header";
       _quoteText.innerHTML = component.content;
+      await TranslateNode(
+        _quoteText,
+        "items." + item.id + ".item_content.i" + index + ".content"
+      );
 
       let _quoteAuthor = document.createElement("SPAN");
       _quoteAuthor.className = "font-base";
@@ -120,12 +158,17 @@ const ItemComponentBuilder = async function (component, itemFolder, item) {
       ) {
         _finalComponent.innerHTML =
           "<div><b class='font-subtitle'>" + component.title + "</b></div>";
+        await TranslateNode(
+          _finalComponent.children[0].children[0],
+          "items." + item.id + ".item_content.i" + index + ".title"
+        );
         _finalComponent.classList.add("show-controls");
 
         //show all button
         let _button = document.createElement("A");
         _button.innerHTML =
           "<i class='mi mi-Picture'></i><span>Show all</span>";
+        await TranslateNode(_button.children[1], "show_all");
         _button.className = "button";
         _button.href =
           "/" +
@@ -196,6 +239,10 @@ const ItemComponentBuilder = async function (component, itemFolder, item) {
             : _arg.alt;
         _alt.innerHTML = _altText;
         _alt.classList.add("img-alt");
+        await TranslateNode(
+          _alt,
+          "items." + item.id + ".item_content.i" + index + ".alt"
+        );
         _finalComponent.appendChild(_alt);
       }
       break;
@@ -206,6 +253,11 @@ const ItemComponentBuilder = async function (component, itemFolder, item) {
       _finalComponent.innerHTML = component.content;
       _finalComponent.href = component.href;
       _finalComponent.target = component.target;
+
+      await TranslateNode(
+        _finalComponent,
+        "items." + item.id + ".item_content.i" + index
+      );
       break;
     case "decoration":
     case "bold":
@@ -242,7 +294,13 @@ const ItemComponentBuilder = async function (component, itemFolder, item) {
           break;
       }
       _finalComponent = document.createElement(_nodeType);
-      _finalComponent.append(await ItemComponentBuilder(component.content));
+      _finalComponent.append(
+        await ItemComponentBuilder(component.content, undefined, item, index)
+      );
+      await TranslateNode(
+        _finalComponent,
+        "items." + item.id + ".item_content.i" + index
+      );
       break;
     case "note":
       _finalComponent = document.createElement("DIV");
@@ -252,17 +310,37 @@ const ItemComponentBuilder = async function (component, itemFolder, item) {
         let _title = document.createElement("B");
         _title.innerText = component.title;
         _finalComponent.appendChild(_title);
+        await TranslateNode(
+          _title,
+          "items." + item.id + ".item_content.i" + index + ".title"
+        );
       }
 
-      _finalComponent.append(await ItemComponentBuilder(component.content));
+      _finalComponent.append(
+        await ItemComponentBuilder(
+          component.content,
+          undefined,
+          item,
+          index
+        )
+      );
       break;
     case "list":
       let _type = component.ordered ? "ol" : "ul";
       _finalComponent = document.createElement(_type);
 
-      for (item of component.content) {
+      let listindex = 0;
+      for (itemList of component.content) {
         let _itemNode = document.createElement("LI");
-        _itemNode.append(await ItemComponentBuilder(item));
+        _itemNode.append(
+          await ItemComponentBuilder(
+            itemList,
+            undefined,
+            item,
+            index * 10 + listindex
+          )
+        );
+        listindex++;
         _finalComponent.appendChild(_itemNode);
       }
       break;
@@ -281,7 +359,9 @@ const ItemComponentBuilder = async function (component, itemFolder, item) {
     case "hightlight":
       _finalComponent = document.createElement("DIV");
       _finalComponent.classList.add("hightlight");
-      _finalComponent.append(await ItemComponentBuilder(component.content));
+      _finalComponent.append(
+        await ItemComponentBuilder(component.content, undefined, item, index)
+      );
       break;
   }
 
