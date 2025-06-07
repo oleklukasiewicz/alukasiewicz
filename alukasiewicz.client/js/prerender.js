@@ -223,7 +223,6 @@ let LANG =
 if (LANG != "en-US" && LANG != "pl-PL") {
   LANG = "en-US";
 }
-LANG = "pl-PL"; //force pl-PL for now, until all translations are done
 //fetch locale file
 let LOCALE_CACHE = [];
 let LOCALE = {};
