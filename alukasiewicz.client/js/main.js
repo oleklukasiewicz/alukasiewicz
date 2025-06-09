@@ -121,6 +121,7 @@ const ItemDate = function (day, month, year) {
     else return 0;
   };
   this.fromDate = function (date) {
+    console.log(date);
     if (typeof date == "string") date = new Date(date);
     this.day = date.getDate();
     this.month = date.getMonth() + 1;
@@ -617,9 +618,14 @@ const landingView = new View(
     onLoad: async function () {
       this.rootNode.classList.add(GLOBAL.loading);
 
-      const homeGroup = await GetDefaultGroup();
-      StorageResponseBuilder(homeGroup, this.data.iList, 1, -1);
-      //display items from landing group
+       //display items from landing group
+      if (ItemController.isItemsLoaded && ItemController.isGroupsLoaded)
+        StorageResponseBuilder(
+          await ItemController.getGroupById("landing"),
+          this.data.iList,
+          1,
+          -1
+        );
     },
     onError: function (err) {
       this.rootNode.classList.add(GLOBAL.error);
@@ -998,7 +1004,7 @@ const createItemTile = async function (node, item) {
     node = document.createElement("A");
     oldNode.parentElement.replaceChild(node, oldNode);
   }
-  let imageSrc = GetResourcePath(item.tileImageResourceId);
+  let imageSrc = ITEM.folder + item.folder + item.tile.image;
   node.className =
     "item " +
     GLOBAL.dataNode +
@@ -1021,15 +1027,14 @@ const createItemTile = async function (node, item) {
   nodeTitle.classList.add("font-subtitle");
   nodeTitle.innerHTML = item.title;
 
-  if (item.isPublished == false) {
+  if (item.dev) {
     let _betabadge = document.createElement("SPAN");
     _betabadge.classList.add("dev-badge");
     _betabadge.classList.add("badge");
     _betabadge.innerHTML = "BETA";
     nodeTitle.appendChild(_betabadge);
   }
-  const targetDate = new ItemDate().fromDate(item.updatedAt || item.createdAt);
-
+  const targetDate = item.modifyDate || item.createDate;
   const dateDiffrence = targetDate.diff(new Date());
   if (dateDiffrence.days < 30) {
     let _betabadge = document.createElement("SPAN");
@@ -1040,7 +1045,7 @@ const createItemTile = async function (node, item) {
 
   let nodeContent = document.createElement("SPAN");
   nodeContent.classList.add("font-base");
-  nodeContent.innerHTML = item.description;
+  nodeContent.innerHTML = item.tile.content;
 
   let nodeLabels = document.createElement("DIV");
   nodeLabels.classList.add("labels");
@@ -1054,13 +1059,14 @@ const createItemTile = async function (node, item) {
 
   nodeLabels.appendChild(nodeButton);
 
+  let date = item.modifyDate || item.createDate;
   let nodeUpdateLabel = document.createElement("DIV");
   nodeUpdateLabel.classList.add("label", "font-caption");
   let nodeUpdateLabelIcon = document.createElement("I");
 
   if (item.modifyDate) nodeUpdateLabelIcon.classList.add("mi", "mi-Update");
 
-  nodeUpdateLabel.innerHTML = " &nbsp;&nbsp;" + targetDate.toHTMLString();
+  nodeUpdateLabel.innerHTML = " &nbsp;&nbsp;" + date.toHTMLString();
   nodeUpdateLabel.insertBefore(nodeUpdateLabelIcon, nodeUpdateLabel.firstChild);
   nodeLabels.appendChild(nodeUpdateLabel);
 
@@ -1086,8 +1092,7 @@ const createItemTile = async function (node, item) {
       }
     );
   } catch (e) {
-    if (item.tileImageResourceId)
-      console.error(`Cannot load image ${item.tileImageResourceId}`);
+    console.error(`Cannot load image ${item.tile.image}`);
   }
 
   //settings up events
@@ -1116,7 +1121,7 @@ const createGroupTile = function (node, group) {
 
   let nodeTitle = document.createElement("SPAN");
   nodeTitle.classList.add("font-title");
-  nodeTitle.innerHTML = group.name;
+  nodeTitle.innerHTML = group.title;
 
   let nodeButton = createButton("mi-ShowAll", "Show all");
 
@@ -1132,55 +1137,124 @@ const createGroupTile = function (node, group) {
   return node;
 };
 
+
+
 //storage response display helpers
-const StorageResponseIndexer = function (response) {
+const StorageResponseIndexer = function (
+  response,
+  depth = 1,
+  limit = 3,
+  startIndex = 0,
+  limitOfDepth = 3
+) {
   let _indexedItems = [];
-  const _groups = response.subGroups;
-  const _items = response.items;
-  for (let i = 0; i < _groups.length; i++) {
-    let group = _groups[i];
-    const indexedContent = StorageResponseIndexer(group, _indexedItems.length);
+  let _groupItemIndex = 0;
+  let _groupIndex = 0;
+  let _currentIndex = startIndex;
+
+  const _addIntoResponse = function (entry) {
+    if (!entry || entry.hidden) return;
+    entry.isIndexed = true;
+
+    //adding item into response
     _indexedItems.push({
-      type: GLOBAL.group,
-      entity: group,
+      index: _currentIndex,
+      obj: entry,
+      groupItemIndex: _groupItemIndex,
     });
-    if (indexedContent.length > 0) _indexedItems.push(...indexedContent);
-  }
-  for (let i = 0; i < _items.length; i++) {
-    let item = _items[i];
-    _indexedItems.push({
-      type: GLOBAL.item,
-      entity: item,
+    _groupItemIndex += 1;
+    if (limit > 0) limit -= 1;
+    _currentIndex += 1;
+  };
+  const _addGroupIntoResponse = function (entry) {
+    if (!entry) return;
+    _groupItemIndex = 0;
+    _groupIndex += 1;
+    entry.isIndexed = true;
+    if (depth > 0) {
+      //adding group into response
+      _indexedItems.push({
+        index: _currentIndex,
+        obj: entry,
+        groupIndex: _groupIndex,
+      });
+      //getting nested groups into response
+      _indexedItems = _indexedItems.concat(
+        StorageResponseIndexer(
+          entry,
+          depth - 1,
+          limitOfDepth,
+          _currentIndex + 1
+        )
+      );
+      //setting current index into index of last item from recursion
+      _currentIndex = _indexedItems[_indexedItems.length - 1].index + 1;
+    }
+  };
+
+  //display items or groups from arguments
+  if (depth == 0)
+    response.arg?.itemsOrder?.forEach((value, index) => {
+      var item =
+        typeof value == "number"
+          ? response.content[value]
+          : ItemController.getItemSnapshotById(value);
+      if (item?.groups?.includes(response.id)) _addIntoResponse(item);
     });
-  }
-  //add indexes
-  _indexedItems.forEach((entry, index) => {
-    entry.index = index;
+  response.arg?.groupsOrder?.forEach((value, index) =>
+    _addGroupIntoResponse(
+      response.content.find(
+        (contentEntry) =>
+          contentEntry.id == value && contentEntry.type == GLOBAL.group
+      )
+    )
+  );
+
+  response.content?.forEach((entry, index) => {
+    if (entry.type == GLOBAL.group) {
+      if (!entry.isIndexed) _addGroupIntoResponse(entry);
+      return;
+    }
+    //checking is item count in group display limit, getting only not indexed items or required to fill group
+    if (
+      (limit > 0 &&
+        (!entry.isIndexed || response.content.length - index <= limit)) ||
+      limit == -1
+    )
+      _addIntoResponse(entry);
   });
   return _indexedItems;
 };
 const StorageResponseBuilder = async function (
   response,
-  targetNode = document.createElement("DIV")
+  targetNode = document.createElement("DIV"),
+  depth = 1,
+  limit = 3
 ) {
   let _items = [...targetNode.getElementsByClassName(GLOBAL.dataNode)];
-  let _indexedItems = StorageResponseIndexer(response);
+  let _indexedItems = StorageResponseIndexer(response, depth, limit, 0);
   await Promise.all(
     _indexedItems.map(async (entry) => {
-      entry.type == GLOBAL.group
+      entry.obj.isIndexed = false;
+      entry.obj.responseIndex =
+        entry.groupItemIndex == undefined
+          ? entry.groupIndex
+          : entry.groupItemIndex;
+      entry.obj.type == GLOBAL.group
         ? await createGroupTile(
             _items[entry.index] ||
               targetNode.appendChild(document.createElement("div")),
-            entry.entity
+            entry.obj
           )
         : await createItemTile(
             _items[entry.index] ||
               targetNode.appendChild(document.createElement("a")),
-            entry.entity
+            entry.obj
           );
     })
   );
 };
+
 
 //universal slider class for resourceMap objects
 const ResourceSlider = function () {
@@ -1639,7 +1713,6 @@ ViewController.addEventListener("navigateFromView", async (lastView) => {
 });
 ViewController.addEventListener("navigationRequest", () => {
   closeNavigation();
-  closeSearch();
 });
 
 window.addEventListener("popstate", (event) =>

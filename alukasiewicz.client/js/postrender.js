@@ -132,29 +132,3 @@ window.addEventListener(
   },
   { passive: true }
 );
-//add search
-let isSearchOpen = false;
-const SEARCH_NODE = getById("search");
-const openSearch = function () {
-  setNavigationState(false);
-  SEARCH_NODE.classList.add("opened");
-  APP_NODE.classList.add("dialog-opened");
-  const searchInput = getById("search-text");
-  searchInput.focus();
-  searchInput.select();
-  isSearchOpen = true;
-};
-const closeSearch = function () {
-  SEARCH_NODE.classList.remove("opened");
-  APP_NODE.classList.remove("dialog-opened");
-  isSearchOpen = false;
-};
-const toggleSearch = function () {
-  if (isSearchOpen) closeSearch();
-  else openSearch();
-};
-NAV_CLOSE_NODE.addEventListener("click", closeSearch, { passive: true });
-NAV_CLOSE_NODE.addEventListener("touchstart", closeSearch, {
-  passive: true,
-});
-getById("main-header-search").addEventListener("click", toggleSearch);
