@@ -1,7 +1,7 @@
 const COMPONENTS_VERSION = 1;
 
 //Item component builder for basic content components (recurence)
-let ItemComponentBuilder = async function (component, itemFolder, item) {
+const ItemComponentBuilder = async function (component, itemFolder, item) {
   if (typeof component === "string") return component;
   let _type = component.type;
   let _arg = component.props || component.arg || {};
@@ -295,7 +295,7 @@ let ItemComponentBuilder = async function (component, itemFolder, item) {
 };
 
 //item structure builder
-let ItemStuctureBuilder = function (item, content) {
+const ItemStuctureBuilder = function (item, content) {
   //merging item and content
   Object.assign(item, content);
 
@@ -310,7 +310,7 @@ let ItemStuctureBuilder = function (item, content) {
   if (item.debug) console.log(item);
 };
 
-let ComponentConverter = function (component, item) {
+const ComponentConverter = function (component, item) {
   //skip if not object
   if (typeof component !== "object") return component;
 
@@ -322,7 +322,7 @@ let ComponentConverter = function (component, item) {
   if (_resources) ResourceResolver(_resources, component, item);
 };
 
-let ResourceResolver = function (resources, component, item) {
+const ResourceResolver = function (resources, component, item) {
   let _componentResourcesGroup = new ResourceGroup();
 
   if (Array.isArray(resources)) {
@@ -342,7 +342,7 @@ let ResourceResolver = function (resources, component, item) {
   component.resourceGroupIndex = _groupIndex;
 };
 
-let ResourcesConverter = function (resource, component, item) {
+const ResourcesConverter = function (resource, component, item) {
   //returns array cause group -> (multiple resources)
   let _resources = [];
 
@@ -387,7 +387,7 @@ let ResourcesConverter = function (resource, component, item) {
   }
   return _resources;
 };
-let ItemMarkdownBuilder = function (markdown) {
+const ItemMarkdownBuilder = function (markdown) {
   const converter = new showdown.Converter();
   return converter.makeHtml(markdown);
 };
