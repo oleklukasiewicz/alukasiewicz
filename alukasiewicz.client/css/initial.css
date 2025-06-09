@@ -812,7 +812,7 @@ u.dotted-separator {
   font-size: var(--size-font-base);
   font-weight: 500;
   background-color: var(--color-theme-hover);
-  color: var(--color-font) ;
+  color: var(--color-font);
 }
 #lang-switch > span {
   padding: 3px 8px;
@@ -822,6 +822,25 @@ u.dotted-separator {
 #lang-switch.en > span:nth-child(2) {
   background-color: var(--color-accent);
   color: var(--color-font-accent);
+}
+#cookies-baner {
+  position: fixed;
+  bottom: 0px;
+  left: 0;
+  width: 100%;
+  background-color: var(--color-theme-A1);
+  border-top: 1px solid var(--color-theme-nav-border);
+  padding: 10px;
+  box-sizing: border-box;
+  z-index: 5;
+  gap: 10px;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  border: 1px solid rgba(128, 128, 128, 0.08);
+  display: none;
+}
+#cookies-baner.active {
+  display: grid;
 }
 @supports not (backdrop-filter: var(--acrylic)) {
   #main-header-base {
@@ -921,6 +940,9 @@ u.dotted-separator {
   }
   #app.nav-bottom #footer {
     margin-bottom: 50px;
+  }
+  #cookies-baner {
+    bottom: 53px;
   }
   #main-header-nav-button {
     display: block;

@@ -1784,6 +1784,21 @@ window.addEventListener("load", async function () {
 
   ConfigureDefaultErrors();
   ConfigureDOM();
+  //cokies
+  const decodedCookies = decodeURIComponent(document.cookie);
+  const cookies = decodedCookies.split("; ");
+  //get cookie with name consent
+  const consentCookie = cookies.find((cookie) => cookie.startsWith("consent="));
+  //if cookie is not set or is not true, show consent popup
+  if (!consentCookie || consentCookie.split("=")[1] != "true") {
+    const consentPopup = getById("cookies-baner");
+    consentPopup.classList.add("active");
+    getById("cookies-accept").addEventListener("click", () => {
+      consentPopup.classList.remove("active");
+      //set cookie with name consent and value true
+      document.cookie = "consent=true; path=/; max-age=31536000"; // 1 year
+    });
+  }
 
   //loading items and groups
   try {
