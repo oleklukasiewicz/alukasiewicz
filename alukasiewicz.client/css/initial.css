@@ -823,27 +823,6 @@ u.dotted-separator {
   background-color: var(--color-accent);
   color: var(--color-font-accent);
 }
-#cookies-baner {
-  position: fixed;
-  bottom: 0px;
-  left: 0;
-  width: calc(100% - 8px);
-  background-color: var(--color-theme-A1);
-  border-top: 1px solid var(--color-theme-nav-border);
-  padding: 10px;
-  box-sizing: border-box;
-  z-index: 5;
-  gap: 16px;
-  grid-template-columns: 1fr auto;
-  align-items: center;
-  border: 1px solid rgba(128, 128, 128, 0.08);
-  display: none;
-  text-align: justify;
-  margin: 8px 0px 8px 8px;
-}
-#cookies-baner.active {
-  display: grid;
-}
 @supports not (backdrop-filter: var(--acrylic)) {
   #main-header-base {
     backdrop-filter: none;
@@ -942,11 +921,6 @@ u.dotted-separator {
   }
   #app.nav-bottom #footer {
     margin-bottom: 50px;
-  }
-  #cookies-baner {
-    bottom: 53px;
-    margin: 0px;
-    width: 100%;
   }
   #main-header-nav-button {
     display: block;

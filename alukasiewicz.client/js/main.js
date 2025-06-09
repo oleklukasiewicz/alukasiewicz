@@ -517,7 +517,6 @@ const ItemController = (function () {
       return;
     }
 
-    //TODO: check if item.js and item.css are downloaded if not -> download
     if (!item.isLink && !item.isContentCached) {
       //getting item content
       let _content = await _downloadItemContent(item, item.folder);
@@ -623,7 +622,6 @@ const landingView = new View(
 
       //set "About me" button
       let _pButton = getById("profile-link-button");
-      //Effect.reveal.add(_pButton, undefined, undefined, true);
       _pButton.classList.remove(GLOBAL.disabled);
       _pButton.href = APP.route.profile.url;
       _pButton.addEventListener("click", () => {
@@ -726,7 +724,6 @@ const itemView = new View(
       //getting item
       let item;
       //if item is loaded into view -> skip rendering
-      //TODO: dynamic item content change
       if (this.data.currentItem?.id == arg.routeArg[0]) {
         document.title = this.data.currentItem.title + " - " + APP.name;
         return;
@@ -1561,7 +1558,6 @@ const MultipleImagesRenderer = async function (imagesList, targetNode) {
 
   let nodes = imagesList.map((image, index) => {
     let imgNode = document.createElement("IMG");
-    //if (image.includes("bg")) imgNode.classList.add("bg");
     imgNode.alt = "img-" + index;
     imgNode.src = image;
     targetNode.appendChild(imgNode);
@@ -1723,14 +1719,12 @@ const ConfigureDOM = function () {
   getById("main-header-icons").classList.remove(GLOBAL.disabled);
 
   const aboutButton = getById("main-header-about-button");
-  //Effect.reveal.add(aboutButton);
   aboutButton.addEventListener("click", (e) => {
     e.preventDefault();
 
     ViewController.navigate(APP.route.profile.viewId);
   });
   const workButton = getById("main-header-work-button");
-  //Effect.reveal.add(workButton,undefined,undefined,true);
   workButton.addEventListener("click", (e) => {
     e.preventDefault();
     ViewController.navigate(APP.route.group.viewId, { routeArg: ["work"] });
@@ -1784,21 +1778,6 @@ window.addEventListener("load", async function () {
 
   ConfigureDefaultErrors();
   ConfigureDOM();
-  //cokies
-  const decodedCookies = decodeURIComponent(document.cookie);
-  const cookies = decodedCookies.split("; ");
-  //get cookie with name consent
-  const consentCookie = cookies.find((cookie) => cookie.startsWith("consent="));
-  //if cookie is not set or is not true, show consent popup
-  if (!consentCookie || consentCookie.split("=")[1] != "true") {
-    const consentPopup = getById("cookies-baner");
-    consentPopup.classList.add("active");
-    getById("cookies-accept").addEventListener("click", () => {
-      consentPopup.classList.remove("active");
-      //set cookie with name consent and value true
-      document.cookie = "consent=true; path=/; max-age=31536000"; // 1 year
-    });
-  }
 
   //loading items and groups
   try {

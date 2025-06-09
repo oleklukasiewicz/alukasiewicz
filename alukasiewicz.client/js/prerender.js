@@ -67,49 +67,37 @@ const DEVELOPMENT =
   window.location.hostname.includes("dev");
 
 const Translate = async function (locale) {
-  if (!locale) {
-    return;
-  }
+  if (!locale) return;
+
   //load from cache
   if (LOCALE_CACHE.length > 0) {
     for (const item of LOCALE_CACHE) {
       var value = GetCurrentTranslationFromLocale(item.value);
-      if (value) {
-        AddTranslation(item.key, value);
-      }
+      if (value) AddTranslation(item.key, value);
     }
   }
   const targets = document.querySelectorAll("[data-translate]");
   for (const target of targets) {
     const path = target.getAttribute("data-translate");
-    if (path) {
-      await TranslateNode(target, path);
-    }
+    if (path) await TranslateNode(target, path);
   }
   const titleTargets = document.querySelectorAll("[data-translate-title]");
   for (const target of titleTargets) {
     const path = target.getAttribute("data-translate-title");
-    if (path) {
-      await TranslateTitleNode(target, path);
-    }
+    if (path) await TranslateTitleNode(target, path);
   }
 };
 const TranslateNode = async function (node, path) {
-  if (!node || !path) {
-    return;
-  }
+  if (!node || !path) return;
+
   const translation = GetTranslation(path, LOCALE);
   if (translation) {
-    //check if tranlation is array
     if (Array.isArray(translation)) {
-      //replace text subnodes with translation
       const chilkdNodes = node.childNodes;
       if (chilkdNodes.length > 0) {
         let localeIndex = 0;
-        chilkdNodes.forEach((childNode, index) => {
-          //check if childNode is text node
+        chilkdNodes.forEach((childNode) => {
           if (childNode.nodeType === Node.TEXT_NODE) {
-            //replace text node with translation
             if (translation[localeIndex]) {
               childNode.textContent = translation[localeIndex];
 
@@ -121,7 +109,6 @@ const TranslateNode = async function (node, path) {
     } else {
       node.innerText = translation;
     }
-    //add custom data attribute for the translation
   }
   node.setAttribute("data-translate", path);
 };
@@ -130,10 +117,7 @@ const TranslateTitleNode = async function (node, path) {
     return;
   }
   const translation = GetTranslation(path, LOCALE);
-  if (translation) {
-    node.setAttribute("title", translation);
-    //add custom data attribute for the title translation
-  }
+  if (translation) node.setAttribute("title", translation);
   node.setAttribute("data-translate-title", path);
 };
 const AddTranslation = function (key, value) {
@@ -143,9 +127,8 @@ const AddTranslation = function (key, value) {
   const keys = key.split(".");
   let current = LOCALE;
   for (let i = 0; i < keys.length - 1; i++) {
-    if (!current[keys[i]]) {
-      current[keys[i]] = {};
-    }
+    if (!current[keys[i]]) current[keys[i]] = {};
+
     current = current[keys[i]];
   }
   current[keys[keys.length - 1]] = value;
@@ -154,7 +137,6 @@ const AddTranslationWithCache = async function (key, value) {
   //check if existing translation is in cache
   const existing = LOCALE_CACHE.find((item) => item.key === key);
   if (existing) return existing.value;
-  //if not, add to cache and to locale
   LOCALE_CACHE.push({ key, value });
   AddTranslation(key, GetCurrentTranslationFromLocale(value));
 };
@@ -174,14 +156,12 @@ const GetTranslation = function (key, locale = LOCALE) {
   return null;
 };
 const GetCurrentTranslationFromLocale = function (locale) {
-  if (!locale) {
-    return;
-  }
+  if (!locale) return;
+
   locale[LOCALE.lang] = locale[LOCALE.lang] || locale["en-US"];
   const currentTranslation = locale[LOCALE.lang];
-  if (!currentTranslation) {
-    return;
-  }
+  if (!currentTranslation) return;
+
   return currentTranslation;
 };
 const FetchLocale = async function (lang) {
@@ -191,9 +171,9 @@ const FetchLocale = async function (lang) {
   const localeUrl = `/locales/${lang}.json`;
   try {
     const response = await fetch(localeUrl);
-    if (!response.ok) {
+    if (!response.ok)
       throw new Error("Network response was not ok " + response.statusText);
-    }
+
     let data = {};
     try {
       data = await response.json();
@@ -206,22 +186,18 @@ const FetchLocale = async function (lang) {
   }
 };
 let LANG = navigator.language || "en-US";
-if (LANG == "pl-PL" || LANG == "pl") {
-  LANG = "pl-PL";
-} else {
-  LANG = "en-US";
-}
+if (LANG == "pl-PL" || LANG == "pl") LANG = "pl-PL";
+else LANG = "en-US";
+
 //fetch locale file
 let LOCALE_CACHE = [];
 let LOCALE = {};
 FetchLocale(LANG).then(async (data) => {
   Object.assign(LOCALE, data);
-  //check if dom is ready and stop rendering before transltion si scompelted
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", async () => {
-      await Translate(LOCALE);
-    });
-  } else {
-    await Translate(LOCALE);
-  }
+  if (document.readyState === "loading")
+    document.addEventListener(
+      "DOMContentLoaded",
+      async () => await Translate(LOCALE)
+    );
+  else await Translate(LOCALE);
 });
