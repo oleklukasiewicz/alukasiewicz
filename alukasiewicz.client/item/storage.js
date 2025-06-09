@@ -309,7 +309,6 @@ const storageItems = () => [
   },
   {
     id: "minerobe",
-    dev: true,
     folder: "/minerobe",
     title: "Minerobe",
     isLink: "https://minerobe.alukasiewicz.online",
@@ -319,9 +318,9 @@ const storageItems = () => [
         "Digital wardrobe for your Minecraft skin. Create your own outfits and use them in the game.",
     },
     createDate: {
-      day: 7,
-      month: 8,
-      year: 2022,
+      day: 9,
+      month: 6,
+      year: 2025,
     },
     groups: ["projects"],
   },
