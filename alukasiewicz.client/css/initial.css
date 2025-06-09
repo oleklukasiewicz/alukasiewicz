@@ -221,14 +221,6 @@ a:not(.icon-button):not(.button):not(.data-node):not(.lang-logo):hover {
 .hidden-opacity {
   opacity: 0 !important;
 }
-.dev-badge {
-  display: none;
-  animation-name: DevAnim;
-  animation-fill-mode: forwards;
-  animation-timing-function: cubic-bezier(0.16, 1, 0.29, 0.99);
-  animation-duration: var(--time);
-  animation-delay: 1.5s;
-}
 .offline-badge {
   display: none;
   background-color: var(--color-font) !important;
