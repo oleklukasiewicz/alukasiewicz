@@ -48,6 +48,33 @@
   "close": "Close",
   "cookies": "This site uses cookies to deliver its services. By using this site, you agree to its use of cookies.",
   "accept": "Accept",
+  "refresh_page": "Refresh Page",
+  "errors": {
+    "item_load_error": {
+      "title": "Error loading item",
+      "message": "An error occurred while loading the item. Please try again later."
+    },
+    "item_outdated": {
+      "title": "Item outdated",
+      "message": "The item you are trying to access is outdated. Please refresh the page or check back later."
+    },
+    "image_not_found": {
+      "title": "Image not found",
+      "message": "The image you are trying to access does not exist or has been moved."
+    },
+    "item_not_found": {
+      "title": "Item not found",
+      "message": "The item you are trying to access does not exist or has been moved."
+    },
+    "group_not_found": {
+      "title": "Group not found",
+      "message": "The group you are trying to access does not exist or has been moved."
+    },
+    "item_not_fetched": {
+      "title": "Item not fetched",
+      "message": "The item you are trying to access has not been fetched yet. Please try again later."
+    }
+  },
   "groups": {},
   "items": {}
 }

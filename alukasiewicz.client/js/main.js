@@ -157,7 +157,7 @@ const EventController = function (eventsList = []) {
 
   eventsList.forEach((eventName) => (_events[eventName] = []));
 
-  this.addEventListener = (event, listener = function () {}) =>
+  this.addEventListener = (event, listener = function () { }) =>
     _events[event].push(listener);
   this.invokeEvent = async (event, arg = []) =>
     await Promise.all(_events[event].map((event) => event(...arg)));
@@ -653,9 +653,9 @@ const landingView = new View(
           -1
         );
     },
-    onError: function (err) {
+    onError: async function (err) {
       this.rootNode.classList.add(GLOBAL.error);
-      createErrorMsg(err, getById("landing-error-node"));
+      await createErrorMsg(err, getById("landing-error-node"));
     },
   },
   true,
@@ -761,7 +761,7 @@ const itemView = new View(
         item.createDate.toHTMLString() +
         (item.modifyDate
           ? " <u class='dotted-separator'></u> <span>Updated</span> " +
-            item.modifyDate.toHTMLString()
+          item.modifyDate.toHTMLString()
           : "");
       const itemInfoSpan2 = this.data.iInfo.querySelector("span:nth-child(3)");
       await TranslateNode(itemInfoSpan2, "updated");
@@ -776,9 +776,9 @@ const itemView = new View(
     onLoadFinish: function (arg) {
       this.rootNode.classList.remove(GLOBAL.loading);
     },
-    onError: function (err) {
+    onError: async function (err) {
       this.rootNode.classList.add(GLOBAL.error);
-      createErrorMsg(err, getById("item-error-node"));
+      await createErrorMsg(err, getById("item-error-node"));
     },
   },
   true,
@@ -853,9 +853,9 @@ const groupView = new View(
       this.rootNode.classList.remove(GLOBAL.loading);
       this.data.groupList.getElementsByClassName("no-data").remove();
     },
-    onError: function (err) {
+    onError: async function (err) {
       this.rootNode.classList.add(GLOBAL.error);
-      createErrorMsg(err, getById("group-error-node"));
+      await createErrorMsg(err, getById("group-error-node"));
     },
   },
   true,
@@ -951,11 +951,11 @@ const resourceView = new View(
             history.state,
             "",
             "/" +
-              _sender.url +
-              "/" +
-              _sender.data.currentItem.id +
-              "/" +
-              res.hash
+            _sender.url +
+            "/" +
+            _sender.data.currentItem.id +
+            "/" +
+            res.hash
           );
           try {
             await ImageHelper(
@@ -1020,9 +1020,9 @@ const resourceView = new View(
       this.rootNode.classList.remove(GLOBAL.error);
       this.data.resSlider.close();
     },
-    onError: function (err) {
+    onError: async function (err) {
       this.rootNode.classList.add(GLOBAL.error);
-      createErrorMsg(err, getById("resources-error-node"));
+      await createErrorMsg(err, getById("resources-error-node"));
     },
   },
   true,
@@ -1279,15 +1279,15 @@ const StorageResponseBuilder = async function (
           : entry.groupItemIndex;
       entry.obj.type == GLOBAL.group
         ? await createGroupTile(
-            _items[entry.index] ||
-              targetNode.appendChild(document.createElement("div")),
-            entry.obj
-          )
+          _items[entry.index] ||
+          targetNode.appendChild(document.createElement("div")),
+          entry.obj
+        )
         : await createItemTile(
-            _items[entry.index] ||
-              targetNode.appendChild(document.createElement("a")),
-            entry.obj
-          );
+          _items[entry.index] ||
+          targetNode.appendChild(document.createElement("a")),
+          entry.obj
+        );
     })
   );
 };
@@ -1440,7 +1440,7 @@ const GestureBuilder = function (node, event = {}) {
 };
 
 //error message node builder
-const createErrorMsg = function (err, node, customImage) {
+const createErrorMsg = async function (err, node, customImage) {
   node.innerHTML = "";
   let errorImg;
   if (!customImage) {
@@ -1454,10 +1454,12 @@ const createErrorMsg = function (err, node, customImage) {
   let errorTitle = document.createElement("DIV");
   errorTitle.classList.add("font-title");
   errorTitle.innerHTML = err.title;
+  await TranslateNode(errorTitle, "errors." + err.id + ".title");
 
   let errorMessage = document.createElement("SPAN");
   errorMessage.classList.add("font-base");
   errorMessage.innerHTML = err.message;
+  await TranslateNode(errorMessage, "errors." + err.id + ".message");
 
   node.appendChild(errorImg);
   node.appendChild(errorTitle);
@@ -1467,6 +1469,7 @@ const createErrorMsg = function (err, node, customImage) {
     let _but = createButton("mi-Refresh", "Refresh page");
     _but.addEventListener("click", () => window.location.reload(true));
     node.appendChild(_but);
+    await TranslateNode(_but.querySelector("span"), "refresh_page");
   }
 };
 const createButton = function (icon, label, tagName = "A", rightLabel = false) {
@@ -1500,14 +1503,14 @@ const PlayViewUnLoadingAnimation = async function () {
 //Image helper for images
 const ImageHelper = function (
   image,
-  onload = () => {},
-  onerror = () => {},
-  onfinish = () => {}
+  onload = () => { },
+  onerror = () => { },
+  onfinish = () => { }
 ) {
   if (!image.src) return;
   const imageIsNotLoaded = function () {
     image.src = "/img/image_error.webp";
-    image.onload = function () {};
+    image.onload = function () { };
     onerror(image);
     onfinish(image);
   };
@@ -1526,12 +1529,12 @@ const ImageHelper = function (
 };
 const MultipleImagesHelper = function (
   images,
-  onload = () => {},
-  onerror = () => {},
-  onfinish = () => {},
-  onloadsingle = () => {},
-  onerrorsingle = () => {},
-  onfinishsingle = () => {}
+  onload = () => { },
+  onerror = () => { },
+  onfinish = () => { },
+  onloadsingle = () => { },
+  onerrorsingle = () => { },
+  onfinishsingle = () => { }
 ) {
   let promises = images.map((img) => {
     try {

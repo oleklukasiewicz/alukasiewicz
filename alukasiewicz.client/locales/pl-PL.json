@@ -48,6 +48,33 @@
   "close": "Zamknij",
   "cookies": "Ta strona używa plików cookie, aby świadczyć usługi. Korzystając z tej strony, zgadzasz się na ich użycie.",
   "accept": "Akceptuj",
+  "refresh_page": "Odśwież stronę",
+  "errors": {
+    "item_load_error": {
+      "title": "Błąd ładowania elementu",
+      "message": "Wystąpił błąd podczas ładowania elementu. Spróbuj ponownie później."
+    },
+    "item_outdated": {
+      "title": "Element nieaktualny",
+      "message": "Element, do którego próbujesz uzyskać dostęp, jest nieaktualny. Odśwież stronę lub sprawdź ponownie później."
+    },
+    "item_not_found": {
+      "title": "Element nie znaleziony",
+      "message": "Nie można znaleźć elementu, którego szukasz. Sprawdź adres URL lub wróć na stronę główną."
+    },
+    "image_not_found": {
+      "title": "Obraz nie znaleziony",
+      "message": "Obraz, do którego próbujesz uzyskać dostęp, nie istnieje lub został przeniesiony."
+    },
+    "group_not_found": {
+      "title": "Grupa nie znaleziona",
+      "message": "Grupa, do której próbujesz uzyskać dostęp, nie istnieje lub została przeniesiona."
+    },
+    "item_not_fetched": {
+      "title": "Element nie został pobrany",
+      "message": "Nie można pobrać elementu. Sprawdź połączenie internetowe lub spróbuj ponownie później."
+    }
+  },
   "groups": {},
   "items": {}
 }
