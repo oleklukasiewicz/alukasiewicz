@@ -157,7 +157,7 @@ const EventController = function (eventsList = []) {
 
   eventsList.forEach((eventName) => (_events[eventName] = []));
 
-  this.addEventListener = (event, listener = function () { }) =>
+  this.addEventListener = (event, listener = function () {}) =>
     _events[event].push(listener);
   this.invokeEvent = async (event, arg = []) =>
     await Promise.all(_events[event].map((event) => event(...arg)));
@@ -761,7 +761,7 @@ const itemView = new View(
         item.createDate.toHTMLString() +
         (item.modifyDate
           ? " <u class='dotted-separator'></u> <span>Updated</span> " +
-          item.modifyDate.toHTMLString()
+            item.modifyDate.toHTMLString()
           : "");
       const itemInfoSpan2 = this.data.iInfo.querySelector("span:nth-child(3)");
       await TranslateNode(itemInfoSpan2, "updated");
@@ -951,11 +951,11 @@ const resourceView = new View(
             history.state,
             "",
             "/" +
-            _sender.url +
-            "/" +
-            _sender.data.currentItem.id +
-            "/" +
-            res.hash
+              _sender.url +
+              "/" +
+              _sender.data.currentItem.id +
+              "/" +
+              res.hash
           );
           try {
             await ImageHelper(
@@ -1279,15 +1279,15 @@ const StorageResponseBuilder = async function (
           : entry.groupItemIndex;
       entry.obj.type == GLOBAL.group
         ? await createGroupTile(
-          _items[entry.index] ||
-          targetNode.appendChild(document.createElement("div")),
-          entry.obj
-        )
+            _items[entry.index] ||
+              targetNode.appendChild(document.createElement("div")),
+            entry.obj
+          )
         : await createItemTile(
-          _items[entry.index] ||
-          targetNode.appendChild(document.createElement("a")),
-          entry.obj
-        );
+            _items[entry.index] ||
+              targetNode.appendChild(document.createElement("a")),
+            entry.obj
+          );
     })
   );
 };
@@ -1503,14 +1503,14 @@ const PlayViewUnLoadingAnimation = async function () {
 //Image helper for images
 const ImageHelper = function (
   image,
-  onload = () => { },
-  onerror = () => { },
-  onfinish = () => { }
+  onload = () => {},
+  onerror = () => {},
+  onfinish = () => {}
 ) {
   if (!image.src) return;
   const imageIsNotLoaded = function () {
     image.src = "/img/image_error.webp";
-    image.onload = function () { };
+    image.onload = function () {};
     onerror(image);
     onfinish(image);
   };
@@ -1529,12 +1529,12 @@ const ImageHelper = function (
 };
 const MultipleImagesHelper = function (
   images,
-  onload = () => { },
-  onerror = () => { },
-  onfinish = () => { },
-  onloadsingle = () => { },
-  onerrorsingle = () => { },
-  onfinishsingle = () => { }
+  onload = () => {},
+  onerror = () => {},
+  onfinish = () => {},
+  onloadsingle = () => {},
+  onerrorsingle = () => {},
+  onfinishsingle = () => {}
 ) {
   let promises = images.map((img) => {
     try {
