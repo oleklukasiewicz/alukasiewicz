@@ -185,6 +185,9 @@
 .mi-Shop:before {
   content: "\EE18";
 }
+.mi-Search:before {
+  content: "\EE04";
+}
 .mi-Copy:before {
   content: "\EB1A";
 }
@@ -220,14 +223,6 @@ a:not(.icon-button):not(.button):not(.data-node):not(.lang-logo):hover {
 }
 .hidden-opacity {
   opacity: 0 !important;
-}
-.dev-badge {
-  display: none;
-  animation-name: DevAnim;
-  animation-fill-mode: forwards;
-  animation-timing-function: cubic-bezier(0.16, 1, 0.29, 0.99);
-  animation-duration: var(--time);
-  animation-delay: 1.5s;
 }
 .offline-badge {
   display: none;
@@ -426,6 +421,87 @@ u.dotted-separator {
   width: 100%;
   gap: 10px;
 }
+.list-view > .group {
+  grid-column-start: 1;
+  grid-column-end: 4;
+  box-sizing: border-box;
+  padding: 12px 16px;
+  font-weight: 700;
+  user-select: none;
+  width: 100%;
+  display: flex;
+  overflow: hidden;
+}
+.list-view > .item {
+  max-width: 100%;
+  min-width: 10px;
+  text-decoration: none;
+  display: grid;
+  grid-template-rows: auto auto 1fr auto;
+  grid-template-columns: 100%;
+  border-radius: var(--border-radius);
+  user-select: none;
+  transition: box-shadow var(--time-A1) cubic-bezier(0.16, 1, 0.29, 0.99),
+    transform var(--time-A1) cubic-bezier(0.16, 1, 0.29, 0.99),
+    opacity var(--time), background-color var(--time);
+  color: var(--color-font);
+  cursor: pointer;
+  position: relative;
+  border: 0;
+}
+.list-view > .group > span {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  width: calc(100% - 82px);
+  flex: 1;
+  margin-right: 24px;
+}
+.list-view > .group > .button {
+  float: right;
+  font-weight: 400;
+  padding: 9px 9px;
+  height: 34px;
+}
+.list-view > .item > .labels {
+  padding: 20px;
+  display: flex;
+  height: 72px;
+  box-sizing: border-box;
+}
+.list-view > .item > span {
+  margin: 12px 20px 0;
+  text-align: justify;
+  letter-spacing: 0.1px;
+}
+.list-view > .item > b {
+  font-weight: 700;
+  margin: 20px 20px 0;
+}
+.list-view > .item > .labels > .button {
+  transition: var(--transition-bg-only);
+  width: 118px;
+  z-index: 3;
+}
+.list-view > .item > .labels > .button > i {
+  float: right;
+}
+.list-view > .item > .labels > .label > i {
+  transform: translateY(1px);
+  min-width: 13px;
+  min-height: 13px;
+  display: inline-table;
+}
+.list-view > .item > .labels > .label {
+  color: var(--color-font);
+  margin-left: 20px;
+  text-align: right;
+  overflow: hidden;
+  max-height: 32px;
+  box-sizing: border-box;
+  line-height: 32px;
+  flex: 1;
+}
 .list-view > .item.loading {
   animation-name: Blink;
   animation-iteration-count: infinite;
@@ -617,9 +693,6 @@ u.dotted-separator {
   max-width: var(--size-max-width);
   margin: 0 auto 40px;
 }
-#item-content.markdown {
-  display: block;
-}
 #item #item-content-loading {
   display: none;
 }
@@ -736,6 +809,11 @@ u.dotted-separator {
     grid-template-columns: 1fr 1fr;
     padding-top: 0px;
   }
+  .list-view > .group {
+    grid-column-start: 1;
+    grid-column-end: 3;
+    padding: 20px 12px;
+  }
   #landing .list-view > .index-0 {
     grid-column: 1;
     margin-right: 5px;
@@ -792,6 +870,11 @@ u.dotted-separator {
   .list-view {
     grid-template-columns: 1fr;
     gap: 0px;
+  }
+  .list-view > .group {
+    grid-column-start: 1;
+    grid-column-end: 2;
+    padding: 16px 12px;
   }
   #landing .list-view > .index-0 {
     grid-column: 1;
