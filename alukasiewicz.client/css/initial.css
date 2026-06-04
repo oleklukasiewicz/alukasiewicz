@@ -734,7 +734,6 @@ u.dotted-separator {
 @media only screen and (max-width: 700px) {
   .list-view {
     grid-template-columns: 1fr 1fr;
-    gap: 0px;
     padding-top: 0px;
   }
   #landing .list-view > .index-0 {
