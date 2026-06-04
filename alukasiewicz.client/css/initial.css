@@ -35,8 +35,8 @@
   --time: 0.3s;
   --time-A1: 0.6s;
   --transition: color var(--time), background-color var(--time);
-  --transition-border: color var(--time), background-color var(--time),
-    border-color var(--time);
+  --transition-border:
+    color var(--time), background-color var(--time), border-color var(--time);
   --transition-bg-only: background-color var(--time);
   --view-max-width: 1024px;
   --color-font-accent: #ffffff;
@@ -129,7 +129,8 @@
   font-weight: 400;
   font-display: swap;
   src: url(/font/);
-  src: url(/font/micon_nb.eot?#iefix) format("embedded-opentype"),
+  src:
+    url(/font/micon_nb.eot?#iefix) format("embedded-opentype"),
     url(/font/micon_nb.woff2) format("woff2"),
     url(/font/micon_nb.woff) format("woff"),
     url(/font/micon_nb.ttf) format("truetype"),
@@ -207,7 +208,9 @@ body.scroll-fix::-webkit-scrollbar-track {
 }
 a:not(.icon-button):not(.button):not(.data-node):not(.lang-logo) {
   color: var(--color-accent-A2);
-  transition: color var(--time), opacity var(--time);
+  transition:
+    color var(--time),
+    opacity var(--time);
   text-decoration: none;
 }
 a:not(.icon-button):not(.button):not(.data-node):not(.lang-logo):hover {
@@ -347,7 +350,9 @@ a:not(.icon-button):not(.button):not(.data-node):not(.lang-logo):hover {
   cursor: pointer;
   color: var(--color-font);
   border-radius: var(--border-radius);
-  transition: background-color var(--time), box-shadow var(--time);
+  transition:
+    background-color var(--time),
+    box-shadow var(--time);
   text-decoration: none;
   display: table;
   user-select: none;
@@ -441,9 +446,11 @@ u.dotted-separator {
   grid-template-columns: 100%;
   border-radius: var(--border-radius);
   user-select: none;
-  transition: box-shadow var(--time-A1) cubic-bezier(0.16, 1, 0.29, 0.99),
+  transition:
+    box-shadow var(--time-A1) cubic-bezier(0.16, 1, 0.29, 0.99),
     transform var(--time-A1) cubic-bezier(0.16, 1, 0.29, 0.99),
-    opacity var(--time), background-color var(--time);
+    opacity var(--time),
+    background-color var(--time);
   color: var(--color-font);
   cursor: pointer;
   position: relative;
@@ -637,7 +644,9 @@ u.dotted-separator {
   cursor: pointer;
   max-height: 40px;
   max-width: 40px;
-  transition: var(--time) background-color, var(--time) filter;
+  transition:
+    var(--time) background-color,
+    var(--time) filter;
 }
 .lang-logo > img {
   margin: 10px;
@@ -814,6 +823,9 @@ u.dotted-separator {
     grid-column-start: 1;
     grid-column-end: 3;
     padding: 20px 12px;
+  }
+  #landing .list-view {
+    gap: 0;
   }
   #landing .list-view > .index-0 {
     grid-column: 1;
